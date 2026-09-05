@@ -1,6 +1,8 @@
 # Gemma Model Launcher
 
-A portable Windows launcher for local translation, writing, roleplay, and conversation. Choose a model, let the launcher prepare its files, and open the built-in Web UI or connect an OpenAI-compatible app.
+**Choose a model and start local AI with one click.** Gemma Model Launcher handles the downloads, model-specific settings, and startup for you. From first installation to everyday use, manage your models and start or stop your AI in one simple Windows app.
+
+Built for people who want to use AI without having to learn how to set it up. Translate, write, roleplay, or chat through the browser-based Web UI—or connect your favorite translation and chat apps to the **OpenAI-compatible API server running on your PC**.
 
 ## Download
 
@@ -8,9 +10,21 @@ A portable Windows launcher for local translation, writing, roleplay, and conver
 
 1. Download `GemmaLauncher-0.1.3-win-x64.exe` from Releases.
 2. Run the EXE directly. No ZIP extraction or companion folder is needed.
-3. Select a model, start it, and choose **Open Web UI** when ready.
+3. Select a model and start the server.
+4. When ready, choose **Open Web UI** to chat in your browser, or **connect another app through the API** using the settings below.
 
 Windows x64 and a Vulkan-capable graphics driver are required. The launcher includes .NET. Model inference also needs the Microsoft Visual C++ x64 runtime; the app offers Microsoft's official installer link if it is missing. Internet access is needed to prepare models initially. Model files and the inference engine are downloaded separately.
+
+## Use with other apps through the API
+
+The launcher can supply the AI model for translation tools, chat clients, and other apps that support a custom OpenAI-compatible API. In the other app's connection settings, enter:
+
+| Setting | Value |
+|---|---|
+| API base URL | `http://127.0.0.1:8080/v1` |
+| Model name / ID | Enter the **model name** shown in the launcher's app-connection section. |
+
+Keep the launcher server running while using the connected app. You do not need to open the Web UI to use the API. The API is accessible from this PC only.
 
 ## Models
 
@@ -65,7 +79,9 @@ Gemma is used to identify the supported models. This is an independent project, 
 
 ## Gemma 모델 런처
 
-번역과 창작용 AI를 내 PC에서 실행하는 Windows 런처입니다. 모델 선택부터 다운로드, 실행, Web UI 연결까지 한곳에서 관리합니다. Web UI로 바로 대화하거나 OpenAI 호환 API를 지원하는 다른 앱에 연결할 수 있습니다.
+**모델을 고르고 한 번만 누르면, 다운로드부터 설정과 실행까지 자동으로 진행됩니다.** Gemma 모델 런처는 처음 설치할 때부터 매일 사용할 때까지, 모델 관리와 AI 켜기·끄기를 한 화면에서 간편하게 처리하는 Windows 앱입니다.
+
+로컬 AI를 처음 접하는 사람도 쉽게 시작할 수 있도록 만들었습니다. Web UI에서 번역·글쓰기·롤플레잉·대화를 바로 즐기거나, **내 PC에서 제공하는 OpenAI 호환 API**를 평소 쓰는 번역 프로그램이나 채팅 앱에 연결해 사용하세요.
 
 ## 다운로드
 
@@ -73,9 +89,21 @@ Gemma is used to identify the supported models. This is an independent project, 
 
 1. Releases에서 `GemmaLauncher-0.1.3-win-x64.exe`를 내려받습니다.
 2. EXE를 바로 실행합니다. 압축 해제나 함께 보관할 별도 폴더가 필요하지 않습니다.
-3. 모델을 선택해 준비를 마치면 **Web UI 열기**로 바로 사용할 수 있습니다.
+3. 사용할 모델을 선택하고 서버를 켭니다.
+4. 준비가 끝나면 **Web UI 열기**로 브라우저에서 직접 대화하거나, 아래 설정으로 **다른 앱에 API를 연결**해 사용합니다.
 
 Windows x64와 Vulkan을 지원하는 그래픽 드라이버가 필요합니다. 런처에는 .NET이 포함되어 있습니다. 모델 실행에 필요한 Microsoft Visual C++ x64 구성요소가 없으면 앱에서 Microsoft 공식 설치 링크를 안내합니다. 첫 준비에는 인터넷 연결이 필요하며, 모델과 실행 엔진은 별도로 다운로드합니다.
+
+## API로 다른 앱에 연결하기
+
+번역 도구나 채팅 앱에서 이 런처의 AI 모델을 사용할 수 있습니다. 연결하려는 앱이 직접 API 주소를 입력하는 OpenAI 호환 연결을 지원한다면, 해당 앱의 연결 설정에 다음 값을 넣으세요.
+
+| 설정 항목 | 입력할 값 |
+|---|---|
+| API 주소 / Base URL | `http://127.0.0.1:8080/v1` |
+| 모델 이름 / Model ID | 런처의 **앱 연결 → 모델 이름**에 표시된 값을 그대로 입력합니다. |
+
+연결한 앱을 사용하는 동안 런처의 서버를 켜 두세요. API를 사용할 때는 Web UI를 열 필요가 없습니다. 이 API는 같은 PC 안에서만 접속할 수 있습니다.
 
 ## 모델
 
