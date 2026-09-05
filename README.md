@@ -66,8 +66,6 @@ Gemma is used to identify the supported models. This is an independent project, 
 ## 다운로드
 
 **[최신 런처 다운로드](https://github.com/motionsilse/GemmaLauncher/releases/latest)**
-<img width="1113" height="854" alt="image" src="https://github.com/user-attachments/assets/4dbdf507-c981-444d-9d90-f625dfb5d714" />
-
 
 1. Releases에서 `GemmaLauncher-*-win-x64.zip`을 내려받아 압축을 풉니다.
 2. `GemmaLauncher.exe`를 실행합니다. `Assets` 폴더도 함께 보관하세요.
