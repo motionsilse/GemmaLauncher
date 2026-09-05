@@ -1,6 +1,4 @@
 # Gemma Model Launcher
-<img width="1150" height="954" alt="image" src="https://github.com/user-attachments/assets/2f58dc1d-546a-4b4f-ba13-b7ffc9911f77" />
-<img width="1094" height="852" alt="image" src="https://github.com/user-attachments/assets/35b6c523-9376-4042-ae30-78370f05a45e" />
 
 A portable Windows launcher for local translation, writing, roleplay, and conversation. Choose a model, let the launcher prepare its files, and open the built-in Web UI or connect an OpenAI-compatible app.
 
@@ -53,10 +51,13 @@ The launcher source is available under the [MIT License](LICENSE). Downloaded mo
 
 Gemma is used to identify the supported models. This is an independent project, not an official Google product.
 
+
+<img width="1150" height="954" alt="image" src="https://github.com/user-attachments/assets/2f58dc1d-546a-4b4f-ba13-b7ffc9911f77" />
+<img width="1094" height="852" alt="image" src="https://github.com/user-attachments/assets/35b6c523-9376-4042-ae30-78370f05a45e" />
+
 ---
 
 # 한국어
-<img width="1153" height="958" alt="image" src="https://github.com/user-attachments/assets/b69466eb-3a84-417b-bc0e-469d45a28a1b" />
 
 ## Gemma 모델 런처
 
@@ -112,3 +113,7 @@ powershell -ExecutionPolicy Bypass -File scripts/publish-launcher.ps1
 런처 소스에는 [MIT 라이선스](LICENSE)가 적용됩니다. 다운로드하는 모델·실행 엔진과 포함된 런타임은 각각의 라이선스를 따릅니다. [타사 구성요소 안내](THIRD-PARTY-NOTICES.md)를 참고하세요.
 
 Gemma는 지원 모델을 식별하기 위해 사용합니다. 이 런처는 Google의 공식 제품이 아닌 독립 프로젝트입니다.
+
+<img width="1153" height="953" alt="image" src="https://github.com/user-attachments/assets/03c9eef6-117e-4b68-b73e-739554259648" />
+<img width="1113" height="853" alt="image" src="https://github.com/user-attachments/assets/0ac99358-5762-4859-8787-f793d18228d7" />
+
