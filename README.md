@@ -1,4 +1,6 @@
-# Gemma Model Launcher by Drugged Cat
+# Gemma Model Launcher
+<img width="1150" height="954" alt="image" src="https://github.com/user-attachments/assets/2f58dc1d-546a-4b4f-ba13-b7ffc9911f77" />
+<img width="1094" height="852" alt="image" src="https://github.com/user-attachments/assets/35b6c523-9376-4042-ae30-78370f05a45e" />
 
 A portable Windows launcher for local translation, writing, roleplay, and conversation. Choose a model, let the launcher prepare its files, and open the built-in Web UI or connect an OpenAI-compatible app.
 
@@ -54,14 +56,17 @@ Gemma is used to identify the supported models. This is an independent project, 
 ---
 
 # 한국어
+<img width="1153" height="958" alt="image" src="https://github.com/user-attachments/assets/b69466eb-3a84-417b-bc0e-469d45a28a1b" />
 
-## Gemma 모델 런처 by Drugged Cat
+## Gemma 모델 런처
 
 번역과 창작용 AI를 내 PC에서 실행하는 Windows 런처입니다. 모델 선택부터 다운로드, 실행, Web UI 연결까지 한곳에서 관리합니다. Web UI로 바로 대화하거나 OpenAI 호환 API를 지원하는 다른 앱에 연결할 수 있습니다.
 
 ## 다운로드
 
 **[최신 런처 다운로드](https://github.com/motionsilse/GemmaLauncher/releases/latest)**
+<img width="1113" height="854" alt="image" src="https://github.com/user-attachments/assets/4dbdf507-c981-444d-9d90-f625dfb5d714" />
+
 
 1. Releases에서 `GemmaLauncher-*-win-x64.zip`을 내려받아 압축을 풉니다.
 2. `GemmaLauncher.exe`를 실행합니다. `Assets` 폴더도 함께 보관하세요.
