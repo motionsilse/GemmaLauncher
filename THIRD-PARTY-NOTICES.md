@@ -2,9 +2,9 @@
 
 Gemma 모델 런처는 아래 프로젝트를 사용합니다. 각 구성 요소의 권리와 이용 조건은 해당 저작권자와 원본 라이선스에 따릅니다.
 
-## 배포 ZIP에 포함된 구성 요소
+## 단일 EXE에 포함된 구성 요소
 
-Windows용 독립 실행 배포에는 .NET 런타임과 Windows Desktop 구성 요소가 포함됩니다. 배포 폴더의 `licenses` 디렉터리에 패키지의 라이선스와 타사 고지 원문을 함께 보관합니다.
+Windows용 단일 EXE에는 .NET 런타임과 Windows Desktop 구성 요소가 포함됩니다. 사용한 런타임 패키지의 라이선스와 타사 고지 원문을 EXE 안에 보관합니다. `GemmaLauncher-0.1.3-win-x64.exe --licenses`로 실행하면 내장된 고지를 텍스트 뷰어로 열 수 있습니다.
 
 - [.NET Runtime](https://github.com/dotnet/runtime) — [라이선스](https://github.com/dotnet/runtime/blob/main/LICENSE.TXT), [타사 고지](https://github.com/dotnet/runtime/blob/main/THIRD-PARTY-NOTICES.TXT)
 - [Windows Presentation Foundation](https://github.com/dotnet/wpf) — [라이선스](https://github.com/dotnet/wpf/blob/main/LICENSE.TXT)
@@ -19,11 +19,11 @@ Windows용 독립 실행 배포에는 .NET 런타임과 Windows Desktop 구성 �
 - [llama.cpp 라이선스](https://github.com/ggml-org/llama.cpp/blob/master/LICENSE)
 - [실행 엔진 배포 목록](https://github.com/ggml-org/llama.cpp/releases)
 
-실행 엔진은 런처 ZIP에 포함하지 않습니다. 다운로드한 실행 엔진과 함께 제공되는 고지 파일은 원래 배포 파일에 포함된 상태로 유지됩니다.
+실행 엔진은 런처 EXE에 포함하지 않습니다. 다운로드한 실행 엔진과 함께 제공되는 고지 파일은 원래 배포 파일에 포함된 상태로 유지됩니다.
 
 ## 사용자가 선택해 다운로드하는 모델
 
-모델 본체와 MTP 파일은 런처 ZIP에 포함하지 않습니다. 모델별 원본 정보와 이용 조건은 다음 저장소에서 확인할 수 있습니다.
+모델 본체와 MTP 파일은 런처 EXE에 포함하지 않습니다. 모델별 원본 정보와 이용 조건은 다음 저장소에서 확인할 수 있습니다.
 
 | 구성 | 출처 |
 |---|---|

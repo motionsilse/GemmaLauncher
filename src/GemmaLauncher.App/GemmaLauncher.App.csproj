@@ -5,10 +5,19 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>GemmaLauncher</AssemblyName>
-    <Version>0.1.2</Version>
+    <Version>0.1.3</Version>
+    <StartupObject>GemmaLauncher.App.Program</StartupObject>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets/launcher.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup><ProjectReference Include="../GemmaLauncher.Core/GemmaLauncher.Core.csproj" /></ItemGroup>
-  <ItemGroup><Content Include="Assets/catalog.json" CopyToOutputDirectory="PreserveNewest" /></ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets/catalog.json" WithCulture="false" LogicalName="GemmaLauncher.Catalog.json" />
+    <EmbeddedResource Include="$(LauncherNoticesFile)" Condition="'$(LauncherNoticesFile)' != ''" WithCulture="false" LogicalName="GemmaLauncher.Notices.txt" />
+    <EmbeddedResource Include="../../LICENSE" Condition="'$(LauncherNoticesFile)' == '' and Exists('../../LICENSE')" WithCulture="false" LogicalName="GemmaLauncher.License.txt" />
+    <EmbeddedResource Include="../../THIRD-PARTY-NOTICES.md" Condition="'$(LauncherNoticesFile)' == ''" WithCulture="false" LogicalName="GemmaLauncher.ThirdPartyNotices.txt" />
+  </ItemGroup>
+  <Target Name="RequireBundledNoticesForSingleFile" BeforeTargets="PrepareForBuild" Condition="'$(PublishSingleFile)' == 'true' and '$(LauncherNoticesFile)' == ''">
+    <Error Text="Single-file publishing requires bundled license notices. Use scripts/publish-launcher.ps1." />
+  </Target>
 </Project>

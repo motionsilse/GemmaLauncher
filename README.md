@@ -6,8 +6,8 @@ A portable Windows launcher for local translation, writing, roleplay, and conver
 
 **[Download the latest launcher](https://github.com/motionsilse/GemmaLauncher/releases/latest)**
 
-1. Download `GemmaLauncher-*-win-x64.zip` from Releases and extract it.
-2. Run `GemmaLauncher.exe`, keeping the `Assets` folder beside it.
+1. Download `GemmaLauncher-0.1.3-win-x64.exe` from Releases.
+2. Run the EXE directly. No ZIP extraction or companion folder is needed.
 3. Select a model, start it, and choose **Open Web UI** when ready.
 
 Windows x64 and a Vulkan-capable graphics driver are required. The launcher includes .NET. Model inference also needs the Microsoft Visual C++ x64 runtime; the app offers Microsoft's official installer link if it is missing. Internet access is needed to prepare models initially. Model files and the inference engine are downloaded separately.
@@ -43,11 +43,15 @@ dotnet build src/GemmaLauncher.App/GemmaLauncher.App.csproj -c Release
 powershell -ExecutionPolicy Bypass -File scripts/publish-launcher.ps1
 ```
 
-The publish script checks all translations and creates a self-contained ZIP and SHA-256 checksum in `dist/`. Existing release files are never overwritten. Use `-Version` to select a new version.
+The publish script checks all translations and produces `dist/GemmaLauncher-0.1.3-win-x64.exe`, plus a local SHA-256 file. The model catalog, translations, .NET runtime, and license notices are included in the EXE. The script verifies the EXE in a directory without companion files before publishing it. Existing releases are never overwritten; use `-Version` to select a new version.
 
 ## License
 
 The launcher source is available under the [MIT License](LICENSE). Downloaded models, the inference engine, and bundled runtimes retain their own licenses; see [Third-party notices](THIRD-PARTY-NOTICES.md).
+
+You may use, modify, and redistribute the launcher freely, including commercially. Keep the original copyright and license notices when distributing it.
+
+To read the notices included in the EXE, run `./GemmaLauncher-0.1.3-win-x64.exe --licenses`.
 
 Gemma is used to identify the supported models. This is an independent project, not an official Google product.
 
@@ -63,8 +67,8 @@ Gemma is used to identify the supported models. This is an independent project, 
 
 **[최신 런처 다운로드](https://github.com/motionsilse/GemmaLauncher/releases/latest)**
 
-1. Releases에서 `GemmaLauncher-*-win-x64.zip`을 내려받아 압축을 풉니다.
-2. `GemmaLauncher.exe`를 실행합니다. `Assets` 폴더도 함께 보관하세요.
+1. Releases에서 `GemmaLauncher-0.1.3-win-x64.exe`를 내려받습니다.
+2. EXE를 바로 실행합니다. 압축 해제나 함께 보관할 별도 폴더가 필요하지 않습니다.
 3. 모델을 선택해 준비를 마치면 **Web UI 열기**로 바로 사용할 수 있습니다.
 
 Windows x64와 Vulkan을 지원하는 그래픽 드라이버가 필요합니다. 런처에는 .NET이 포함되어 있습니다. 모델 실행에 필요한 Microsoft Visual C++ x64 구성요소가 없으면 앱에서 Microsoft 공식 설치 링크를 안내합니다. 첫 준비에는 인터넷 연결이 필요하며, 모델과 실행 엔진은 별도로 다운로드합니다.
@@ -100,10 +104,14 @@ dotnet build src/GemmaLauncher.App/GemmaLauncher.App.csproj -c Release
 powershell -ExecutionPolicy Bypass -File scripts/publish-launcher.ps1
 ```
 
-배포 스크립트는 모든 언어 리소스를 검사하고 `dist/`에 독립 실행 ZIP과 SHA-256 체크섬을 만듭니다. 기존 배포 파일은 덮어쓰지 않으며, 새 버전은 `-Version`으로 지정합니다.
+배포 스크립트는 모든 언어 리소스를 검사하고 `dist/GemmaLauncher-0.1.3-win-x64.exe`와 로컬 SHA-256 파일을 만듭니다. 모델 목록, 번역 리소스, .NET 런타임과 라이선스 고지는 EXE 안에 포함됩니다. 다른 파일이 없는 폴더에서 EXE를 검증한 뒤 배포 파일로 내보냅니다. 기존 배포 파일은 덮어쓰지 않으며, 새 버전은 `-Version`으로 지정합니다.
 
 ## 라이선스
 
 런처 소스에는 [MIT 라이선스](LICENSE)가 적용됩니다. 다운로드하는 모델·실행 엔진과 포함된 런타임은 각각의 라이선스를 따릅니다. [타사 구성요소 안내](THIRD-PARTY-NOTICES.md)를 참고하세요.
+
+런처는 상업적 이용을 포함해 자유롭게 사용·수정·재배포할 수 있습니다. 배포할 때 원래 저작권 표시와 라이선스 문구를 유지해 주세요.
+
+EXE에 포함된 고지를 읽으려면 `./GemmaLauncher-0.1.3-win-x64.exe --licenses`로 실행하세요.
 
 Gemma는 지원 모델을 식별하기 위해 사용합니다. 이 런처는 Google의 공식 제품이 아닌 독립 프로젝트입니다.

@@ -55,7 +55,7 @@ public partial class App : System.Windows.Application
             var store = new SettingsStore(paths);
             var settings = store.Load();
             Core.Localization.Current.SetLanguage(settings.LanguagePreference);
-            var catalog = CatalogLoader.Load(System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "catalog.json"));
+            var catalog = BundledResources.LoadCatalog();
             for (var i = 0; i + 1 < e.Args.Length; i++)
                 if (e.Args[i] == "--model-folder" && System.IO.Directory.Exists(e.Args[i + 1]) && !settings.ModelFolders.Contains(e.Args[i + 1], StringComparer.OrdinalIgnoreCase)) settings.ModelFolders.Add(System.IO.Path.GetFullPath(e.Args[i + 1]));
             _viewModel = new(catalog, paths, settings, store);
