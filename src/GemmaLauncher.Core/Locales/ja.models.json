@@ -1,0 +1,23 @@
+{
+  "models.e2b.category": "軽量翻訳",
+  "models.e2b.headline": "軽快でスピーディーな翻訳",
+  "models.e2b.description": "ゲームのセリフや字幕のための軽量翻訳モデル。会話の流れや口調を踏まえた自然な翻訳を手軽に利用できます。",
+  "models.e2b.hardwareGuide": "PCへの負荷を抑えたい方は、このモデルからお試しください。",
+  "models.e2b.memoryGuide": "RAM ≈ 2.1 GB · VRAM ≈ 1.9 GB",
+  "models.e2b.benefit1": "セリフと字幕の翻訳に特化したチューニング",
+  "models.e2b.benefit2": "SSDから必要なデータだけを読み込むメモリ最適化",
+  "models.e4b.category": "品質重視の翻訳",
+  "models.e4b.headline": "細かなニュアンスまで伝える翻訳",
+  "models.e4b.description": "会話の流れや繊細な意味を重視した翻訳専用モデル。字幕から長いセリフまで、翻訳の品質を優先したい方に適しています。",
+  "models.e4b.hardwareGuide": "グラフィックメモリに余裕があるPCにおすすめです。",
+  "models.e4b.memoryGuide": "RAM ≈ 3.7 GB · VRAM ≈ 3.6 GB",
+  "models.e4b.benefit1": "文脈と口調を生かす翻訳",
+  "models.e4b.benefit2": "SSDから必要なデータだけを読み込むメモリ最適化",
+  "models.12b.category": "翻訳 · 創作 · 多用途",
+  "models.12b.headline": "表現豊かな創作、個性ある会話",
+  "models.12b.description": "翻訳から文章作成、ロールプレイ、人と話すような自然な会話まで。無検閲チューニングと個性を引き出すスタイル調整を組み合わせた、多用途の創作モデルです。",
+  "models.12b.hardwareGuide": "性能に余裕のあるPCで、幅広い創作や会話に活用できます。",
+  "models.12b.memoryGuide": "RAM ≈ 8.1 GB · VRAM ≈ 8.3 GB",
+  "models.12b.benefit1": "無検閲チューニングで、より自由な表現を",
+  "models.12b.benefit2": "文章に個性を生むスタイルチューニング"
+}

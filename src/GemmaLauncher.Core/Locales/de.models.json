@@ -1,0 +1,23 @@
+{
+  "models.e2b.category": "Leichte Übersetzung",
+  "models.e2b.headline": "Leichte, schnelle Übersetzung",
+  "models.e2b.description": "Ein leichtes Übersetzungsmodell für Spieldialoge und Untertitel. Natürliche Übersetzungen, die den Gesprächsverlauf und Ton berücksichtigen.",
+  "models.e2b.hardwareGuide": "Der richtige Einstieg, wenn Sie Ihren PC weniger belasten möchten.",
+  "models.e2b.memoryGuide": "RAM ≈ 2,1 GB · VRAM ≈ 1,9 GB",
+  "models.e2b.benefit1": "Für die Übersetzung von Dialogen und Untertiteln abgestimmt",
+  "models.e2b.benefit2": "Speicheroptimierung, die nur benötigte Daten von der SSD liest",
+  "models.e4b.category": "Qualitätsorientierte Übersetzung",
+  "models.e4b.headline": "Übersetzung mit Gespür für Nuancen",
+  "models.e4b.description": "Ein spezialisiertes Übersetzungsmodell mit Blick auf den Gesprächsfluss und feine Bedeutungsunterschiede. Für Untertitel bis hin zu längeren Dialogen, wenn Übersetzungsqualität an erster Stelle steht.",
+  "models.e4b.hardwareGuide": "Empfohlen, wenn genügend Grafikspeicher frei ist.",
+  "models.e4b.memoryGuide": "RAM ≈ 3,7 GB · VRAM ≈ 3,6 GB",
+  "models.e4b.benefit1": "Übersetzungen, die Kontext und Ton bewahren",
+  "models.e4b.benefit2": "Speicheroptimierung, die nur benötigte Daten von der SSD liest",
+  "models.12b.category": "Übersetzen · Gestalten · Vielseitigkeit",
+  "models.12b.headline": "Ausdrucksstarke Texte, persönliche Gespräche",
+  "models.12b.description": "Von Übersetzungen über Schreiben und Rollenspiel bis zu natürlichen, menschlich wirkenden Gesprächen. Ein vielseitiges Kreativmodell, das unzensierte Anpassung mit einem eigenständigen Stil verbindet.",
+  "models.12b.hardwareGuide": "Für vielfältige kreative Aufgaben und Gespräche auf einem leistungsfähigen PC.",
+  "models.12b.memoryGuide": "RAM ≈ 8,1 GB · VRAM ≈ 8,3 GB",
+  "models.12b.benefit1": "Unzensierte Anpassung für freieren Ausdruck",
+  "models.12b.benefit2": "Stilabstimmung, die Ihren Texten Persönlichkeit verleiht"
+}

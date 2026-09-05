@@ -1,0 +1,23 @@
+{
+  "models.e2b.category": "Dịch thuật nhẹ",
+  "models.e2b.headline": "Dịch nhanh, nhẹ máy",
+  "models.e2b.description": "Mô hình dịch nhẹ dành cho hội thoại trong game và phụ đề. Bản dịch tự nhiên, có xét đến mạch hội thoại và giọng điệu.",
+  "models.e2b.hardwareGuide": "Bắt đầu với mô hình này nếu bạn muốn giảm tải cho máy tính.",
+  "models.e2b.memoryGuide": "RAM ≈ 2.1 GB · VRAM ≈ 1.9 GB",
+  "models.e2b.benefit1": "Tinh chỉnh riêng cho dịch hội thoại và phụ đề",
+  "models.e2b.benefit2": "Tối ưu bộ nhớ bằng cách chỉ đọc dữ liệu cần thiết từ SSD",
+  "models.e4b.category": "Dịch thuật ưu tiên chất lượng",
+  "models.e4b.headline": "Bản dịch truyền tải trọn sắc thái",
+  "models.e4b.description": "Mô hình chuyên dịch thuật, chú trọng mạch hội thoại và những sắc thái tinh tế. Phù hợp khi bạn ưu tiên chất lượng bản dịch, từ phụ đề đến hội thoại dài.",
+  "models.e4b.hardwareGuide": "Khuyên dùng khi máy còn dư bộ nhớ đồ họa.",
+  "models.e4b.memoryGuide": "RAM ≈ 3.7 GB · VRAM ≈ 3.6 GB",
+  "models.e4b.benefit1": "Bản dịch giữ được ngữ cảnh và giọng điệu",
+  "models.e4b.benefit2": "Tối ưu bộ nhớ bằng cách chỉ đọc dữ liệu cần thiết từ SSD",
+  "models.12b.category": "Dịch thuật · sáng tạo · đa dụng",
+  "models.12b.headline": "Viết giàu biểu cảm, trò chuyện có cá tính",
+  "models.12b.description": "Từ dịch thuật đến viết lách, nhập vai và trò chuyện tự nhiên như với người thật. Mô hình sáng tạo đa dụng kết hợp tinh chỉnh không kiểm duyệt với tinh chỉnh phong cách riêng.",
+  "models.12b.hardwareGuide": "Dành cho nhiều nhu cầu sáng tạo và trò chuyện trên máy tính có cấu hình đủ mạnh.",
+  "models.12b.memoryGuide": "RAM ≈ 8.1 GB · VRAM ≈ 8.3 GB",
+  "models.12b.benefit1": "Tinh chỉnh không kiểm duyệt để diễn đạt tự do hơn",
+  "models.12b.benefit2": "Tinh chỉnh phong cách để bài viết có cá tính"
+}

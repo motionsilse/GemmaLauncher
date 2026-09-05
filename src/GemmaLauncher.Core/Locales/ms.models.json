@@ -1,0 +1,23 @@
+{
+  "models.e2b.category": "Terjemahan ringan",
+  "models.e2b.headline": "Terjemahan ringan dan pantas",
+  "models.e2b.description": "Model terjemahan ringan untuk dialog permainan dan sari kata. Menghasilkan terjemahan semula jadi yang mengambil kira perbualan dan nada.",
+  "models.e2b.hardwareGuide": "Mulakan di sini jika anda mahukan beban PC yang lebih ringan.",
+  "models.e2b.memoryGuide": "RAM ≈ 2.1 GB · VRAM ≈ 1.9 GB",
+  "models.e2b.benefit1": "Ditala untuk terjemahan dialog dan sari kata",
+  "models.e2b.benefit2": "Mengoptimumkan memori dengan membaca hanya data yang diperlukan daripada SSD",
+  "models.e4b.category": "Terjemahan berfokuskan kualiti",
+  "models.e4b.headline": "Terjemahan yang menangkap nuansa",
+  "models.e4b.description": "Model khusus terjemahan yang memfokuskan aliran perbualan dan makna halus. Pilih apabila kualiti terjemahan menjadi keutamaan, daripada sari kata hingga dialog panjang.",
+  "models.e4b.hardwareGuide": "Disyorkan jika memori grafik anda masih banyak tersedia.",
+  "models.e4b.memoryGuide": "RAM ≈ 3.7 GB · VRAM ≈ 3.6 GB",
+  "models.e4b.benefit1": "Terjemahan yang mengekalkan konteks dan nada",
+  "models.e4b.benefit2": "Mengoptimumkan memori dengan membaca hanya data yang diperlukan daripada SSD",
+  "models.12b.category": "Terjemahan · kreatif · serba guna",
+  "models.12b.headline": "Penulisan ekspresif, perbualan berperibadi",
+  "models.12b.description": "Daripada terjemahan kepada penulisan, lakonan watak dan perbualan semula jadi seperti dengan manusia. Model kreatif serba guna yang menggabungkan penalaan tanpa tapisan dengan gaya bahasa tersendiri.",
+  "models.12b.hardwareGuide": "Untuk pelbagai karya kreatif dan perbualan pada PC berkeupayaan tinggi.",
+  "models.12b.memoryGuide": "RAM ≈ 8.1 GB · VRAM ≈ 8.3 GB",
+  "models.12b.benefit1": "Penalaan tanpa tapisan untuk ekspresi yang lebih bebas",
+  "models.12b.benefit2": "Penalaan gaya yang memberikan keperibadian pada penulisan anda"
+}

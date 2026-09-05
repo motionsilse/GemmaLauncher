@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>GemmaLauncher</AssemblyName>
+    <Version>0.1.2</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets/launcher.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup><ProjectReference Include="../GemmaLauncher.Core/GemmaLauncher.Core.csproj" /></ItemGroup>
+  <ItemGroup><Content Include="Assets/catalog.json" CopyToOutputDirectory="PreserveNewest" /></ItemGroup>
+</Project>

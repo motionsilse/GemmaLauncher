@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "runtime": {
+    "version": "b10795",
+    "url": "https://github.com/ggml-org/llama.cpp/releases/download/b10795/llama-b10795-bin-win-vulkan-x64.zip",
+    "bytes": 35208196,
+    "sha256": "d6f81f2cbbaf457aa4392080a6b8d7675e0cb4ef0163ee26076439dfc956aab4",
+    "executableRelativePath": "llama-server.exe"
+  },
+  "models": [
+    {
+      "id": "translate-gemma4-sub-e2b-q4-k-xl",
+      "displayName": "Translate Gemma 4 Sub · E2B",
+      "apiModelId": "Translate-Gemma-4-Sub-E2B",
+      "category": "Lightweight translation",
+      "headline": "Lightweight, fast translation",
+      "description": "A lightweight translation model for game dialogue and subtitles. Natural translations that take the conversation and tone into account.",
+      "hardwareGuide": "Start here if you want a lighter load on your PC.",
+      "memoryGuide": "RAM ≈ 2.1 GB · VRAM ≈ 1.9 GB",
+      "benefits": [
+        "Tuned for dialogue and subtitle translation",
+        "Memory optimization that reads only the needed data from SSD"
+      ],
+      "sourceUrl": "https://huggingface.co/17slever17/translate-gemma-4-sub-e2b-GGUF",
+      "licenseUrl": "https://huggingface.co/17slever17/translate-gemma-4-sub-e2b-GGUF/blob/dc7285667d34af7679d4d6b824d6565e7b69ec84/README.md",
+      "profile": {
+        "defaultContext": 8192,
+        "contextSizes": [
+          4096,
+          8192,
+          16384
+        ],
+        "lazy": "on",
+        "mtpDraftMax": 2,
+        "temperature": 0,
+        "topP": 0.95,
+        "topK": 64,
+        "minP": 0.05
+      },
+      "artifacts": [
+        {
+          "role": "model",
+          "filename": "translate_gemma4_sub-E2B-Q4_K_XL.gguf",
+          "url": "https://huggingface.co/17slever17/translate-gemma-4-sub-e2b-GGUF/resolve/dc7285667d34af7679d4d6b824d6565e7b69ec84/translate_gemma4_sub-E2B-Q4_K_XL.gguf",
+          "bytes": 3184494816,
+          "sha256": "ade14eaefcd3f70051f87a359b48e284b456d757b3d63ce7c8b397991b5b9d8d"
+        },
+        {
+          "role": "mtp",
+          "filename": "mtp-gemma-4-E2B-it.gguf",
+          "url": "https://huggingface.co/17slever17/translate-gemma-4-sub-e2b-GGUF/resolve/dc7285667d34af7679d4d6b824d6565e7b69ec84/mtp-gemma-4-E2B-it.gguf",
+          "bytes": 77919328,
+          "sha256": "a83e3318c0ed6cf7db9f856b7fd2d8cca8b2101efe6bf71160dce28afb7f1d46"
+        }
+      ]
+    },
+    {
+      "id": "translate-gemma4-sub-e4b-q4-k-xl",
+      "displayName": "Translate Gemma 4 Sub · E4B",
+      "apiModelId": "Translate-Gemma-4-Sub-E4B",
+      "category": "Quality-focused translation",
+      "headline": "Translation that captures the nuance",
+      "description": "A dedicated translation model focused on conversation flow and subtle meaning. Choose it when translation quality comes first, from subtitles to longer dialogue.",
+      "hardwareGuide": "Recommended when you have graphics memory to spare.",
+      "memoryGuide": "RAM ≈ 3.7 GB · VRAM ≈ 3.6 GB",
+      "benefits": [
+        "Translation that preserves context and tone",
+        "Memory optimization that reads only the needed data from SSD"
+      ],
+      "sourceUrl": "https://huggingface.co/17slever17/translate-gemma-4-sub-e4b-GGUF",
+      "licenseUrl": "https://huggingface.co/17slever17/translate-gemma-4-sub-e4b-GGUF/blob/10d94e65ab684c0a6d22f3417604b6a7999aff3d/README.md",
+      "profile": {
+        "defaultContext": 8192,
+        "contextSizes": [
+          4096,
+          8192,
+          16384
+        ],
+        "lazy": "on",
+        "mtpDraftMax": 2,
+        "temperature": 0,
+        "topP": 0.95,
+        "topK": 64,
+        "minP": 0.05
+      },
+      "artifacts": [
+        {
+          "role": "model",
+          "filename": "translate_gemma4_sub-E4B-Q4_K_XL.gguf",
+          "url": "https://huggingface.co/17slever17/translate-gemma-4-sub-e4b-GGUF/resolve/10d94e65ab684c0a6d22f3417604b6a7999aff3d/translate_gemma4_sub-E4B-Q4_K_XL.gguf",
+          "bytes": 5126307008,
+          "sha256": "0b3d302f371fefa42945371635cbb2355a74c1c8a5ecf80670b21ccf421027d9"
+        },
+        {
+          "role": "mtp",
+          "filename": "mtp-gemma-4-E4B-it.gguf",
+          "url": "https://huggingface.co/17slever17/translate-gemma-4-sub-e4b-GGUF/resolve/10d94e65ab684c0a6d22f3417604b6a7999aff3d/mtp-gemma-4-E4B-it.gguf",
+          "bytes": 78460000,
+          "sha256": "8893285256a76126cf36ba99c4ea2cb7e93366be5733a0a6d669d81e3a26864c"
+        }
+      ]
+    },
+    {
+      "id": "gemma4-12b-qat-heretic-styletune-q4-q8head",
+      "displayName": "Gemma 4 · 12B Heretic StyleTune",
+      "apiModelId": "Gemma-4-12B-QAT-Heretic-StyleTune",
+      "category": "Translation · creative · multipurpose",
+      "headline": "Expressive writing, personal conversations",
+      "description": "From translation to writing, roleplay, and natural, humanlike conversations. A versatile creative model combining uncensored tuning with distinctive style tuning.",
+      "hardwareGuide": "For broad creative work and conversations on a capable PC.",
+      "memoryGuide": "RAM ≈ 8.1 GB · VRAM ≈ 8.3 GB",
+      "benefits": [
+        "Uncensored tuning for freer expression",
+        "Style tuning that gives your writing a personality"
+      ],
+      "credit": "Custom by Drugged Cat",
+      "sourceUrl": "https://huggingface.co/motionsilse/Gemma-4-12B-QAT-Heretic-StyleTune-GGUF",
+      "licenseUrl": "https://huggingface.co/motionsilse/Gemma-4-12B-QAT-Heretic-StyleTune-GGUF/blob/c2628697a405a1b62eea330c912fa1b71495642c/README.md",
+      "profile": {
+        "defaultContext": 32768,
+        "contextSizes": [
+          8192,
+          16384,
+          32768
+        ],
+        "lazy": "auto",
+        "mtpDraftMax": 4,
+        "temperature": 1.0,
+        "topP": 0.95,
+        "topK": 64,
+        "minP": 0.05
+      },
+      "artifacts": [
+        {
+          "role": "model",
+          "filename": "Gemma-4-12B-QAT-Heretic-StyleTune-Q4_0-Q8Head.gguf",
+          "url": "https://huggingface.co/motionsilse/Gemma-4-12B-QAT-Heretic-StyleTune-GGUF/resolve/c2628697a405a1b62eea330c912fa1b71495642c/Gemma-4-12B-QAT-Heretic-StyleTune-Q4_0-Q8Head.gguf",
+          "bytes": 8045427072,
+          "sha256": "b41711286ff9e75014da30a40dfbf7a8e12634ff5b768b131933af0a58677da2"
+        },
+        {
+          "role": "mtp",
+          "filename": "mtp-gemma-4-12B-it.gguf",
+          "url": "https://huggingface.co/unsloth/gemma-4-12B-it-qat-GGUF/resolve/980b060c40a8539ac159e0501a3e0f66a6365af3/mtp-gemma-4-12B-it.gguf",
+          "bytes": 253708800,
+          "sha256": "fcb35dea42c71333db904cee11baac525c9ef872818ee3753f6cb156f3c6f4f6"
+        }
+      ]
+    }
+  ]
+}

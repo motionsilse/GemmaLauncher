@@ -1,0 +1,23 @@
+{
+  "models.e2b.category": "Magaan na pagsasalin",
+  "models.e2b.headline": "Magaan at mabilis na pagsasalin",
+  "models.e2b.description": "Isang magaan na modelo para sa pagsasalin ng diyalogo sa laro at mga subtitle. Natural na salin na isinasaalang-alang ang usapan at tono.",
+  "models.e2b.hardwareGuide": "Magsimula rito kung gusto mo ng mas magaan na paggamit ng PC.",
+  "models.e2b.memoryGuide": "RAM ≈ 2.1 GB · VRAM ≈ 1.9 GB",
+  "models.e2b.benefit1": "Nakatutok sa pagsasalin ng diyalogo at subtitle",
+  "models.e2b.benefit2": "Tipid sa memory: binabasa lang mula sa SSD ang kinakailangang data",
+  "models.e4b.category": "Pagsasaling inuuna ang kalidad",
+  "models.e4b.headline": "Salin na kuha ang mas malalim na kahulugan",
+  "models.e4b.description": "Isang espesyalisadong modelo ng pagsasalin na nakatuon sa daloy ng usapan at banayad na kahulugan. Piliin ito kung kalidad ng salin ang priyoridad, mula subtitle hanggang mahahabang diyalogo.",
+  "models.e4b.hardwareGuide": "Inirerekomenda kung may sapat ka pang graphics memory.",
+  "models.e4b.memoryGuide": "RAM ≈ 3.7 GB · VRAM ≈ 3.6 GB",
+  "models.e4b.benefit1": "Salin na pinapanatili ang konteksto at tono",
+  "models.e4b.benefit2": "Tipid sa memory: binabasa lang mula sa SSD ang kinakailangang data",
+  "models.12b.category": "Pagsasalin · paglikha · maraming gamit",
+  "models.12b.headline": "Masining na sulat, usapang may personalidad",
+  "models.12b.description": "Mula sa pagsasalin at pagsusulat hanggang roleplay at natural na usapang parang tao. Isang malikhaing modelong maraming gamit na pinagsasama ang pag-aangkop na walang sensura at estilong may sariling karakter.",
+  "models.12b.hardwareGuide": "Para sa malawak na malikhaing gawain at pag-uusap sa malakas na PC.",
+  "models.12b.memoryGuide": "RAM ≈ 8.1 GB · VRAM ≈ 8.3 GB",
+  "models.12b.benefit1": "Pag-aangkop na walang sensura para sa mas malayang pagpapahayag",
+  "models.12b.benefit2": "Pag-aangkop ng estilo na nagbibigay ng personalidad sa iyong sulat"
+}

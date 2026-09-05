@@ -1,0 +1,126 @@
+<Window x:Class="GemmaLauncher.App.ModelManagerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:GemmaLauncher.App.Localization"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Title="{loc:Text ui.manager.title}" Width="1120" Height="860" MinWidth="900" MinHeight="650"
+        WindowStartupLocation="CenterOwner" WindowStyle="None" ResizeMode="CanResize"
+        ShowInTaskbar="False" AutomationProperties.Name="{loc:Text ui.manager.title}" Style="{StaticResource {x:Type Window}}">
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="0" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" />
+    </shell:WindowChrome.WindowChrome>
+    <Border BorderBrush="#BCCDB2" BorderThickness="1" Background="{StaticResource PaperBrush}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Border Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown" Padding="28,23,16,20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel IsHitTestVisible="False">
+                        <TextBlock Text="{loc:Text ui.manager.headline}" FontSize="25" FontWeight="SemiBold" />
+                        <TextBlock Text="{loc:Text ui.manager.description}" Style="{StaticResource BodyText}" Margin="0,7,0,0" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="&#xE8BB;" Style="{StaticResource WindowButton}" Click="Close_Click" VerticalAlignment="Top" ToolTip="{loc:Text ui.close}" AutomationProperties.Name="{loc:Text ui.manager.close}" />
+                </Grid>
+            </Border>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="22,0,22,12">
+                <StackPanel>
+                    <ItemsControl ItemsSource="{Binding ModelCards}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="3" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="#CDD9C5" BorderThickness="1" CornerRadius="10" Background="#F6F8F1" Margin="6,0,6,12" Padding="19,20">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Category}" Foreground="{StaticResource AccentBrush}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Headline}" FontSize="21" FontWeight="SemiBold" LineHeight="30" Margin="0,10,0,0" MinHeight="60" />
+                                            <StackPanel MinHeight="40" Margin="0,2,0,9">
+                                                <TextBlock Text="{Binding DisplayName}" Foreground="{StaticResource MutedBrush}" LineHeight="20" />
+                                                <TextBlock Text="{Binding Credit}" Foreground="{StaticResource MutedBrush}" FontSize="13" LineHeight="18" Margin="0,2,0,0">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Credit}" Value=""><Setter Property="Visibility" Value="Collapsed" /></DataTrigger>
+                                                                <DataTrigger Binding="{Binding Credit}" Value="{x:Null}"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="1">
+                                            <TextBlock Text="{Binding Description}" Style="{StaticResource BodyText}" MinHeight="80" />
+                                            <Border BorderBrush="#DBE4D3" BorderThickness="0,1,0,0" Margin="0,8,0,0" Padding="0,8,0,0">
+                                                <ItemsControl ItemsSource="{Binding Benefits}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Grid Margin="0,0,0,6">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="16" />
+                                                                    <ColumnDefinition Width="*" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock Text="✓" Foreground="{StaticResource AccentBrush}" Margin="0,2,0,0" />
+                                                                <TextBlock Grid.Column="1" Text="{Binding}" Foreground="#45643B" LineHeight="22" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </Border>
+                                            <TextBlock Text="{Binding HardwareGuide}" LineHeight="22" Margin="0,10,0,0" />
+                                            <TextBlock Text="{loc:Text ui.manager.memory}" Foreground="{StaticResource MutedBrush}" Margin="0,12,0,4" />
+                                            <TextBlock Text="{Binding MemoryGuide}" FontWeight="SemiBold" LineHeight="23" />
+                                            <TextBlock Text="{loc:Text ui.manager.download}" Foreground="{StaticResource MutedBrush}" Margin="0,12,0,4" />
+                                            <TextBlock Text="{Binding DownloadLabel}" FontSize="20" FontWeight="SemiBold" />
+                                        </StackPanel>
+                                        <Button Grid.Row="2" Content="{loc:Text ui.manager.select}" Style="{StaticResource PrimaryButton}" Margin="0,22,0,0"
+                                                IsEnabled="{Binding DataContext.CanSelectModel, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                Command="{Binding DataContext.SelectModelCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                CommandParameter="{Binding Definition}" Click="SelectModel_Click" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Border Background="#EDF3E5" BorderBrush="#D6E1CC" BorderThickness="1" CornerRadius="7" Padding="15,13" Margin="6,2,6,0">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Text="{loc:Text ui.acceleration.hint}" Foreground="#536D42" Margin="16,0,0,0" />
+                            <TextBlock Text="{Binding AccelerationLabel}" FontWeight="SemiBold" Foreground="#3D6034" />
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+            <Border Grid.Row="2" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,1,0,0" Padding="28,15">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center" Margin="0,0,20,0">
+                        <TextBlock Text="{loc:Text ui.manager.hint}" Style="{StaticResource BodyText}" />
+                        <WrapPanel Margin="-5,3,0,0">
+                            <Button Content="{loc:Text ui.files.add}" Command="{Binding ImportCatalogCommand}" Style="{StaticResource TextButton}" Margin="0,0,12,0" ToolTip="{loc:Text ui.manager.addHint}" />
+                            <Button Content="{loc:Text ui.files.find}" Command="{Binding ChooseModelFolderCommand}" Style="{StaticResource TextButton}" Margin="0,0,12,0" />
+                            <Button Content="{loc:Text ui.manager.openFolder}" Command="{Binding OpenFolderCommand}" Style="{StaticResource TextButton}" />
+                        </WrapPanel>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="{loc:Text ui.close}" IsCancel="True" Click="Close_Click" Padding="24,10" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

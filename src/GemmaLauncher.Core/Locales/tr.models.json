@@ -1,0 +1,23 @@
+{
+  "models.e2b.category": "Hafif çeviri",
+  "models.e2b.headline": "Hafif ve hızlı çeviri",
+  "models.e2b.description": "Oyun diyalogları ve altyazılar için hafif bir çeviri modeli. Konuşmayı ve üslubu dikkate alan doğal çeviriler.",
+  "models.e2b.hardwareGuide": "Bilgisayarınızı daha az yormak istiyorsanız buradan başlayın.",
+  "models.e2b.memoryGuide": "RAM ≈ 2,1 GB · VRAM ≈ 1,9 GB",
+  "models.e2b.benefit1": "Diyalog ve altyazı çevirisi için özel olarak ayarlandı",
+  "models.e2b.benefit2": "SSD'den yalnızca gereken veriyi okuyarak bellek tasarrufu sağlar",
+  "models.e4b.category": "Kalite odaklı çeviri",
+  "models.e4b.headline": "Anlamın inceliklerini yakalayan çeviri",
+  "models.e4b.description": "Konuşmanın akışına ve anlamın inceliklerine odaklanan özel bir çeviri modeli. Altyazılardan uzun diyaloglara kadar çeviri kalitesini önceliklendirdiğinizde seçin.",
+  "models.e4b.hardwareGuide": "Grafik belleğinde yeterli boş alanınız varsa önerilir.",
+  "models.e4b.memoryGuide": "RAM ≈ 3,7 GB · VRAM ≈ 3,6 GB",
+  "models.e4b.benefit1": "Bağlamı ve üslubu koruyan çeviri",
+  "models.e4b.benefit2": "SSD'den yalnızca gereken veriyi okuyarak bellek tasarrufu sağlar",
+  "models.12b.category": "Çeviri · yaratıcılık · çok amaçlı",
+  "models.12b.headline": "Etkileyici yazılar, kişilikli sohbetler",
+  "models.12b.description": "Çeviriden yazarlığa, rol yapmadan insanla konuşur gibi doğal sohbetlere kadar. Sansürsüz ince ayarı kendine özgü üslup ayarıyla birleştiren, çok yönlü bir yaratıcı model.",
+  "models.12b.hardwareGuide": "Güçlü bir bilgisayarda çeşitli yaratıcı çalışmalar ve sohbetler için.",
+  "models.12b.memoryGuide": "RAM ≈ 8,1 GB · VRAM ≈ 8,3 GB",
+  "models.12b.benefit1": "Daha özgür ifade için sansürsüz ince ayar",
+  "models.12b.benefit2": "Yazılarınıza kişilik katan üslup ayarı"
+}

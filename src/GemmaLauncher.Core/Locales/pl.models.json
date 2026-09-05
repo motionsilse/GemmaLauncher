@@ -1,0 +1,23 @@
+{
+  "models.e2b.category": "Lekkie tłumaczenie",
+  "models.e2b.headline": "Lekkie i szybkie tłumaczenie",
+  "models.e2b.description": "Lekki model tłumaczenia dialogów w grach i napisów. Naturalne tłumaczenia uwzględniające przebieg rozmowy i ton wypowiedzi.",
+  "models.e2b.hardwareGuide": "Zacznij tutaj, jeśli chcesz mniej obciążać komputer.",
+  "models.e2b.memoryGuide": "RAM ≈ 2,1 GB · VRAM ≈ 1,9 GB",
+  "models.e2b.benefit1": "Dostrojony do tłumaczenia dialogów i napisów",
+  "models.e2b.benefit2": "Oszczędność pamięci dzięki odczytywaniu z SSD tylko potrzebnych danych",
+  "models.e4b.category": "Tłumaczenie nastawione na jakość",
+  "models.e4b.headline": "Tłumaczenie oddające niuanse",
+  "models.e4b.description": "Wyspecjalizowany model tłumaczenia, który skupia się na toku rozmowy i subtelnościach znaczenia. Wybierz go, gdy liczy się przede wszystkim jakość — od napisów po dłuższe dialogi.",
+  "models.e4b.hardwareGuide": "Polecany, gdy masz zapas pamięci graficznej.",
+  "models.e4b.memoryGuide": "RAM ≈ 3,7 GB · VRAM ≈ 3,6 GB",
+  "models.e4b.benefit1": "Tłumaczenie zachowujące kontekst i ton",
+  "models.e4b.benefit2": "Oszczędność pamięci dzięki odczytywaniu z SSD tylko potrzebnych danych",
+  "models.12b.category": "Tłumaczenie · twórczość · wiele zastosowań",
+  "models.12b.headline": "Wyraziste teksty, rozmowy z charakterem",
+  "models.12b.description": "Od tłumaczenia po pisanie, odgrywanie ról i naturalne rozmowy jak z człowiekiem. Wszechstronny model do twórczości, łączący strojenie bez cenzury z wyrazistym stylem.",
+  "models.12b.hardwareGuide": "Do różnorodnej twórczości i rozmów na wydajnym komputerze.",
+  "models.12b.memoryGuide": "RAM ≈ 8,1 GB · VRAM ≈ 8,3 GB",
+  "models.12b.benefit1": "Strojenie bez cenzury dla większej swobody wypowiedzi",
+  "models.12b.benefit2": "Dostrojenie stylu nadające tekstom własny charakter"
+}

@@ -1,0 +1,23 @@
+{
+  "models.e2b.category": "Lightweight translation",
+  "models.e2b.headline": "Lightweight, fast translation",
+  "models.e2b.description": "A lightweight translation model for game dialogue and subtitles. Natural translations that take the conversation and tone into account.",
+  "models.e2b.hardwareGuide": "Start here if you want a lighter load on your PC.",
+  "models.e2b.memoryGuide": "RAM ≈ 2.1 GB · VRAM ≈ 1.9 GB",
+  "models.e2b.benefit1": "Tuned for dialogue and subtitle translation",
+  "models.e2b.benefit2": "Memory optimization that reads only the needed data from SSD",
+  "models.e4b.category": "Quality-focused translation",
+  "models.e4b.headline": "Translation that captures the nuance",
+  "models.e4b.description": "A dedicated translation model focused on conversation flow and subtle meaning. Choose it when translation quality comes first, from subtitles to longer dialogue.",
+  "models.e4b.hardwareGuide": "Recommended when you have graphics memory to spare.",
+  "models.e4b.memoryGuide": "RAM ≈ 3.7 GB · VRAM ≈ 3.6 GB",
+  "models.e4b.benefit1": "Translation that preserves context and tone",
+  "models.e4b.benefit2": "Memory optimization that reads only the needed data from SSD",
+  "models.12b.category": "Translation · creative · multipurpose",
+  "models.12b.headline": "Expressive writing, personal conversations",
+  "models.12b.description": "From translation to writing, roleplay, and natural, humanlike conversations. A versatile creative model combining uncensored tuning with distinctive style tuning.",
+  "models.12b.hardwareGuide": "For broad creative work and conversations on a capable PC.",
+  "models.12b.memoryGuide": "RAM ≈ 8.1 GB · VRAM ≈ 8.3 GB",
+  "models.12b.benefit1": "Uncensored tuning for freer expression",
+  "models.12b.benefit2": "Style tuning that gives your writing a personality"
+}

@@ -1,0 +1,23 @@
+{
+  "models.e2b.category": "경량 번역",
+  "models.e2b.headline": "가볍고 빠른 번역",
+  "models.e2b.description": "게임 대사와 영상 자막을 위한 경량 번역 모델. 앞선 대화와 말투를 고려한 자연스러운 번역을 가볍게 시작하세요.",
+  "models.e2b.hardwareGuide": "사양 부담을 줄이고 싶다면 먼저 선택하세요.",
+  "models.e2b.memoryGuide": "RAM 약 2.1 GB · VRAM 약 1.9 GB",
+  "models.e2b.benefit1": "대사와 자막에 맞춘 번역 튜닝",
+  "models.e2b.benefit2": "SSD에서 필요한 부분만 읽는 메모리 최적화",
+  "models.e4b.category": "품질 중심 번역",
+  "models.e4b.headline": "섬세한 뉘앙스까지 담는 번역",
+  "models.e4b.description": "대화의 흐름과 표현의 뉘앙스에 집중한 번역 특화 모델. 자막부터 긴 대사까지, 번역 품질을 우선할 때 선택하세요.",
+  "models.e4b.hardwareGuide": "그래픽 메모리에 여유가 있다면 추천합니다.",
+  "models.e4b.memoryGuide": "RAM 약 3.7 GB · VRAM 약 3.6 GB",
+  "models.e4b.benefit1": "문맥과 말투를 살리는 번역",
+  "models.e4b.benefit2": "SSD에서 필요한 부분만 읽는 메모리 최적화",
+  "models.12b.category": "번역·창작·다용도",
+  "models.12b.headline": "자유로운 창작, 개성 있는 대화",
+  "models.12b.description": "번역부터 글쓰기, 롤플레잉, 사람과 이야기하듯 자연스러운 대화까지. 무검열 튜닝과 스타일 튜닝을 결합한 창작·다용도 모델입니다.",
+  "models.12b.hardwareGuide": "여유 있는 PC에서 창작과 대화에 폭넓게 활용하세요.",
+  "models.12b.memoryGuide": "RAM 약 8.1 GB · VRAM 약 8.3 GB",
+  "models.12b.benefit1": "무검열 튜닝으로 자유로운 표현",
+  "models.12b.benefit2": "스타일 튜닝으로 말투에 개성"
+}

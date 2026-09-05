@@ -1,0 +1,23 @@
+{
+  "models.e2b.category": "Traducción ligera",
+  "models.e2b.headline": "Traducción ligera y rápida",
+  "models.e2b.description": "Un modelo de traducción ligero para diálogos de juegos y subtítulos. Traducciones naturales que tienen en cuenta la conversación y el tono.",
+  "models.e2b.hardwareGuide": "Empieza aquí si buscas una menor carga para tu PC.",
+  "models.e2b.memoryGuide": "RAM ≈ 2,1 GB · VRAM ≈ 1,9 GB",
+  "models.e2b.benefit1": "Ajustado para traducir diálogos y subtítulos",
+  "models.e2b.benefit2": "Optimización de memoria que lee del SSD solo los datos necesarios",
+  "models.e4b.category": "Traducción centrada en la calidad",
+  "models.e4b.headline": "Traducción que capta los matices",
+  "models.e4b.description": "Un modelo dedicado a la traducción que cuida el hilo de la conversación y los significados sutiles. Elígelo si priorizas la calidad, desde subtítulos hasta diálogos largos.",
+  "models.e4b.hardwareGuide": "Recomendado si dispones de memoria gráfica de sobra.",
+  "models.e4b.memoryGuide": "RAM ≈ 3,7 GB · VRAM ≈ 3,6 GB",
+  "models.e4b.benefit1": "Traducción que conserva el contexto y el tono",
+  "models.e4b.benefit2": "Optimización de memoria que lee del SSD solo los datos necesarios",
+  "models.12b.category": "Traducción · creación · uso general",
+  "models.12b.headline": "Escritura expresiva, conversaciones personales",
+  "models.12b.description": "Desde traducción hasta escritura, juegos de rol y conversaciones naturales, cercanas a las humanas. Un modelo creativo versátil que combina ajustes sin censura con un estilo distintivo.",
+  "models.12b.hardwareGuide": "Para trabajos creativos variados y conversaciones en un PC con buen rendimiento.",
+  "models.12b.memoryGuide": "RAM ≈ 8,1 GB · VRAM ≈ 8,3 GB",
+  "models.12b.benefit1": "Ajustes sin censura para expresarte con más libertad",
+  "models.12b.benefit2": "Ajustes de estilo que dan personalidad a tu escritura"
+}

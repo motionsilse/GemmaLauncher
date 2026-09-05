@@ -1,0 +1,23 @@
+{
+  "models.e2b.category": "轻量翻译",
+  "models.e2b.headline": "轻巧快速的翻译",
+  "models.e2b.description": "面向游戏对白和字幕的轻量翻译模型。兼顾对话脉络与语气，让译文自然流畅。",
+  "models.e2b.hardwareGuide": "想减轻电脑负担，可以从这款模型开始。",
+  "models.e2b.memoryGuide": "RAM ≈ 2.1 GB · VRAM ≈ 1.9 GB",
+  "models.e2b.benefit1": "针对对白和字幕翻译进行调优",
+  "models.e2b.benefit2": "仅从SSD读取所需数据，优化内存使用",
+  "models.e4b.category": "品质优先翻译",
+  "models.e4b.headline": "捕捉细腻语意的翻译",
+  "models.e4b.description": "专注对话脉络与细微含义的翻译专用模型。从字幕到长篇对白，适合优先考虑翻译品质的场景。",
+  "models.e4b.hardwareGuide": "显存较充裕时，推荐选择这款模型。",
+  "models.e4b.memoryGuide": "RAM ≈ 3.7 GB · VRAM ≈ 3.6 GB",
+  "models.e4b.benefit1": "保留上下文与语气的翻译",
+  "models.e4b.benefit2": "仅从SSD读取所需数据，优化内存使用",
+  "models.12b.category": "翻译 · 创作 · 多用途",
+  "models.12b.headline": "富有表现力的写作，有个性的对话",
+  "models.12b.description": "从翻译到写作、角色扮演，以及如同与真人交流般自然的对话。结合无审查调优与鲜明的风格调优，是一款多用途创作模型。",
+  "models.12b.hardwareGuide": "适合在性能充裕的电脑上进行多样化创作与对话。",
+  "models.12b.memoryGuide": "RAM ≈ 8.1 GB · VRAM ≈ 8.3 GB",
+  "models.12b.benefit1": "无审查调优，让表达更自由",
+  "models.12b.benefit2": "风格调优，让文字更有个性"
+}
