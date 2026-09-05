@@ -75,6 +75,7 @@ public sealed class LauncherPaths
 
 public interface IInstallationService
 {
+    Task<ModelDefinition?> MatchModelFileAsync(string filePath, IEnumerable<ModelDefinition> models, IProgress<InstallationProgress>? progress = null, CancellationToken cancellationToken = default);
     Task<InstalledModel?> FindAsync(ModelDefinition model, CancellationToken cancellationToken = default);
     Task<InstalledModel> EnsureModelAsync(ModelDefinition model, IProgress<InstallationProgress>? progress = null, CancellationToken cancellationToken = default);
     Task<string> EnsureRuntimeAsync(RuntimePackage runtime, IProgress<InstallationProgress>? progress = null, CancellationToken cancellationToken = default);

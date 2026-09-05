@@ -29,7 +29,7 @@
   "ui.memory.hint": "Ang RAM ay system memory; ang VRAM ay graphics memory. Nakadepende ang paggamit sa kapasidad ng teksto at sa iyong setup.",
   "ui.files.title": "Mga file at pamamahala ng modelo",
   "ui.files.hint": "Gamitin ang mga na-download nang modelo, o magdagdag ng bago.",
-  "ui.files.find": "Hanapin ang mga umiiral na modelo",
+  "ui.files.find": "Maghanap sa folder",
   "ui.files.folder": "Folder ng modelo",
   "ui.files.info": "Impormasyon ng modelo",
   "ui.files.add": "Magdagdag ng modelo",
@@ -106,5 +106,12 @@
   "ui.tray.open": "Buksan ang launcher",
   "ui.tray.exit": "Tuluyang lumabas",
   "ui.tray.notice": "Kontrolin ang server mula sa tray. Piliin ang Tuluyang lumabas para isara ang launcher at ang server nito.",
-  "ui.error.appExit": "Nagkaproblema sa paghinto ng server.\n{0}"
+  "ui.error.appExit": "Nagkaproblema sa paghinto ng server.\n{0}",
+  "ui.files.connect": "Ikonekta ang GGUF file",
+  "ui.files.catalog": "Mag-import ng listahan ng modelo (JSON)",
+  "ui.files.advanced": "Mga advanced na opsyon",
+  "ui.picker.gguf": "Pumili ng na-download na GGUF model file",
+  "ui.picker.ggufFilter": "Mga GGUF model file (*.gguf)|*.gguf",
+  "ui.error.ggufNotRecognized": "Hindi tumutugma ang file na ito sa isang nakarehistrong modelo. Piliin ang pangunahing GGUF file na nakalista para sa modelong iyon.",
+  "ui.note.ggufConnected": "Nakonekta ang {0}. Gagamitin ang orihinal na file sa kasalukuyang lokasyon nito."
 }

@@ -14,6 +14,7 @@ public sealed class InstallationService : IInstallationService, IDisposable
     private readonly HttpClient client;
     private readonly bool ownsClient;
     private readonly string[] searchDirectories;
+    private readonly IReadOnlyDictionary<string, string> modelFiles;
     private readonly SemaphoreSlim gate = new(1, 1);
     private readonly Dictionary<string, VerifiedFile> verified = new(StringComparer.OrdinalIgnoreCase);
     private bool cacheLoaded;
@@ -21,13 +22,37 @@ public sealed class InstallationService : IInstallationService, IDisposable
     private sealed record VerifiedFile(long Bytes, long LastWriteTicks, string Sha256);
     private sealed record RuntimeReceipt(string PackageSha256, Dictionary<string, string> Files);
 
-    public InstallationService(LauncherPaths paths, HttpClient? httpClient = null, IEnumerable<string>? searchDirectories = null)
+    public InstallationService(LauncherPaths paths, HttpClient? httpClient = null, IEnumerable<string>? searchDirectories = null, IReadOnlyDictionary<string, string>? modelFiles = null)
     {
         this.paths = paths;
         ownsClient = httpClient is null;
         client = httpClient ?? new HttpClient { Timeout = Timeout.InfiniteTimeSpan };
         this.searchDirectories = (searchDirectories ?? []).Select(Path.GetFullPath)
             .Concat(FindWinGetModelDirectories()).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+        this.modelFiles = modelFiles ?? new Dictionary<string, string>();
+    }
+
+    public async Task<ModelDefinition?> MatchModelFileAsync(string filePath, IEnumerable<ModelDefinition> models, IProgress<InstallationProgress>? progress = null, CancellationToken cancellationToken = default)
+    {
+        await gate.WaitAsync(cancellationToken);
+        try
+        {
+            if (!string.Equals(Path.GetExtension(filePath), ".gguf", StringComparison.OrdinalIgnoreCase) || !File.Exists(filePath)) return null;
+            filePath = Path.GetFullPath(filePath);
+            var bytes = new FileInfo(filePath).Length;
+            foreach (var model in models)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                ValidateModel(model);
+                var artifact = model.Artifacts.Single(artifact => artifact.Role == "model");
+                if (artifact.Bytes != bytes || !await VerifyAsync(filePath, artifact.Bytes, artifact.Sha256, progress, cancellationToken)) continue;
+                cancellationToken.ThrowIfCancellationRequested();
+                return model;
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+            return null;
+        }
+        finally { gate.Release(); }
     }
 
     public async Task<InstalledModel?> FindAsync(ModelDefinition model, CancellationToken cancellationToken = default)
@@ -106,16 +131,30 @@ public sealed class InstallationService : IInstallationService, IDisposable
 
     private async Task<string?> FindArtifactAsync(ModelDefinition model, ModelArtifact artifact, IProgress<InstallationProgress>? progress, CancellationToken token)
     {
-        var candidates = new[] { ArtifactPath(model, artifact) }.Concat(searchDirectories.SelectMany(directory => new[]
-        {
-            Path.Combine(directory, artifact.Filename), Path.Combine(directory, model.Id, artifact.Filename)
-        }));
-        foreach (var candidate in candidates.Distinct(StringComparer.OrdinalIgnoreCase))
+        foreach (var candidate in ArtifactCandidates(model, artifact).Distinct(StringComparer.OrdinalIgnoreCase))
         {
             token.ThrowIfCancellationRequested();
             if (await VerifyAsync(candidate, artifact.Bytes, artifact.Sha256, progress, token)) return candidate;
         }
         return null;
+    }
+
+    private IEnumerable<string> ArtifactCandidates(ModelDefinition model, ModelArtifact artifact)
+    {
+        if (modelFiles.TryGetValue(artifact.Sha256, out var mappedFile) && !string.IsNullOrWhiteSpace(mappedFile))
+            yield return Path.GetFullPath(mappedFile);
+        if (artifact.Role == "mtp")
+        {
+            var mainArtifact = model.Artifacts.Single(candidate => candidate.Role == "model");
+            if (modelFiles.TryGetValue(mainArtifact.Sha256, out var mainFile) && !string.IsNullOrWhiteSpace(mainFile))
+                yield return Path.Combine(Path.GetDirectoryName(Path.GetFullPath(mainFile))!, artifact.Filename);
+        }
+        yield return ArtifactPath(model, artifact);
+        foreach (var directory in searchDirectories)
+        {
+            yield return Path.Combine(directory, artifact.Filename);
+            yield return Path.Combine(directory, model.Id, artifact.Filename);
+        }
     }
 
     private string ArtifactPath(ModelDefinition model, ModelArtifact artifact) => ManagedPath(paths.Models, model.Id, artifact.Sha256[..12], artifact.Filename);

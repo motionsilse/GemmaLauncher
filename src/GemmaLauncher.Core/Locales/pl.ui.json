@@ -29,7 +29,7 @@
   "ui.memory.hint": "RAM to pamięć systemowa, a VRAM to pamięć graficzna. Zużycie zależy od pojemności tekstu i konfiguracji.",
   "ui.files.title": "Pliki i zarządzanie modelami",
   "ui.files.hint": "Użyj już pobranych modeli lub dodaj nowe.",
-  "ui.files.find": "Znajdź istniejące modele",
+  "ui.files.find": "Szukaj w folderze",
   "ui.files.folder": "Folder modelu",
   "ui.files.info": "Informacje o modelu",
   "ui.files.add": "Dodaj model",
@@ -106,5 +106,12 @@
   "ui.tray.open": "Otwórz launcher",
   "ui.tray.exit": "Zakończ całkowicie",
   "ui.tray.notice": "Steruj serwerem z zasobnika. Wybierz Zakończ całkowicie, aby zamknąć launcher i jego serwer.",
-  "ui.error.appExit": "Wystąpił problem podczas zatrzymywania serwera.\n{0}"
+  "ui.error.appExit": "Wystąpił problem podczas zatrzymywania serwera.\n{0}",
+  "ui.files.connect": "Połącz plik GGUF",
+  "ui.files.catalog": "Importuj listę modeli (JSON)",
+  "ui.files.advanced": "Zaawansowane",
+  "ui.picker.gguf": "Wybierz pobrany plik modelu GGUF",
+  "ui.picker.ggufFilter": "Pliki modeli GGUF (*.gguf)|*.gguf",
+  "ui.error.ggufNotRecognized": "Ten plik nie odpowiada zarejestrowanemu modelowi. Wybierz główny plik GGUF wskazany dla tego modelu.",
+  "ui.note.ggufConnected": "Połączono {0}. Oryginalny plik będzie używany w obecnej lokalizacji."
 }

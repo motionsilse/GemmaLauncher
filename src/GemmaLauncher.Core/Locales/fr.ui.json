@@ -29,7 +29,7 @@
   "ui.memory.hint": "La RAM est la mémoire système ; la VRAM est la mémoire graphique. L’utilisation dépend de la capacité de texte et de votre configuration.",
   "ui.files.title": "Fichiers et gestion des modèles",
   "ui.files.hint": "Utilisez des modèles déjà téléchargés ou ajoutez-en de nouveaux.",
-  "ui.files.find": "Rechercher des modèles existants",
+  "ui.files.find": "Rechercher dans un dossier",
   "ui.files.folder": "Dossier du modèle",
   "ui.files.info": "Informations sur le modèle",
   "ui.files.add": "Ajouter un modèle",
@@ -106,5 +106,12 @@
   "ui.tray.open": "Ouvrir le lanceur",
   "ui.tray.exit": "Quitter complètement",
   "ui.tray.notice": "Contrôlez le serveur depuis la zone de notification. Choisissez Quitter complètement pour fermer le lanceur et son serveur.",
-  "ui.error.appExit": "Un problème est survenu lors de l’arrêt du serveur.\n{0}"
+  "ui.error.appExit": "Un problème est survenu lors de l’arrêt du serveur.\n{0}",
+  "ui.files.connect": "Connecter un fichier GGUF",
+  "ui.files.catalog": "Importer une liste de modèles (JSON)",
+  "ui.files.advanced": "Avancé",
+  "ui.picker.gguf": "Sélectionner un fichier de modèle GGUF téléchargé",
+  "ui.picker.ggufFilter": "Fichiers de modèle GGUF (*.gguf)|*.gguf",
+  "ui.error.ggufNotRecognized": "Ce fichier ne correspond à aucun modèle enregistré. Sélectionnez le fichier GGUF principal indiqué pour ce modèle.",
+  "ui.note.ggufConnected": "{0} connecté. Le fichier d’origine sera utilisé à son emplacement actuel."
 }

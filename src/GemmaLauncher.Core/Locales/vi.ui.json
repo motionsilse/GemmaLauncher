@@ -29,7 +29,7 @@
   "ui.memory.hint": "RAM là bộ nhớ hệ thống; VRAM là bộ nhớ đồ họa. Mức sử dụng thay đổi theo lượng văn bản và cấu hình của bạn.",
   "ui.files.title": "Tệp mô hình và quản lý",
   "ui.files.hint": "Dùng các mô hình đã tải hoặc thêm mô hình mới.",
-  "ui.files.find": "Tìm mô hình có sẵn",
+  "ui.files.find": "Tìm trong thư mục",
   "ui.files.folder": "Thư mục mô hình",
   "ui.files.info": "Thông tin mô hình",
   "ui.files.add": "Thêm mô hình",
@@ -106,5 +106,12 @@
   "ui.tray.open": "Mở trình khởi chạy",
   "ui.tray.exit": "Thoát hoàn toàn",
   "ui.tray.notice": "Điều khiển máy chủ từ khay hệ thống. Chọn Thoát hoàn toàn để đóng trình khởi chạy và máy chủ của nó.",
-  "ui.error.appExit": "Đã xảy ra sự cố khi tắt máy chủ.\n{0}"
+  "ui.error.appExit": "Đã xảy ra sự cố khi tắt máy chủ.\n{0}",
+  "ui.files.connect": "Kết nối tệp GGUF",
+  "ui.files.catalog": "Nhập danh sách mô hình (JSON)",
+  "ui.files.advanced": "Nâng cao",
+  "ui.picker.gguf": "Chọn tệp mô hình GGUF đã tải xuống",
+  "ui.picker.ggufFilter": "Tệp mô hình GGUF (*.gguf)|*.gguf",
+  "ui.error.ggufNotRecognized": "Tệp này không khớp với mô hình đã đăng ký. Hãy chọn tệp GGUF chính được liệt kê cho mô hình đó.",
+  "ui.note.ggufConnected": "Đã kết nối {0}. Tệp gốc sẽ được sử dụng tại vị trí hiện tại."
 }

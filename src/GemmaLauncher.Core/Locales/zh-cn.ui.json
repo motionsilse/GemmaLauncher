@@ -29,7 +29,7 @@
   "ui.memory.hint": "RAM是系统内存，VRAM是显存。用量会随文本容量和运行配置而变化。",
   "ui.files.title": "模型文件与管理",
   "ui.files.hint": "使用已下载的模型，或添加新模型。",
-  "ui.files.find": "查找已有模型",
+  "ui.files.find": "在文件夹中查找",
   "ui.files.folder": "模型文件夹",
   "ui.files.info": "模型信息",
   "ui.files.add": "添加模型",
@@ -106,5 +106,12 @@
   "ui.tray.open": "打开启动器",
   "ui.tray.exit": "完全退出",
   "ui.tray.notice": "可从托盘控制服务器。选择“完全退出”即可关闭启动器及其服务器。",
-  "ui.error.appExit": "关闭服务器时出现问题。\n{0}"
+  "ui.error.appExit": "关闭服务器时出现问题。\n{0}",
+  "ui.files.connect": "连接 GGUF 文件",
+  "ui.files.catalog": "导入模型列表 (JSON)",
+  "ui.files.advanced": "高级",
+  "ui.picker.gguf": "选择已下载的 GGUF 模型文件",
+  "ui.picker.ggufFilter": "GGUF 模型文件 (*.gguf)|*.gguf",
+  "ui.error.ggufNotRecognized": "此文件与已注册的模型不匹配。请选择该模型列表中指定的主体 GGUF 文件。",
+  "ui.note.ggufConnected": "已连接 {0}。将直接使用原始文件。"
 }

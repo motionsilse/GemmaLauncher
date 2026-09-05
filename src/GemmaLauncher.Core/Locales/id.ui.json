@@ -29,7 +29,7 @@
   "ui.memory.hint": "RAM adalah memori sistem; VRAM adalah memori grafis. Penggunaan bergantung pada kapasitas teks dan pengaturan Anda.",
   "ui.files.title": "File dan pengelolaan model",
   "ui.files.hint": "Gunakan model yang sudah diunduh, atau tambahkan model baru.",
-  "ui.files.find": "Cari model yang ada",
+  "ui.files.find": "Cari dalam folder",
   "ui.files.folder": "Folder model",
   "ui.files.info": "Informasi model",
   "ui.files.add": "Tambah model",
@@ -106,5 +106,12 @@
   "ui.tray.open": "Buka peluncur",
   "ui.tray.exit": "Keluar sepenuhnya",
   "ui.tray.notice": "Kendalikan server dari baki sistem. Pilih Keluar sepenuhnya untuk menutup peluncur dan servernya.",
-  "ui.error.appExit": "Terjadi masalah saat menghentikan server.\n{0}"
+  "ui.error.appExit": "Terjadi masalah saat menghentikan server.\n{0}",
+  "ui.files.connect": "Hubungkan file GGUF",
+  "ui.files.catalog": "Impor daftar model (JSON)",
+  "ui.files.advanced": "Lanjutan",
+  "ui.picker.gguf": "Pilih file model GGUF yang sudah diunduh",
+  "ui.picker.ggufFilter": "File model GGUF (*.gguf)|*.gguf",
+  "ui.error.ggufNotRecognized": "File ini tidak cocok dengan model yang terdaftar. Pilih file GGUF utama yang tercantum untuk model tersebut.",
+  "ui.note.ggufConnected": "{0} terhubung. File asli akan digunakan di lokasi saat ini."
 }

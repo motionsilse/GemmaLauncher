@@ -8,6 +8,7 @@ public sealed record LauncherSettings
     public string? SelectedModelId { get; set; }
     public Dictionary<string, int> Contexts { get; set; } = [];
     public List<string> ModelFolders { get; set; } = [];
+    public Dictionary<string, string> ModelFiles { get; set; } = [];
 }
 
 public sealed class SettingsStore(LauncherPaths paths)
@@ -20,6 +21,7 @@ public sealed class SettingsStore(LauncherPaths paths)
             var settings = JsonSerializer.Deserialize<LauncherSettings>(File.ReadAllText(paths.SettingsFile), CatalogLoader.JsonOptions) ?? new();
             settings.Contexts ??= [];
             settings.ModelFolders ??= [];
+            settings.ModelFiles ??= [];
             settings.LanguagePreference = string.IsNullOrWhiteSpace(settings.LanguagePreference)
                 ? "auto" : settings.LanguagePreference;
             return settings;

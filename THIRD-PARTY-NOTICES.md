@@ -4,7 +4,7 @@ Gemma 모델 런처는 아래 프로젝트를 사용합니다. 각 구성 요소
 
 ## 단일 EXE에 포함된 구성 요소
 
-Windows용 단일 EXE에는 .NET 런타임과 Windows Desktop 구성 요소가 포함됩니다. 사용한 런타임 패키지의 라이선스와 타사 고지 원문을 EXE 안에 보관합니다. `GemmaLauncher-0.1.3-win-x64.exe --licenses`로 실행하면 내장된 고지를 텍스트 뷰어로 열 수 있습니다.
+Windows용 단일 EXE에는 .NET 런타임과 Windows Desktop 구성 요소가 포함됩니다. 사용한 런타임 패키지의 라이선스와 타사 고지 원문을 EXE 안에 보관합니다. `GemmaLauncher-0.1.4-win-x64.exe --licenses`로 실행하면 내장된 고지를 텍스트 뷰어로 열 수 있습니다.
 
 - [.NET Runtime](https://github.com/dotnet/runtime) — [라이선스](https://github.com/dotnet/runtime/blob/main/LICENSE.TXT), [타사 고지](https://github.com/dotnet/runtime/blob/main/THIRD-PARTY-NOTICES.TXT)
 - [Windows Presentation Foundation](https://github.com/dotnet/wpf) — [라이선스](https://github.com/dotnet/wpf/blob/main/LICENSE.TXT)

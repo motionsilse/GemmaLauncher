@@ -29,7 +29,7 @@
   "ui.memory.hint": "RAMはシステムメモリ、VRAMはグラフィックメモリです。使用量は文章量の設定や実行環境によって変わります。",
   "ui.files.title": "モデルファイルの管理",
   "ui.files.hint": "ダウンロード済みのモデルを利用したり、新しいモデルを追加したりできます。",
-  "ui.files.find": "既存のモデルを探す",
+  "ui.files.find": "フォルダー内を検索",
   "ui.files.folder": "モデルフォルダー",
   "ui.files.info": "モデル情報",
   "ui.files.add": "モデルを追加",
@@ -106,5 +106,12 @@
   "ui.tray.open": "ランチャーを開く",
   "ui.tray.exit": "完全に終了",
   "ui.tray.notice": "トレイからサーバーを操作できます。「完全に終了」を選ぶと、ランチャーとサーバーが終了します。",
-  "ui.error.appExit": "サーバーの停止中に問題が発生しました。\n{0}"
+  "ui.error.appExit": "サーバーの停止中に問題が発生しました。\n{0}",
+  "ui.files.connect": "GGUFファイルを接続",
+  "ui.files.catalog": "モデル一覧を読み込む (JSON)",
+  "ui.files.advanced": "詳細設定",
+  "ui.picker.gguf": "ダウンロード済みのGGUFモデルファイルを選択",
+  "ui.picker.ggufFilter": "GGUFモデルファイル (*.gguf)|*.gguf",
+  "ui.error.ggufNotRecognized": "このファイルは登録済みのモデルと一致しません。そのモデルの一覧に記載された本体GGUFファイルを選択してください。",
+  "ui.note.ggufConnected": "{0}を接続しました。元のファイルをその場所で使用します。"
 }

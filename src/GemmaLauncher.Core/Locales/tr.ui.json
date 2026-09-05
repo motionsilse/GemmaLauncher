@@ -29,7 +29,7 @@
   "ui.memory.hint": "RAM sistem belleği, VRAM ise grafik belleğidir. Kullanım, metin kapasitesine ve yapılandırmanıza bağlıdır.",
   "ui.files.title": "Model dosyaları ve yönetimi",
   "ui.files.hint": "İndirdiğiniz modelleri kullanın veya yeni modeller ekleyin.",
-  "ui.files.find": "Mevcut modelleri bul",
+  "ui.files.find": "Klasörde ara",
   "ui.files.folder": "Model klasörü",
   "ui.files.info": "Model bilgileri",
   "ui.files.add": "Model ekle",
@@ -106,5 +106,12 @@
   "ui.tray.open": "Başlatıcıyı aç",
   "ui.tray.exit": "Tamamen çık",
   "ui.tray.notice": "Sunucuyu sistem tepsisinden yönetin. Başlatıcıyı ve sunucusunu kapatmak için Tamamen çık seçeneğini kullanın.",
-  "ui.error.appExit": "Sunucu durdurulurken bir sorun oluştu.\n{0}"
+  "ui.error.appExit": "Sunucu durdurulurken bir sorun oluştu.\n{0}",
+  "ui.files.connect": "GGUF dosyasını bağla",
+  "ui.files.catalog": "Model listesini içe aktar (JSON)",
+  "ui.files.advanced": "Gelişmiş",
+  "ui.picker.gguf": "İndirilmiş bir GGUF model dosyası seçin",
+  "ui.picker.ggufFilter": "GGUF model dosyaları (*.gguf)|*.gguf",
+  "ui.error.ggufNotRecognized": "Bu dosya kayıtlı bir modelle eşleşmiyor. O model için listelenen ana GGUF dosyasını seçin.",
+  "ui.note.ggufConnected": "{0} bağlandı. Özgün dosya mevcut konumunda kullanılacak."
 }

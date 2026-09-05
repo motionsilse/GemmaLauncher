@@ -113,10 +113,26 @@
                     <StackPanel VerticalAlignment="Center" Margin="0,0,20,0">
                         <TextBlock Text="{loc:Text ui.manager.hint}" Style="{StaticResource BodyText}" />
                         <WrapPanel Margin="-5,3,0,0">
-                            <Button Content="{loc:Text ui.files.add}" Command="{Binding ImportCatalogCommand}" Style="{StaticResource TextButton}" Margin="0,0,12,0" ToolTip="{loc:Text ui.manager.addHint}" />
+                            <Button Content="{loc:Text ui.files.connect}" Command="{Binding ConnectModelFileCommand}" Style="{StaticResource PrimaryButton}" FontSize="13" MinHeight="30" Padding="8,5" Margin="5,0,12,0" ToolTip="{loc:Text ui.picker.gguf}" />
                             <Button Content="{loc:Text ui.files.find}" Command="{Binding ChooseModelFolderCommand}" Style="{StaticResource TextButton}" Margin="0,0,12,0" />
                             <Button Content="{loc:Text ui.manager.openFolder}" Command="{Binding OpenFolderCommand}" Style="{StaticResource TextButton}" />
+                            <Expander Header="{loc:Text ui.files.advanced}" IsExpanded="False" Margin="12,4,0,4">
+                                <Button Content="{loc:Text ui.files.catalog}" Command="{Binding ImportCatalogCommand}" Style="{StaticResource TextButton}" ToolTip="{loc:Text ui.manager.addHint}" Margin="0,4,0,0" />
+                            </Expander>
                         </WrapPanel>
+                        <Grid Visibility="{Binding IsProgressVisible, Converter={StaticResource BoolVisibility}}" Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                                <TextBlock Text="{Binding ProgressMessage}" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,5" />
+                                <ProgressBar Value="{Binding ProgressPercent, Mode=OneWay}" IsIndeterminate="{Binding IsIndeterminate}" Maximum="100" AutomationProperties.Name="{loc:Text ui.progress.name}" />
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="{Binding PrimaryLabel}" Command="{Binding PrimaryCommand}" VerticalAlignment="Center" />
+                        </Grid>
+                        <TextBlock Text="{Binding StatusDescription}" TextWrapping="Wrap" Visibility="{Binding HasError, Converter={StaticResource BoolVisibility}}" Foreground="{StaticResource MutedBrush}" Margin="0,4,0,0" AutomationProperties.LiveSetting="Polite" />
+                        <TextBlock Text="{Binding StatusNote}" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,4,0,0" AutomationProperties.LiveSetting="Polite" />
                     </StackPanel>
                     <Button Grid.Column="1" Content="{loc:Text ui.close}" IsCancel="True" Click="Close_Click" Padding="24,10" VerticalAlignment="Center" />
                 </Grid>

@@ -186,11 +186,14 @@
                                 <StackPanel Margin="0,8,0,0">
                                     <TextBlock Text="{loc:Text ui.files.hint}" Style="{StaticResource BodyText}" Margin="0,0,0,8" />
                                     <WrapPanel Margin="-5,0,0,0">
+                                        <Button Content="{loc:Text ui.files.connect}" Command="{Binding ConnectModelFileCommand}" Style="{StaticResource PrimaryButton}" FontSize="13" MinHeight="30" Padding="8,5" Margin="5,0,7,4" ToolTip="{loc:Text ui.picker.gguf}" />
                                         <Button Content="{loc:Text ui.files.find}" Command="{Binding ChooseModelFolderCommand}" Style="{StaticResource TextButton}" Margin="0,0,7,4" />
                                         <Button Content="{loc:Text ui.files.folder}" Command="{Binding OpenFolderCommand}" Style="{StaticResource TextButton}" Margin="0,0,7,4" />
                                         <Button Content="{loc:Text ui.files.info}" Command="{Binding OpenModelSourceCommand}" Style="{StaticResource TextButton}" Margin="0,0,7,4" />
-                                        <Button Content="{loc:Text ui.files.add}" Command="{Binding ImportCatalogCommand}" Style="{StaticResource TextButton}" Margin="0,0,7,4" />
                                         <Button Content="{loc:Text ui.files.logs}" Command="{Binding OpenLogsCommand}" Style="{StaticResource TextButton}" Margin="0,0,7,4" />
+                                        <Expander Header="{loc:Text ui.files.advanced}" IsExpanded="False" Margin="6,4,0,4">
+                                            <Button Content="{loc:Text ui.files.catalog}" Command="{Binding ImportCatalogCommand}" Style="{StaticResource TextButton}" ToolTip="{loc:Text ui.manager.addHint}" Margin="0,4,0,0" />
+                                        </Expander>
                                     </WrapPanel>
                                 </StackPanel>
                             </Expander>

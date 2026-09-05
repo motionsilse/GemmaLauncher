@@ -29,7 +29,7 @@
   "ui.memory.hint": "RAM ist der Arbeitsspeicher, VRAM der Grafikspeicher. Die Nutzung hängt von der Textkapazität und Ihrer Konfiguration ab.",
   "ui.files.title": "Modelldateien und Verwaltung",
   "ui.files.hint": "Nutzen Sie bereits heruntergeladene Modelle oder fügen Sie neue hinzu.",
-  "ui.files.find": "Vorhandene Modelle suchen",
+  "ui.files.find": "Im Ordner suchen",
   "ui.files.folder": "Modellordner",
   "ui.files.info": "Modellinformationen",
   "ui.files.add": "Modell hinzufügen",
@@ -106,5 +106,12 @@
   "ui.tray.open": "Modellstarter öffnen",
   "ui.tray.exit": "Vollständig beenden",
   "ui.tray.notice": "Steuern Sie den Server im Infobereich. Wählen Sie Vollständig beenden, um den Modellstarter und seinen Server zu schließen.",
-  "ui.error.appExit": "Beim Beenden des Servers ist ein Problem aufgetreten.\n{0}"
+  "ui.error.appExit": "Beim Beenden des Servers ist ein Problem aufgetreten.\n{0}",
+  "ui.files.connect": "GGUF-Datei verbinden",
+  "ui.files.catalog": "Modellliste importieren (JSON)",
+  "ui.files.advanced": "Erweitert",
+  "ui.picker.gguf": "Eine heruntergeladene GGUF-Modelldatei auswählen",
+  "ui.picker.ggufFilter": "GGUF-Modelldateien (*.gguf)|*.gguf",
+  "ui.error.ggufNotRecognized": "Diese Datei stimmt mit keinem registrierten Modell überein. Wähle die für das Modell angegebene GGUF-Hauptdatei aus.",
+  "ui.note.ggufConnected": "{0} verbunden. Die Originaldatei wird an ihrem bisherigen Speicherort verwendet."
 }

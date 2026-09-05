@@ -29,7 +29,7 @@
   "ui.memory.hint": "RAM is system memory; VRAM is graphics memory. Usage varies with text capacity and your setup.",
   "ui.files.title": "Model files and management",
   "ui.files.hint": "Use models you already downloaded, or add new ones.",
-  "ui.files.find": "Find existing models",
+  "ui.files.find": "Find in folder",
   "ui.files.folder": "Model folder",
   "ui.files.info": "Model information",
   "ui.files.add": "Add a model",
@@ -106,5 +106,12 @@
   "ui.tray.open": "Open launcher",
   "ui.tray.exit": "Quit completely",
   "ui.tray.notice": "Control the server from the tray. Choose Quit completely to close the launcher and its server.",
-  "ui.error.appExit": "There was a problem stopping the server.\n{0}"
+  "ui.error.appExit": "There was a problem stopping the server.\n{0}",
+  "ui.files.connect": "Connect GGUF file",
+  "ui.files.catalog": "Import model list (JSON)",
+  "ui.files.advanced": "Advanced",
+  "ui.picker.gguf": "Select a downloaded GGUF model file",
+  "ui.picker.ggufFilter": "GGUF model files (*.gguf)|*.gguf",
+  "ui.error.ggufNotRecognized": "This file does not match a registered model. Select the main GGUF file listed for that model.",
+  "ui.note.ggufConnected": "{0} connected. The original file will be used in place."
 }
