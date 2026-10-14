@@ -1,0 +1,27 @@
+<UserControl x:Class="GemmaLauncher.App.PresetEditorView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:loc="clr-namespace:GemmaLauncher.App.Localization">
+ <Grid><Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+  <DockPanel Margin="0,0,0,16"><Button DockPanel.Dock="Right" Content="{loc:Text ui.library.newPreset}" Command="{Binding NewPresetCommand}" /><StackPanel><TextBlock Text="{loc:Text ui.library.presets}" FontSize="22" FontWeight="SemiBold" /><TextBlock Text="{loc:Text ui.library.presetsHint}" Style="{StaticResource BodyText}" Margin="0,5,15,0" /></StackPanel></DockPanel>
+  <ComboBox Grid.Row="1" ItemsSource="{Binding Presets}" SelectedItem="{Binding SelectedPreset, Mode=TwoWay}" DisplayMemberPath="Name" IsEnabled="{Binding CanChangePreset}" AutomationProperties.Name="{loc:Text ui.library.taskPreset}" Margin="0,0,0,16" />
+  <Grid Grid.Row="2" IsEnabled="{Binding CanEditPreset}"><Grid.ColumnDefinitions><ColumnDefinition Width="1.1*" /><ColumnDefinition Width="24" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+   <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"><StackPanel Margin="0,0,4,0">
+    <TextBlock Text="{loc:Text ui.library.presetName}" Margin="0,0,0,6" /><TextBox Text="{Binding PresetName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormField}" AutomationProperties.Name="{loc:Text ui.library.presetName}" />
+    <TextBlock Text="{loc:Text ui.library.prompt}" Margin="0,14,0,6" /><TextBox Text="{Binding PresetPrompt, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormField}" VerticalContentAlignment="Top" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="180" MaxHeight="300" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="{loc:Text ui.library.prompt}" />
+    <Expander Header="{loc:Text ui.library.generation}" Margin="0,16,0,0"><StackPanel Margin="0,10,0,0">
+     <TextBlock Text="{loc:Text ui.library.clientWins}" Style="{StaticResource BodyText}" Margin="0,0,0,10" />
+     <TextBlock Text="{loc:Text ui.library.temperature}" /><TextBox Text="{Binding PresetTemperature, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormField}" Margin="0,5,0,10" />
+     <TextBlock Text="Top P" /><TextBox Text="{Binding PresetTopP, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormField}" Margin="0,5,0,10" />
+     <TextBlock Text="{loc:Text ui.library.maxTokens}" /><TextBox Text="{Binding PresetMaxTokens, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormField}" Margin="0,5,0,0" />
+    </StackPanel></Expander>
+   </StackPanel></ScrollViewer>
+   <Grid Grid.Column="2"><Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+    <DockPanel Margin="0,0,0,8"><Button DockPanel.Dock="Right" Content="{loc:Text ui.library.importGlossary}" Command="{Binding ImportGlossaryCommand}" Style="{StaticResource TextButton}" /><TextBlock Text="{loc:Text ui.library.glossary}" FontWeight="SemiBold" VerticalAlignment="Center" /></DockPanel>
+    <DataGrid x:Name="GlossaryGrid" Grid.Row="1" ItemsSource="{Binding Glossary}" AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{StaticResource LineBrush}" BorderBrush="{StaticResource LineBrush}" Background="{StaticResource PaperBrush}" RowBackground="{StaticResource PaperBrush}" AlternatingRowBackground="{StaticResource SideBrush}" MinRowHeight="36" SelectionMode="Extended" AutomationProperties.Name="{loc:Text ui.library.glossary}">
+     <DataGrid.Resources><Style TargetType="DataGridColumnHeader"><Setter Property="Background" Value="{StaticResource SideBrush}" /><Setter Property="Foreground" Value="{StaticResource MutedBrush}" /><Setter Property="Padding" Value="10,8" /></Style><Style TargetType="DataGridCell"><Setter Property="Padding" Value="10,6" /></Style></DataGrid.Resources>
+     <DataGrid.Columns><DataGridTextColumn Header="{loc:Text ui.library.source}" Binding="{Binding Source, UpdateSourceTrigger=PropertyChanged}" Width="*" /><DataGridTextColumn Header="{loc:Text ui.library.target}" Binding="{Binding Target, UpdateSourceTrigger=PropertyChanged}" Width="*" /></DataGrid.Columns>
+    </DataGrid>
+    <TextBlock Grid.Row="2" Text="{loc:Text ui.library.glossaryHint}" Style="{StaticResource BodyText}" Margin="0,9,0,0" />
+   </Grid>
+  </Grid>
+  <DockPanel Grid.Row="3" Margin="0,16,0,0"><StackPanel DockPanel.Dock="Right" Orientation="Horizontal"><Button Content="{loc:Text ui.library.deletePreset}" Command="{Binding DeletePresetCommand}" Style="{StaticResource TextButton}" Margin="0,0,12,0" /><Button Content="{loc:Text ui.library.save}" Command="{Binding SavePresetCommand}" Click="Save_Click" Style="{StaticResource PrimaryButton}" Padding="25,10" /></StackPanel><TextBlock Text="{loc:Text ui.library.presetScope}" VerticalAlignment="Center" Foreground="{StaticResource AccentBrush}" Margin="0,0,16,0" /></DockPanel>
+ </Grid>
+</UserControl>

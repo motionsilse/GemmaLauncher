@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "A model file name is invalid.",
   "engine.catalog.invalidProfile": "The model's runtime settings are invalid.",
   "engine.catalog.invalidDownload": "The download size or verification information is invalid.",
-  "engine.catalog.httpsRequired": "Only HTTPS addresses are supported."
+  "engine.catalog.httpsRequired": "Only HTTPS addresses are supported.",
+  "engine.library.architecture": "This engine cannot load this model architecture: {0}. Choose a supported text-generation GGUF.",
+  "engine.library.cacheFlash": "Quantized KV cache requires Flash Attention. Enable it or choose f16.",
+  "engine.library.gatewayError": "The model server could not handle this request. Check its status and logs.",
+  "engine.library.glossaryFormat": "Use two columns: source term and translation, separated by commas or tabs.",
+  "engine.library.hfAccess": "This repository requires access approval. Download the GGUF with your account, then connect the local file.",
+  "engine.library.hfMetadata": "The repository did not provide valid, bounded model file information.",
+  "engine.library.hfNoFiles": "No GGUF files with verification information were found in this repository.",
+  "engine.library.hfRange": "Could not inspect the file without downloading it in full. Download it first and connect the local GGUF.",
+  "engine.library.hfUrl": "Enter a Hugging Face repository URL or owner/model.",
+  "engine.library.incompatibleMtp": "This MTP file is not compatible. Select a Gemma 4 assistant matching the main model's vocabulary and target dimensions.",
+  "engine.library.invalidGguf": "This is not a complete, valid GGUF model. Check the file or download it again.",
+  "engine.library.invalidOptions": "Check the GPU, cache, reasoning and draft settings.",
+  "engine.library.invalidPreset": "Check the preset name, instructions, dictionary and numeric limits.",
+  "engine.library.localMissing": "The linked file is missing or changed: {0}. Connect the GGUF again.",
+  "engine.library.mainFirst": "Install or connect the main model before attaching its MTP file.",
+  "engine.library.presetRequest": "This preset needs a text prompt or a user message. Token-only completion requests cannot use text presets.",
+  "engine.library.split": "This is one part of a split GGUF. Choose a single-file GGUF model."
 }

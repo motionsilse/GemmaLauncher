@@ -19,5 +19,19 @@
   "models.12b.hardwareGuide": "適合在效能充裕的電腦上進行多樣化創作與對話。",
   "models.12b.memoryGuide": "RAM ≈ 8.1 GB · VRAM ≈ 8.3 GB",
   "models.12b.benefit1": "無審查微調，讓表達更自由",
-  "models.12b.benefit2": "風格微調，讓文字更有個性"
+  "models.12b.benefit2": "風格微調，讓文字更有個性",
+  "models.hy18.category": "輕量翻譯",
+  "models.hy18.headline": "輕巧快速的翻譯",
+  "models.hy18.hardwareGuide": "想減輕電腦負擔，可以從這款模型開始。",
+  "models.hy18.description": "輕量多語言翻譯模型，以較低的記憶體負擔快速處理日常翻譯。",
+  "models.hy18.memoryGuide": "執行時顯示實際RAM與VRAM用量。",
+  "models.hy18.benefit1": "採用Q4_K_M壓縮的輕量翻譯模型",
+  "models.hy18.benefit2": "使用自訂翻譯指令與術語詞典",
+  "models.hy7.category": "品質優先翻譯",
+  "models.hy7.headline": "捕捉細膩語意的翻譯",
+  "models.hy7.hardwareGuide": "顯示卡記憶體充裕時，推薦選擇這款模型。",
+  "models.hy7.description": "更大的多語言翻譯模型，適合複雜句子與上下文，注重翻譯準確性與表達。",
+  "models.hy7.memoryGuide": "執行時顯示實際RAM與VRAM用量。",
+  "models.hy7.benefit1": "注重翻譯品質的更大模型",
+  "models.hy7.benefit2": "使用自訂翻譯指令與術語詞典"
 }

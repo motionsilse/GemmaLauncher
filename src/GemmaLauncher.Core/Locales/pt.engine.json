@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "Um nome de arquivo do modelo é inválido.",
   "engine.catalog.invalidProfile": "As configurações de execução do modelo são inválidas.",
   "engine.catalog.invalidDownload": "O tamanho do download ou os dados de verificação são inválidos.",
-  "engine.catalog.httpsRequired": "Somente endereços HTTPS são aceitos."
+  "engine.catalog.httpsRequired": "Somente endereços HTTPS são aceitos.",
+  "engine.library.architecture": "Este mecanismo não pode carregar esta arquitetura: {0}. Escolha um GGUF de geração de texto compatível.",
+  "engine.library.cacheFlash": "O cache KV quantizado exige Flash Attention. Ative-o ou escolha f16.",
+  "engine.library.gatewayError": "O servidor não conseguiu processar a solicitação. Verifique o status e os registros.",
+  "engine.library.glossaryFormat": "Use duas colunas: termo original e tradução, separadas por vírgula ou tabulação.",
+  "engine.library.hfAccess": "Este repositório exige autorização. Baixe o GGUF com sua conta e conecte o arquivo local.",
+  "engine.library.hfMetadata": "O repositório não forneceu informações válidas sobre os arquivos do modelo.",
+  "engine.library.hfNoFiles": "Nenhum GGUF com informações de verificação foi encontrado neste repositório.",
+  "engine.library.hfRange": "Não foi possível inspecionar sem baixar o arquivo inteiro. Baixe-o primeiro e conecte o GGUF local.",
+  "engine.library.hfUrl": "Digite a URL do repositório Hugging Face ou owner/model.",
+  "engine.library.incompatibleMtp": "Este MTP não é compatível. Escolha um assistente Gemma 4 com vocabulário e dimensões de destino correspondentes ao modelo principal.",
+  "engine.library.invalidGguf": "O GGUF está incompleto ou é inválido. Verifique o arquivo ou baixe-o novamente.",
+  "engine.library.invalidOptions": "Verifique as configurações de GPU, cache, raciocínio, rascunho e template.",
+  "engine.library.invalidPreset": "Verifique o nome do preset, as instruções, o dicionário e os limites numéricos.",
+  "engine.library.localMissing": "O arquivo conectado está ausente ou foi alterado: {0}. Conecte o GGUF novamente.",
+  "engine.library.mainFirst": "Instale ou conecte o modelo principal antes do arquivo MTP.",
+  "engine.library.presetRequest": "Este preset precisa de texto ou de uma mensagem do usuário. Solicitações apenas com tokens numéricos não aceitam presets de texto.",
+  "engine.library.split": "Esta é uma parte de um GGUF dividido. Escolha um modelo GGUF em um único arquivo."
 }

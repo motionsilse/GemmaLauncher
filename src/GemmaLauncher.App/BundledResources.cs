@@ -89,10 +89,16 @@ public static partial class BundledResources
             {
                 "[Launcher/LICENSE]", "[Launcher/THIRD-PARTY-NOTICES.md]",
                 "[Microsoft.NETCore.App.Runtime.win-x64/LICENSE.TXT]",
-                "[Microsoft.WindowsDesktop.App.Runtime.win-x64/LICENSE]"
+                "[Microsoft.WindowsDesktop.App.Runtime.win-x64/LICENSE]",
+                "[Microsoft.AspNetCore.App.Runtime.win-x64/LICENSE.txt]"
             })
                 if (!notices.Contains(section, StringComparison.OrdinalIgnoreCase))
                     throw new InvalidDataException($"The bundled notices are missing {section}.");
+
+            // Probe the HTTP runtime inside the exact single EXE without launching model inference.
+            var gateway = new RequestGateway();
+            try { gateway.StartAsync(0, 1, TaskPreset.Empty).GetAwaiter().GetResult(); }
+            finally { gateway.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
 
             WriteReport(reportPath, new
             {

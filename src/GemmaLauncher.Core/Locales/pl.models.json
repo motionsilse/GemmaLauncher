@@ -19,5 +19,19 @@
   "models.12b.hardwareGuide": "Do różnorodnej twórczości i rozmów na wydajnym komputerze.",
   "models.12b.memoryGuide": "RAM ≈ 8,1 GB · VRAM ≈ 8,3 GB",
   "models.12b.benefit1": "Strojenie bez cenzury dla większej swobody wypowiedzi",
-  "models.12b.benefit2": "Dostrojenie stylu nadające tekstom własny charakter"
+  "models.12b.benefit2": "Dostrojenie stylu nadające tekstom własny charakter",
+  "models.hy18.category": "Lekkie tłumaczenie",
+  "models.hy18.headline": "Lekkie i szybkie tłumaczenie",
+  "models.hy18.hardwareGuide": "Zacznij tutaj, jeśli chcesz mniej obciążać komputer.",
+  "models.hy18.description": "Kompaktowy model wielojęzyczny do szybkich codziennych tłumaczeń przy mniejszym zużyciu pamięci.",
+  "models.hy18.memoryGuide": "Rzeczywiste użycie RAM i VRAM jest widoczne podczas pracy.",
+  "models.hy18.benefit1": "Model tłumaczeniowy z kompresją Q4_K_M",
+  "models.hy18.benefit2": "Używaj własnych instrukcji tłumaczenia i terminów",
+  "models.hy7.category": "Tłumaczenie nastawione na jakość",
+  "models.hy7.headline": "Tłumaczenie oddające niuanse",
+  "models.hy7.hardwareGuide": "Polecany, gdy masz zapas pamięci graficznej.",
+  "models.hy7.description": "Większy model wielojęzyczny do złożonych zdań i kontekstu, skupiony na dokładności i wyrażaniu myśli.",
+  "models.hy7.memoryGuide": "Rzeczywiste użycie RAM i VRAM jest widoczne podczas pracy.",
+  "models.hy7.benefit1": "Większy model nastawiony na jakość tłumaczenia",
+  "models.hy7.benefit2": "Używaj własnych instrukcji tłumaczenia i terminów"
 }

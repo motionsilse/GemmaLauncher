@@ -19,5 +19,19 @@
   "models.12b.hardwareGuide": "Dành cho nhiều nhu cầu sáng tạo và trò chuyện trên máy tính có cấu hình đủ mạnh.",
   "models.12b.memoryGuide": "RAM ≈ 8.1 GB · VRAM ≈ 8.3 GB",
   "models.12b.benefit1": "Tinh chỉnh không kiểm duyệt để diễn đạt tự do hơn",
-  "models.12b.benefit2": "Tinh chỉnh phong cách để bài viết có cá tính"
+  "models.12b.benefit2": "Tinh chỉnh phong cách để bài viết có cá tính",
+  "models.hy18.category": "Dịch thuật nhẹ",
+  "models.hy18.headline": "Dịch nhanh, nhẹ máy",
+  "models.hy18.hardwareGuide": "Bắt đầu với mô hình này nếu bạn muốn giảm tải cho máy tính.",
+  "models.hy18.description": "Mô hình dịch đa ngôn ngữ nhỏ gọn, xử lý nhanh các bản dịch hằng ngày với ít bộ nhớ hơn.",
+  "models.hy18.memoryGuide": "Mức dùng RAM và VRAM thực tế được hiển thị khi chạy.",
+  "models.hy18.benefit1": "Mô hình chuyên dịch được nén Q4_K_M",
+  "models.hy18.benefit2": "Dùng chỉ dẫn dịch và thuật ngữ riêng",
+  "models.hy7.category": "Dịch thuật ưu tiên chất lượng",
+  "models.hy7.headline": "Bản dịch truyền tải trọn sắc thái",
+  "models.hy7.hardwareGuide": "Khuyên dùng khi máy còn dư bộ nhớ đồ họa.",
+  "models.hy7.description": "Mô hình đa ngôn ngữ lớn hơn cho câu phức tạp và ngữ cảnh, tập trung vào độ chính xác và cách diễn đạt.",
+  "models.hy7.memoryGuide": "Mức dùng RAM và VRAM thực tế được hiển thị khi chạy.",
+  "models.hy7.benefit1": "Mô hình lớn hơn ưu tiên chất lượng dịch",
+  "models.hy7.benefit2": "Dùng chỉ dẫn dịch và thuật ngữ riêng"
 }

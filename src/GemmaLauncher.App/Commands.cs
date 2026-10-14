@@ -27,6 +27,6 @@ public sealed class RelayCommand(Action<object?> execute, Predicate<object?>? ca
 public sealed class ContextChoice(int value, bool recommended) : ObservableObject
 {
     public int Value { get; } = value;
-    public string Label => recommended ? Core.Localization.T("ui.context.recommended", Value / 1024) : $"{Value / 1024}K";
+    public string Label => recommended ? Core.Localization.T("ui.context.recommended", Value / 1024d) : $"{Value / 1024d:0.###}K";
     public void RefreshLanguage() => OnPropertyChanged(nameof(Label));
 }

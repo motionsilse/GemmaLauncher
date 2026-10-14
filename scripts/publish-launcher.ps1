@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [ValidatePattern('^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$')]
-    [string]$Version = '0.1.4',
+    [string]$Version = '0.2.0-preview.2',
     [string]$DotnetPath = 'dotnet',
     [string]$PythonPath = 'python'
 )
@@ -68,7 +68,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Could not locate the runtime license packages.' }
     $packResult = ($packOutput -join [Environment]::NewLine) | ConvertFrom-Json
     $runtimePacks = @($packResult.Items.ResolvedRuntimePack)
-    foreach ($requiredPack in @('Microsoft.NETCore.App.Runtime.win-x64', 'Microsoft.WindowsDesktop.App.Runtime.win-x64')) {
+    foreach ($requiredPack in @('Microsoft.NETCore.App.Runtime.win-x64', 'Microsoft.WindowsDesktop.App.Runtime.win-x64', 'Microsoft.AspNetCore.App.Runtime.win-x64')) {
         if ($requiredPack -notin $runtimePacks.Identity) { throw "Runtime package is missing: $requiredPack" }
     }
     $notices = [Text.StringBuilder]::new()
@@ -118,7 +118,10 @@ try {
         throw 'Single-file verification failed.'
     }
     $report = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
-    if ($report.success -ne $true -or $report.modelCount -ne 3 -or $report.languageCount -ne 17) {
+    $expectedCatalog = Get-Content -LiteralPath (Get-WorkspacePath 'src/GemmaLauncher.App/Assets/catalog.json') -Raw | ConvertFrom-Json
+    $expectedIds = @($expectedCatalog.models.id | Sort-Object)
+    if ($report.success -ne $true -or $report.modelCount -ne $expectedIds.Count -or $report.languageCount -ne 17 -or
+        @(Compare-Object $expectedIds @($report.modelIds | Sort-Object)).Count -ne 0) {
         throw 'The single EXE does not contain the expected catalog and languages.'
     }
 

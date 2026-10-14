@@ -19,5 +19,19 @@
   "models.12b.hardwareGuide": "Für vielfältige kreative Aufgaben und Gespräche auf einem leistungsfähigen PC.",
   "models.12b.memoryGuide": "RAM ≈ 8,1 GB · VRAM ≈ 8,3 GB",
   "models.12b.benefit1": "Unzensierte Anpassung für freieren Ausdruck",
-  "models.12b.benefit2": "Stilabstimmung, die Ihren Texten Persönlichkeit verleiht"
+  "models.12b.benefit2": "Stilabstimmung, die Ihren Texten Persönlichkeit verleiht",
+  "models.hy18.category": "Leichte Übersetzung",
+  "models.hy18.headline": "Leichte, schnelle Übersetzung",
+  "models.hy18.hardwareGuide": "Der richtige Einstieg, wenn Sie Ihren PC weniger belasten möchten.",
+  "models.hy18.description": "Ein kompaktes mehrsprachiges Übersetzungsmodell für schnelle Übersetzungen mit geringerem Speicherbedarf.",
+  "models.hy18.memoryGuide": "Die tatsächliche RAM- und VRAM-Nutzung wird während der Ausführung angezeigt.",
+  "models.hy18.benefit1": "Übersetzungsmodell mit Q4_K_M-Komprimierung",
+  "models.hy18.benefit2": "Eigene Übersetzungsanweisungen und Begriffe verwenden",
+  "models.hy7.category": "Qualitätsorientierte Übersetzung",
+  "models.hy7.headline": "Übersetzung mit Gespür für Nuancen",
+  "models.hy7.hardwareGuide": "Empfohlen, wenn genügend Grafikspeicher frei ist.",
+  "models.hy7.description": "Ein größeres mehrsprachiges Modell für komplexe Sätze und Kontext, mit Fokus auf Genauigkeit und Ausdruck.",
+  "models.hy7.memoryGuide": "Die tatsächliche RAM- und VRAM-Nutzung wird während der Ausführung angezeigt.",
+  "models.hy7.benefit1": "Ein größeres Modell für höhere Übersetzungsqualität",
+  "models.hy7.benefit2": "Eigene Übersetzungsanweisungen und Begriffe verwenden"
 }

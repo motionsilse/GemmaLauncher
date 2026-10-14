@@ -19,5 +19,19 @@
   "models.12b.hardwareGuide": "Güçlü bir bilgisayarda çeşitli yaratıcı çalışmalar ve sohbetler için.",
   "models.12b.memoryGuide": "RAM ≈ 8,1 GB · VRAM ≈ 8,3 GB",
   "models.12b.benefit1": "Daha özgür ifade için sansürsüz ince ayar",
-  "models.12b.benefit2": "Yazılarınıza kişilik katan üslup ayarı"
+  "models.12b.benefit2": "Yazılarınıza kişilik katan üslup ayarı",
+  "models.hy18.category": "Hafif çeviri",
+  "models.hy18.headline": "Hafif ve hızlı çeviri",
+  "models.hy18.hardwareGuide": "Bilgisayarınızı daha az yormak istiyorsanız buradan başlayın.",
+  "models.hy18.description": "Daha az bellek kullanarak günlük çevirileri hızla yapan kompakt, çok dilli bir çeviri modeli.",
+  "models.hy18.memoryGuide": "Gerçek RAM ve VRAM kullanımı çalışırken gösterilir.",
+  "models.hy18.benefit1": "Q4_K_M sıkıştırmalı çeviri modeli",
+  "models.hy18.benefit2": "Kendi çeviri talimatlarınızı ve terimlerinizi kullanın",
+  "models.hy7.category": "Kalite odaklı çeviri",
+  "models.hy7.headline": "Anlamın inceliklerini yakalayan çeviri",
+  "models.hy7.hardwareGuide": "Grafik belleğinde yeterli boş alanınız varsa önerilir.",
+  "models.hy7.description": "Karmaşık cümleler ve bağlam için doğruluk ve ifadeye odaklanan daha büyük, çok dilli çeviri modeli.",
+  "models.hy7.memoryGuide": "Gerçek RAM ve VRAM kullanımı çalışırken gösterilir.",
+  "models.hy7.benefit1": "Çeviri kalitesine odaklanan daha büyük model",
+  "models.hy7.benefit2": "Kendi çeviri talimatlarınızı ve terimlerinizi kullanın"
 }

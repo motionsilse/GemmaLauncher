@@ -19,5 +19,19 @@
   "models.12b.hardwareGuide": "Untuk pelbagai karya kreatif dan perbualan pada PC berkeupayaan tinggi.",
   "models.12b.memoryGuide": "RAM ≈ 8.1 GB · VRAM ≈ 8.3 GB",
   "models.12b.benefit1": "Penalaan tanpa tapisan untuk ekspresi yang lebih bebas",
-  "models.12b.benefit2": "Penalaan gaya yang memberikan keperibadian pada penulisan anda"
+  "models.12b.benefit2": "Penalaan gaya yang memberikan keperibadian pada penulisan anda",
+  "models.hy18.category": "Terjemahan ringan",
+  "models.hy18.headline": "Terjemahan ringan dan pantas",
+  "models.hy18.hardwareGuide": "Mulakan di sini jika anda mahukan beban PC yang lebih ringan.",
+  "models.hy18.description": "Model terjemahan berbilang bahasa yang ringkas untuk terjemahan harian pantas dengan penggunaan memori lebih rendah.",
+  "models.hy18.memoryGuide": "Penggunaan RAM dan VRAM sebenar dipaparkan semasa berjalan.",
+  "models.hy18.benefit1": "Model khusus terjemahan dengan pemampatan Q4_K_M",
+  "models.hy18.benefit2": "Gunakan arahan terjemahan dan istilah sendiri",
+  "models.hy7.category": "Terjemahan berfokuskan kualiti",
+  "models.hy7.headline": "Terjemahan yang menangkap nuansa",
+  "models.hy7.hardwareGuide": "Disyorkan jika memori grafik anda masih banyak tersedia.",
+  "models.hy7.description": "Model berbilang bahasa lebih besar untuk ayat rumit dan konteks, dengan tumpuan pada ketepatan dan ungkapan.",
+  "models.hy7.memoryGuide": "Penggunaan RAM dan VRAM sebenar dipaparkan semasa berjalan.",
+  "models.hy7.benefit1": "Model lebih besar yang mengutamakan kualiti terjemahan",
+  "models.hy7.benefit2": "Gunakan arahan terjemahan dan istilah sendiri"
 }

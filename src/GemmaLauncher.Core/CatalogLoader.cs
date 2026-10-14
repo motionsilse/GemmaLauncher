@@ -27,7 +27,7 @@ public static partial class CatalogLoader
         var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var model in catalog.Models)
         {
-            if (!SafeIdentifier(model.Id) || !ids.Add(model.Id) || string.IsNullOrWhiteSpace(model.DisplayName) ||
+            if (!SafeIdentifier(model.Id) || !ids.Add(model.Id) || string.IsNullOrWhiteSpace(model.DisplayName) || model.DisplayName.Length > 200 || model.DisplayName.Any(char.IsControl) ||
                 string.IsNullOrWhiteSpace(model.ApiModelId) || model.ApiModelId.Any(char.IsControl) || model.ApiModelId.Contains(','))
                 throw new InvalidDataException(Localization.T("engine.catalog.invalidIdentity"));
             if (model.Artifacts is not { Length: >= 1 and <= 8 } || model.Artifacts.Count(a => a.Role == "model") != 1 ||
@@ -38,7 +38,12 @@ public static partial class CatalogLoader
             {
                 if (!SafeFilename(artifact.Filename) || !names.Add(artifact.Filename))
                     throw new InvalidDataException(Localization.T("engine.catalog.invalidFilename"));
-                ValidateDownload(artifact.Url, artifact.Sha256, artifact.Bytes);
+                if (artifact.IsLocal)
+                {
+                    if (!Sha256().IsMatch(artifact.Sha256) || artifact.Bytes <= 0 || artifact.Url.Length != 0)
+                        throw new InvalidDataException(Localization.T("engine.catalog.invalidDownload"));
+                }
+                else ValidateDownload(artifact.Url, artifact.Sha256, artifact.Bytes);
             }
             var p = model.Profile;
             if (p.ContextSizes is not { Length: > 0 and <= 16 } || !p.ContextSizes.Contains(p.DefaultContext) ||
@@ -46,10 +51,11 @@ public static partial class CatalogLoader
                 p.MtpDraftMax is < 0 or > 16 || p.Temperature is < 0 or > 2 || !double.IsFinite(p.Temperature) ||
                 p.TopP is <= 0 or > 1 || !double.IsFinite(p.TopP) || p.TopK is < 1 or > 1000 ||
                 p.MinP is < 0 or > 1 || !double.IsFinite(p.MinP) ||
+                !double.IsFinite(p.RepeatPenalty) || p.RepeatPenalty is < .5 or > 2 ||
                 (p.MtpDraftMax > 0 != model.Artifacts.Any(a => a.Role == "mtp")))
                 throw new InvalidDataException(Localization.T("engine.catalog.invalidProfile"));
-            ValidateWebLink(model.SourceUrl);
-            ValidateWebLink(model.LicenseUrl);
+            if (model.SourceUrl.Length > 0 || model.Origin != "local") ValidateWebLink(model.SourceUrl);
+            if (model.LicenseUrl.Length > 0 || model.Origin != "local") ValidateWebLink(model.LicenseUrl);
         }
     }
 

@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "モデルファイルの名前が正しくありません。",
   "engine.catalog.invalidProfile": "モデルの実行設定が正しくありません。",
   "engine.catalog.invalidDownload": "ダウンロードサイズまたは検証情報が正しくありません。",
-  "engine.catalog.httpsRequired": "HTTPSアドレスのみ使用できます。"
+  "engine.catalog.httpsRequired": "HTTPSアドレスのみ使用できます。",
+  "engine.library.architecture": "このエンジンではこのモデル構造を読み込めません: {0}。対応するテキスト生成用GGUFを選んでください。",
+  "engine.library.cacheFlash": "量子化KVキャッシュにはFlash Attentionが必要です。有効にするかf16を選んでください。",
+  "engine.library.gatewayError": "モデルサーバーがリクエストを処理できませんでした。状態とログを確認してください。",
+  "engine.library.glossaryFormat": "原語と訳語の2列をカンマまたはタブで区切ってください。",
+  "engine.library.hfAccess": "このリポジトリにはアクセス承認が必要です。自分のアカウントでGGUFをダウンロードしてからローカルファイルを接続してください。",
+  "engine.library.hfMetadata": "リポジトリから有効なモデルファイル情報を取得できませんでした。",
+  "engine.library.hfNoFiles": "このリポジトリに検証情報付きのGGUFが見つかりません。",
+  "engine.library.hfRange": "全体をダウンロードせずにファイルを確認できませんでした。先にダウンロードしてからローカルGGUFを接続してください。",
+  "engine.library.hfUrl": "Hugging FaceのリポジトリURLまたはowner/modelを入力してください。",
+  "engine.library.incompatibleMtp": "このMTPには互換性がありません。本体の語彙と出力次元に合うGemma 4 assistantを選んでください。",
+  "engine.library.invalidGguf": "完全で有効なGGUFモデルではありません。ファイルを確認するか再ダウンロードしてください。",
+  "engine.library.invalidOptions": "GPU、キャッシュ、推論、ドラフト、テンプレートの設定を確認してください。",
+  "engine.library.invalidPreset": "プリセット名、指示、辞書と数値の範囲を確認してください。",
+  "engine.library.localMissing": "接続したファイルが見つからないか変更されています: {0}。GGUFを接続し直してください。",
+  "engine.library.mainFirst": "MTPを接続する前に本体モデルをインストールまたは接続してください。",
+  "engine.library.presetRequest": "このプリセットにはテキストまたはユーザーメッセージが必要です。数値トークンのみのリクエストには適用できません。",
+  "engine.library.split": "分割GGUFの一部です。単一ファイルのGGUFモデルを選んでください。"
 }

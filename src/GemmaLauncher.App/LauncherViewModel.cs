@@ -7,7 +7,7 @@ using static GemmaLauncher.Core.Localization;
 
 namespace GemmaLauncher.App;
 
-public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
+public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposable
 {
     private readonly LauncherPaths _paths;
     private readonly SettingsStore _store;
@@ -24,6 +24,7 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
     private ContextChoice? _selectedContext;
     private InstalledModel? _installed;
     private bool _busy;
+    private bool _operationUsesModel;
     private bool _scanning;
     private bool _isDisposed;
     private bool _rebuildingChoices;
@@ -56,10 +57,7 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
         get => _selectedModel;
         set
         {
-            if (value is null || !CanSelectModel || !ApplyModelSelection(value)) return;
-            SaveSettings();
-            Refresh();
-            _scan = ScanSelectedAsync(value);
+            if (value is not null && !TrySelectModel(value)) OnPropertyChanged(nameof(SelectedModel));
         }
     }
     public ContextChoice? SelectedContext
@@ -97,13 +95,19 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
         : T("ui.context.hint");
     public string StatusLabel => _error.Length > 0 ? T("ui.status.attention") : CanOpenWebUi ? T("ui.status.running") : IsBusy ? T("ui.status.preparing") : T("ui.status.off");
     public string StatusTitle => _error.Length > 0 ? T("ui.status.failedTitle") : CanOpenWebUi ? T("ui.status.runningTitle")
+        : _busy && !_operationUsesModel ? T("ui.library.inspecting")
         : _busy ? (_session.Status.State == ServerState.Stopping ? T("ui.status.stoppingTitle") : T("ui.status.preparingTitle"))
-        : _scanning ? T("ui.status.scanningTitle") : _installed is null ? T("ui.status.firstTitle") : T("ui.status.readyTitle");
+        : _scanning ? T("ui.status.scanningTitle")
+        : SelectedPresentation?.FileState == ModelFileState.ReconnectRequired ? T("ui.library.reconnectNeeded")
+        : _installed is null ? T("ui.status.firstTitle") : T("ui.status.readyTitle");
     public string StatusDescription => _error.Length > 0 ? Core.Localization.Current.Retranslate(_error) : CanOpenWebUi ? T("ui.status.runningDescription")
         : _busy ? ProgressMessage : _scanning ? T("ui.status.scanningDescription")
+        : SelectedPresentation?.FileState == ModelFileState.ReconnectRequired ? T("ui.library.reconnectHint")
         : _installed is null ? T("ui.status.firstDescription") : T("ui.status.readyDescription");
     public string PrimaryLabel => _busy ? (_session.Status.State == ServerState.Stopping ? T("ui.action.stopping") : T("ui.action.cancel"))
-        : CanOpenWebUi ? T("ui.action.stop") : _scanning ? T("ui.action.scanning") : _installed is null ? T("ui.action.download") : T("ui.action.start");
+        : CanOpenWebUi ? T("ui.action.stop") : _scanning ? T("ui.action.scanning")
+        : SelectedPresentation?.FileState == ModelFileState.ReconnectRequired ? T(NeedsMtpReconnect ? "ui.library.connectMtp" : "ui.files.connect")
+        : _installed is null ? T("ui.action.download") : T("ui.action.start");
     public bool IsServerRunning => CanOpenWebUi;
     public ICommand PrimaryCommand { get; }
     public ICommand RestartCommand { get; }
@@ -130,11 +134,11 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
         _session = session ?? new ServerSession();
         _installer = installer ?? CreateInstaller();
         _session.StatusChanged += OnSessionStatus;
-        PrimaryCommand = Command(_ => Primary(), _ => !_scanning && _session.Status.State != ServerState.Stopping && !_isDisposed);
+        PrimaryCommand = Command(_ => Primary(), _ => !_scanning && _session.Status.State != ServerState.Stopping && !_isDisposed && (HasSelectedModel || _busy || CanOpenWebUi));
         RestartCommand = Command(_ => BeginOperation(RestartAsync), _ => HasPendingContext && !_busy);
         CopyApiCommand = Command(_ => { try { System.Windows.Clipboard.SetText(ApiAddress); Note(T("ui.note.copied")); } catch (Exception ex) { Note(T("ui.note.copyFailed", ex.Message)); } });
         OpenWebUiCommand = Command(_ => OpenLink("http://127.0.0.1:8080/"), _ => CanOpenWebUi);
-        ManageModelsCommand = Command(_ => { var window = new ModelManagerWindow(this) { Owner = System.Windows.Application.Current.MainWindow }; window.ShowDialog(); });
+        ManageModelsCommand = Command(_ => { PageIndex = 1; ModelPageIndex = 0; });
         SelectModelCommand = Command(value => { if (value is ModelDefinition model) SelectedModel = model; }, _ => CanSelectModel);
         OpenFolderCommand = Command(_ => OpenDirectory(_installed is null ? _paths.Models : Path.GetDirectoryName(_installed.ModelPath)!));
         OpenLogsCommand = Command(_ => OpenDirectory(_paths.Logs));
@@ -144,7 +148,10 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
         OpenModelSourceCommand = Command(_ => { if (SelectedModel is not null) OpenLink(SelectedModel.SourceUrl); });
         InstallPrerequisiteCommand = Command(_ => { if (_prerequisiteDownload is not null) OpenLink(_prerequisiteDownload.AbsoluteUri); }, _ => NeedsRuntimePrerequisite);
         LoadExtraCatalog();
-        SelectedModel = Models.FirstOrDefault(m => m.Id == settings.SelectedModelId) ?? Models[0];
+        InitializeLibrary();
+        var savedModel = LibraryModels.FirstOrDefault(card => card.Definition.Id == settings.SelectedModelId) ?? LibraryModels.FirstOrDefault();
+        if (savedModel is not null) { if (!TrySelectModel(savedModel.Definition)) PageIndex = 1; }
+        else { PageIndex = 1; SaveSettings(); }
         _memoryTimer.Tick += async (_, _) => await ReadMemoryAsync();
         _memoryTimer.Start();
     }
@@ -158,6 +165,7 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
         SaveSettings();
         foreach (var card in ModelCards) card.RefreshLanguage();
         foreach (var choice in ContextChoices) choice.RefreshLanguage();
+        foreach (var preset in Presets) preset.RefreshLanguage();
         OnPropertyChanged(nameof(LanguageOptions));
         OnPropertyChanged(nameof(LanguageSelection));
         Refresh();
@@ -181,6 +189,7 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
             SelectedContext = ContextChoices.FirstOrDefault(c => c.Value == selected) ?? ContextChoices.First(c => c.Value == model.Profile.DefaultContext);
         }
         finally { _rebuildingChoices = false; }
+        OnLibraryModelSelected();
         return true;
     }
 
@@ -192,6 +201,7 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
         foreach (var command in _commands) command.Refresh();
         OnPropertyChanged(nameof(NeedsRuntimePrerequisite));
         OnPropertyChanged(nameof(AccelerationLabel));
+        RefreshLibraryProperties();
         SessionChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -200,17 +210,28 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
         _scanCancellation?.Cancel();
         var cancellation = new CancellationTokenSource();
         _scanCancellation = cancellation;
+        var card = ModelCards.First(card => card.Definition.Id == model.Id);
+        card.FileState = ModelFileState.Checking;
+        _installed = null;
         _scanning = true; _indeterminate = true; Refresh();
         try
         {
-            var found = await _installer.FindAsync(model, cancellation.Token);
-            if (!cancellation.IsCancellationRequested && SelectedModel?.Id == model.Id) _installed = found;
+            var found = await _installer.FindAsync(EffectiveModel(model), cancellation.Token);
+            if (!cancellation.IsCancellationRequested && SelectedModel?.Id == model.Id)
+            {
+                _installed = found;
+                card.FileState = found is not null ? ModelFileState.Ready : UnavailableFileState(EffectiveModel(model));
+            }
         }
         catch (OperationCanceledException) { }
         catch (Exception ex) { if (!cancellation.IsCancellationRequested && SelectedModel?.Id == model.Id) Note(T("ui.note.scanFailed", ex.Message)); }
         finally
         {
-            if (ReferenceEquals(cancellation, _scanCancellation)) { _scanning = false; _scanCancellation = null; Refresh(); }
+            if (ReferenceEquals(cancellation, _scanCancellation))
+            {
+                if (card.FileState == ModelFileState.Checking) card.FileState = ModelFileState.Unchecked;
+                _scanning = false; _scanCancellation = null; Refresh();
+            }
             cancellation.Dispose();
         }
     }
@@ -218,6 +239,11 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
     private void Primary()
     {
         if (_busy) { _operationCancellation?.Cancel(); _progressMessage = T("ui.status.cancelling"); Refresh(); return; }
+        if (!CanOpenWebUi && SelectedPresentation?.FileState == ModelFileState.ReconnectRequired)
+        {
+            if (NeedsMtpReconnect) ChooseMtp(); else ChooseModelFile();
+            return;
+        }
         BeginOperation(CanOpenWebUi ? StopAsync : StartAsync);
     }
 
@@ -225,6 +251,7 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
     {
         if (_busy || _isDisposed) return;
         _busy = true; _error = ""; _statusNote = ""; _indeterminate = true; _prerequisiteDownload = null;
+        _operationUsesModel = stopOnFailure;
         _operationCancellation = new();
         Refresh();
         _operation = RunOperationAsync(action, _operationCancellation, stopOnFailure);
@@ -241,6 +268,7 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
 
     private async Task StartAsync(CancellationToken cancellationToken)
     {
+        if (!SavePendingPreset()) return;
         RuntimePrerequisites.EnsureAvailable();
         var model = SelectedModel ?? throw new InvalidOperationException(T("ui.error.selectModel"));
         var context = SelectedContext?.Value ?? model.Profile.DefaultContext;
@@ -249,10 +277,13 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
             _progressMessage = value.Message; _progressPercent = value.Percent ?? 0; _indeterminate = value.Percent is null; Refresh();
         });
         var runtime = await _installer.EnsureRuntimeAsync(_catalog.Runtime, progress, cancellationToken);
-        _installed = await _installer.EnsureModelAsync(model, progress, cancellationToken);
+        _installed = await _installer.EnsureModelAsync(EffectiveModel(model), progress, cancellationToken);
+        if (SelectedPresentation is { } card) card.FileState = ModelFileState.Ready;
         cancellationToken.ThrowIfCancellationRequested();
         _progressMessage = T("ui.status.loading"); _indeterminate = true; Refresh();
-        await _session.StartAsync(new(_installed, runtime, context, _paths.Logs), cancellationToken);
+        if (model.Origin != "catalog") await Task.Run(() => GgufMetadata.Read(_installed.ModelPath, cancellationToken).RequireLoadable(), cancellationToken);
+        await _session.StartAsync(new(_installed, runtime, context, _paths.Logs) { LoadOptions = LoadOptions, Preset = SelectedPreset?.Preset ?? TaskPreset.Empty, EnableGateway = true }, cancellationToken);
+        RememberModel(model); SaveSettings();
         _activeContext = context;
     }
 
@@ -326,7 +357,7 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
 
     public Task ConnectModelFileAsync(string path)
     {
-        if (!CanSelectModel) return Task.CompletedTask;
+        if (!CanSelectModel || !SavePendingPreset()) return Task.CompletedTask;
         BeginOperation(token => ConnectModelFileCoreAsync(path, token), stopOnFailure: false);
         return _operation ?? Task.CompletedTask;
     }
@@ -345,10 +376,18 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
         });
         var model = await _installer.MatchModelFileAsync(fullPath, Models.ToArray(), progress, cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
-        if (model is null) throw new InvalidDataException(T("ui.error.ggufNotRecognized"));
+        if (model is null)
+        {
+            var imported = await ModelImportService.ImportLocalAsync(fullPath, Models.ToArray(), cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            PersistRegistration(imported.Definition, imported.Files);
+            ApplyModelSelection(imported.Definition); await ScanSelectedAsync(imported.Definition);
+            PageIndex = 0; SaveSettings(); Note(T("ui.library.added")); Refresh(); return;
+        }
         var main = model.Artifacts.Single(artifact => artifact.Role == "model");
         var hadPreviousPath = _settings.ModelFiles.TryGetValue(main.Sha256, out var previousPath);
         var previousModelId = _settings.SelectedModelId;
+        var wasRegistered = _settings.LibraryModelIds.Contains(model.Id);
         _settings.ModelFiles[main.Sha256] = fullPath;
         _deferSettingsSave = true;
         InstalledModel? installed;
@@ -356,9 +395,9 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
         {
             // Resolve the companion again even when this model is already selected.
             // Keep the visible selection unchanged until verification and persistence finish.
-            installed = await _installer.FindAsync(model, cancellationToken);
+            installed = await _installer.FindAsync(EffectiveModel(model), cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
-            _settings.SelectedModelId = model.Id;
+            _settings.SelectedModelId = model.Id; RememberModel(model);
             _store.Save(_settings);
         }
         catch
@@ -366,6 +405,7 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
             if (hadPreviousPath) _settings.ModelFiles[main.Sha256] = previousPath!;
             else _settings.ModelFiles.Remove(main.Sha256);
             _settings.SelectedModelId = previousModelId;
+            if (!wasRegistered) _settings.LibraryModelIds.Remove(model.Id);
             throw;
         }
         finally
@@ -373,8 +413,10 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
             _deferSettingsSave = false;
             if (_settingsSavePending) { _settingsSavePending = false; SaveSettings(); }
         }
-        ApplyModelSelection(model);
+        SyncLibrary(); ApplyModelSelection(model);
         _installed = installed;
+        SelectedPresentation!.FileState = installed is not null ? ModelFileState.Ready : UnavailableFileState(EffectiveModel(model));
+        RememberModel(model); PageIndex = 0; SaveSettings();
         Note(T("ui.note.ggufConnected", model.DisplayName));
         Refresh();
     }
@@ -414,7 +456,7 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
         {
             if (Models.Any(m => m.Id.Equals(model.Id, StringComparison.OrdinalIgnoreCase))) throw new InvalidDataException(T("ui.error.duplicateModel", model.Id));
         }
-        foreach (var model in extra.Models) { Models.Add(model); ModelCards.Add(new(model)); }
+        foreach (var model in extra.Models) { Models.Add(model); ModelCards.Add(new(model)); RememberModel(model); }
     }
     private void ImportCatalog()
     {
@@ -426,7 +468,8 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
             // Validate all records before changing either the visible catalog or the persistent file.
             if (extra.Runtime.Version != _catalog.Runtime.Version || !extra.Runtime.Sha256.Equals(_catalog.Runtime.Sha256, StringComparison.OrdinalIgnoreCase)) throw new InvalidDataException(T("ui.error.catalogRuntime"));
             if (extra.Models.Any(m => Models.Any(existing => existing.Id.Equals(m.Id, StringComparison.OrdinalIgnoreCase)))) throw new InvalidDataException(T("ui.error.catalogDuplicates"));
-            var allExtras = Models.Where(m => !_catalog.Models.Any(b => b.Id.Equals(m.Id, StringComparison.OrdinalIgnoreCase))).Concat(extra.Models).ToArray();
+            var allExtras = Models.Where(m => !_catalog.Models.Any(b => b.Id.Equals(m.Id, StringComparison.OrdinalIgnoreCase)) &&
+                !_settings.UserModels.Any(b => b.Id.Equals(m.Id, StringComparison.OrdinalIgnoreCase))).Concat(extra.Models).ToArray();
             var saved = extra with { Models = allExtras };
             CatalogLoader.Validate(saved);
             Directory.CreateDirectory(_paths.Root);
@@ -450,5 +493,6 @@ public sealed class LauncherViewModel : ObservableObject, IAsyncDisposable
         _session.StatusChanged -= OnSessionStatus;
         await _session.DisposeAsync();
         (_installer as IDisposable)?.Dispose();
+        _huggingFace.Dispose();
     }
 }

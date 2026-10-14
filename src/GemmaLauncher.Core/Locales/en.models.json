@@ -19,5 +19,19 @@
   "models.12b.hardwareGuide": "For broad creative work and conversations on a capable PC.",
   "models.12b.memoryGuide": "RAM ≈ 8.1 GB · VRAM ≈ 8.3 GB",
   "models.12b.benefit1": "Uncensored tuning for freer expression",
-  "models.12b.benefit2": "Style tuning that gives your writing a personality"
+  "models.12b.benefit2": "Style tuning that gives your writing a personality",
+  "models.hy18.category": "Lightweight translation",
+  "models.hy18.headline": "Lightweight, fast translation",
+  "models.hy18.description": "A compact multilingual translation model for quick everyday translations with a lower memory footprint.",
+  "models.hy18.hardwareGuide": "Choose it for responsiveness and a lighter load on your PC.",
+  "models.hy18.memoryGuide": "Actual RAM and VRAM usage is shown while running.",
+  "models.hy18.benefit1": "Translation-focused model with Q4_K_M compression",
+  "models.hy18.benefit2": "Use your own translation instructions and terminology",
+  "models.hy7.category": "Quality-focused translation",
+  "models.hy7.headline": "Translation with attention to context",
+  "models.hy7.description": "A larger multilingual translation model for complex sentences and context, when accuracy and expression matter most.",
+  "models.hy7.hardwareGuide": "Choose it when translation quality matters more than memory use.",
+  "models.hy7.memoryGuide": "Actual RAM and VRAM usage is shown while running.",
+  "models.hy7.benefit1": "A larger model for quality-focused translation",
+  "models.hy7.benefit2": "Use your own translation instructions and terminology"
 }

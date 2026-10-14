@@ -19,5 +19,19 @@
   "models.12b.hardwareGuide": "Para sa malawak na malikhaing gawain at pag-uusap sa malakas na PC.",
   "models.12b.memoryGuide": "RAM ≈ 8.1 GB · VRAM ≈ 8.3 GB",
   "models.12b.benefit1": "Pag-aangkop na walang sensura para sa mas malayang pagpapahayag",
-  "models.12b.benefit2": "Pag-aangkop ng estilo na nagbibigay ng personalidad sa iyong sulat"
+  "models.12b.benefit2": "Pag-aangkop ng estilo na nagbibigay ng personalidad sa iyong sulat",
+  "models.hy18.category": "Magaan na pagsasalin",
+  "models.hy18.headline": "Magaan at mabilis na pagsasalin",
+  "models.hy18.hardwareGuide": "Magsimula rito kung gusto mo ng mas magaan na paggamit ng PC.",
+  "models.hy18.description": "Maliit na modelong pangsalin sa maraming wika para sa mabilis na araw-araw na pagsasalin na mas kaunti ang gamit na memory.",
+  "models.hy18.memoryGuide": "Makikita ang aktuwal na gamit ng RAM at VRAM habang tumatakbo.",
+  "models.hy18.benefit1": "Modelong pangsalin na may Q4_K_M compression",
+  "models.hy18.benefit2": "Gamitin ang sariling tagubilin at mga termino",
+  "models.hy7.category": "Pagsasaling inuuna ang kalidad",
+  "models.hy7.headline": "Salin na kuha ang mas malalim na kahulugan",
+  "models.hy7.hardwareGuide": "Inirerekomenda kung may sapat ka pang graphics memory.",
+  "models.hy7.description": "Mas malaking modelong pangsalin para sa masalimuot na pangungusap at konteksto, na nakatuon sa katumpakan at pagpapahayag.",
+  "models.hy7.memoryGuide": "Makikita ang aktuwal na gamit ng RAM at VRAM habang tumatakbo.",
+  "models.hy7.benefit1": "Mas malaking modelo na nakatuon sa kalidad ng salin",
+  "models.hy7.benefit2": "Gamitin ang sariling tagubilin at mga termino"
 }

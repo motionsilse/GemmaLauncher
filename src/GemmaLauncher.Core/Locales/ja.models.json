@@ -19,5 +19,19 @@
   "models.12b.hardwareGuide": "性能に余裕のあるPCで、幅広い創作や会話に活用できます。",
   "models.12b.memoryGuide": "RAM ≈ 8.1 GB · VRAM ≈ 8.3 GB",
   "models.12b.benefit1": "無検閲チューニングで、より自由な表現を",
-  "models.12b.benefit2": "文章に個性を生むスタイルチューニング"
+  "models.12b.benefit2": "文章に個性を生むスタイルチューニング",
+  "models.hy18.category": "軽量翻訳",
+  "models.hy18.headline": "軽快でスピーディーな翻訳",
+  "models.hy18.hardwareGuide": "PCへの負荷を抑えたい方は、このモデルからお試しください。",
+  "models.hy18.description": "メモリ負荷を抑え、日常の翻訳を素早く処理する軽量な多言語翻訳モデルです。",
+  "models.hy18.memoryGuide": "実際のRAM・VRAM使用量は実行中に表示します。",
+  "models.hy18.benefit1": "Q4_K_M圧縮で軽量な翻訳専用モデル",
+  "models.hy18.benefit2": "独自の翻訳指示と用語集を使えます",
+  "models.hy7.category": "品質重視の翻訳",
+  "models.hy7.headline": "細かなニュアンスまで伝える翻訳",
+  "models.hy7.hardwareGuide": "グラフィックメモリに余裕があるPCにおすすめです。",
+  "models.hy7.description": "複雑な文や文脈を扱い、翻訳の正確さと表現を重視する大きな多言語翻訳モデルです。",
+  "models.hy7.memoryGuide": "実際のRAM・VRAM使用量は実行中に表示します。",
+  "models.hy7.benefit1": "翻訳品質を重視する大きなモデル",
+  "models.hy7.benefit2": "独自の翻訳指示と用語集を使えます"
 }

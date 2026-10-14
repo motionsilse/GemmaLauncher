@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "ชื่อไฟล์โมเดลไม่ถูกต้อง",
   "engine.catalog.invalidProfile": "การตั้งค่าเรียกใช้โมเดลไม่ถูกต้อง",
   "engine.catalog.invalidDownload": "ขนาดดาวน์โหลดหรือข้อมูลตรวจสอบไม่ถูกต้อง",
-  "engine.catalog.httpsRequired": "รองรับเฉพาะที่อยู่ HTTPS เท่านั้น"
+  "engine.catalog.httpsRequired": "รองรับเฉพาะที่อยู่ HTTPS เท่านั้น",
+  "engine.library.architecture": "เอนจินนี้โหลดสถาปัตยกรรมนี้ไม่ได้: {0} โปรดเลือก GGUF สำหรับสร้างข้อความที่รองรับ",
+  "engine.library.cacheFlash": "แคช KV แบบควอนไทซ์ต้องใช้ Flash Attention โปรดเปิดหรือเลือก f16",
+  "engine.library.gatewayError": "เซิร์ฟเวอร์โมเดลประมวลผลคำขอไม่ได้ โปรดตรวจสอบสถานะและบันทึก",
+  "engine.library.glossaryFormat": "ใช้สองคอลัมน์: คำต้นฉบับและคำแปล คั่นด้วยจุลภาคหรือแท็บ",
+  "engine.library.hfAccess": "คลังนี้ต้องได้รับอนุมัติการเข้าถึง โปรดดาวน์โหลด GGUF ด้วยบัญชีของคุณแล้วเชื่อมต่อไฟล์ในเครื่อง",
+  "engine.library.hfMetadata": "คลังไม่ได้ให้ข้อมูลไฟล์โมเดลที่ถูกต้อง",
+  "engine.library.hfNoFiles": "ไม่พบไฟล์ GGUF ที่มีข้อมูลตรวจสอบในคลังนี้",
+  "engine.library.hfRange": "ตรวจสอบไฟล์โดยไม่ดาวน์โหลดทั้งหมดไม่ได้ โปรดดาวน์โหลดก่อนแล้วเชื่อมต่อ GGUF ในเครื่อง",
+  "engine.library.hfUrl": "ป้อน URL คลัง Hugging Face หรือ owner/model",
+  "engine.library.incompatibleMtp": "MTP นี้ไม่เข้ากัน โปรดเลือก Gemma 4 assistant ที่มีชุดคำศัพท์และขนาดเป้าหมายตรงกับโมเดลหลัก",
+  "engine.library.invalidGguf": "GGUF นี้ไม่ครบถ้วนหรือไม่ถูกต้อง โปรดตรวจสอบไฟล์หรือดาวน์โหลดใหม่",
+  "engine.library.invalidOptions": "ตรวจสอบการตั้งค่า GPU แคช การให้เหตุผล ฉบับร่าง และเทมเพลต",
+  "engine.library.invalidPreset": "ตรวจสอบชื่อพรีเซ็ต คำสั่ง พจนานุกรม และช่วงตัวเลข",
+  "engine.library.localMissing": "ไฟล์ที่เชื่อมต่อหายไปหรือเปลี่ยนแปลง: {0} โปรดเชื่อมต่อ GGUF ใหม่",
+  "engine.library.mainFirst": "ติดตั้งหรือเชื่อมต่อโมเดลหลักก่อนเพิ่มไฟล์ MTP",
+  "engine.library.presetRequest": "พรีเซ็ตนี้ต้องใช้ข้อความหรือข้อความจากผู้ใช้ คำขอที่มีเฉพาะโทเคนตัวเลขใช้พรีเซ็ตข้อความไม่ได้",
+  "engine.library.split": "นี่เป็นส่วนหนึ่งของ GGUF ที่แบ่งไฟล์ โปรดเลือกโมเดล GGUF แบบไฟล์เดียว"
 }

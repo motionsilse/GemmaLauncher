@@ -1,6 +1,9 @@
+.worktrees/
+.superpowers/
 **/bin/
 **/obj/
 dist/
-__pycache__/
+artifacts/
 *.user
+__pycache__/
 .vs/

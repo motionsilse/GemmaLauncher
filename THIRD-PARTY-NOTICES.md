@@ -4,11 +4,12 @@ Gemma 모델 런처는 아래 프로젝트를 사용합니다. 각 구성 요소
 
 ## 단일 EXE에 포함된 구성 요소
 
-Windows용 단일 EXE에는 .NET 런타임과 Windows Desktop 구성 요소가 포함됩니다. 사용한 런타임 패키지의 라이선스와 타사 고지 원문을 EXE 안에 보관합니다. `GemmaLauncher-0.1.4-win-x64.exe --licenses`로 실행하면 내장된 고지를 텍스트 뷰어로 열 수 있습니다.
+Windows용 단일 EXE에는 .NET 런타임, Windows Desktop과 ASP.NET Core 구성 요소가 포함됩니다. 사용한 런타임 패키지의 라이선스와 타사 고지 원문을 EXE 안에 보관합니다. 실행 파일에 `--licenses` 인수를 붙이면 내장된 고지를 텍스트 뷰어로 열 수 있습니다.
 
 - [.NET Runtime](https://github.com/dotnet/runtime) — [라이선스](https://github.com/dotnet/runtime/blob/main/LICENSE.TXT), [타사 고지](https://github.com/dotnet/runtime/blob/main/THIRD-PARTY-NOTICES.TXT)
 - [Windows Presentation Foundation](https://github.com/dotnet/wpf) — [라이선스](https://github.com/dotnet/wpf/blob/main/LICENSE.TXT)
 - [Windows Forms](https://github.com/dotnet/winforms) — [라이선스](https://github.com/dotnet/winforms/blob/main/LICENSE.TXT)
+- [ASP.NET Core](https://github.com/dotnet/aspnetcore) — [라이선스](https://github.com/dotnet/aspnetcore/blob/main/LICENSE.txt)
 
 ## 첫 준비 시 다운로드하는 실행 엔진
 
@@ -31,6 +32,8 @@ Windows용 단일 EXE에는 .NET 런타임과 Windows Desktop 구성 요소가 �
 | E4B 번역 모델 · MTP | [17slever17/translate-gemma-4-sub-e4b-GGUF](https://huggingface.co/17slever17/translate-gemma-4-sub-e4b-GGUF) |
 | 12B Heretic StyleTune 모델 | [motionsilse/Gemma-4-12B-QAT-Heretic-StyleTune-GGUF](https://huggingface.co/motionsilse/Gemma-4-12B-QAT-Heretic-StyleTune-GGUF) |
 | 12B MTP | [unsloth/gemma-4-12B-it-qat-GGUF](https://huggingface.co/unsloth/gemma-4-12B-it-qat-GGUF) |
+| HY-MT2 1.8B Q4_K_M | [unsloth/Hy-MT2-1.8B-GGUF](https://huggingface.co/unsloth/Hy-MT2-1.8B-GGUF) |
+| HY-MT2 7B Q4_K_M | [unsloth/Hy-MT2-7B-GGUF](https://huggingface.co/unsloth/Hy-MT2-7B-GGUF) |
 
 기본 모델 카탈로그의 `sourceUrl`과 `licenseUrl`에도 각 출처가 기록되어 있습니다. 추가 모델은 해당 모델의 카탈로그와 원본 저장소의 조건을 확인하세요.
 

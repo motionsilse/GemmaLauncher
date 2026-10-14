@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "模型文件名无效。",
   "engine.catalog.invalidProfile": "模型的运行设置无效。",
   "engine.catalog.invalidDownload": "下载大小或校验信息无效。",
-  "engine.catalog.httpsRequired": "仅支持HTTPS地址。"
+  "engine.catalog.httpsRequired": "仅支持HTTPS地址。",
+  "engine.library.architecture": "此引擎无法加载该模型架构：{0}。请选择支持的文本生成 GGUF。",
+  "engine.library.cacheFlash": "量化 KV 缓存需要 Flash Attention。请启用它或选择 f16。",
+  "engine.library.gatewayError": "模型服务器无法处理请求。请检查状态和日志。",
+  "engine.library.glossaryFormat": "请使用原词和译词两列，以逗号或制表符分隔。",
+  "engine.library.hfAccess": "此仓库需要访问授权。请用自己的账户下载 GGUF，然后连接本地文件。",
+  "engine.library.hfMetadata": "仓库未提供有效的模型文件信息。",
+  "engine.library.hfNoFiles": "此仓库中未找到包含校验信息的 GGUF 文件。",
+  "engine.library.hfRange": "无法在不完整下载的情况下检查文件。请先下载，再连接本地 GGUF。",
+  "engine.library.hfUrl": "请输入 Hugging Face 仓库地址或 owner/model。",
+  "engine.library.incompatibleMtp": "此 MTP 文件不兼容。请选择词表和目标维度与主模型匹配的 Gemma 4 assistant。",
+  "engine.library.invalidGguf": "这不是完整有效的 GGUF 模型。请检查文件或重新下载。",
+  "engine.library.invalidOptions": "请检查 GPU、缓存、推理、草稿和模板设置。",
+  "engine.library.invalidPreset": "请检查预设名称、指令、词典和数值范围。",
+  "engine.library.localMissing": "连接的文件丢失或已更改：{0}。请重新连接 GGUF。",
+  "engine.library.mainFirst": "连接 MTP 前，请先安装或连接主模型。",
+  "engine.library.presetRequest": "此预设需要文本提示或用户消息。仅包含数字令牌的请求无法使用文本预设。",
+  "engine.library.split": "这是分片 GGUF 的一部分。请选择单文件 GGUF 模型。"
 }

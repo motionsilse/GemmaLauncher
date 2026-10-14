@@ -19,5 +19,19 @@
   "models.12b.hardwareGuide": "适合在性能充裕的电脑上进行多样化创作与对话。",
   "models.12b.memoryGuide": "RAM ≈ 8.1 GB · VRAM ≈ 8.3 GB",
   "models.12b.benefit1": "无审查调优，让表达更自由",
-  "models.12b.benefit2": "风格调优，让文字更有个性"
+  "models.12b.benefit2": "风格调优，让文字更有个性",
+  "models.hy18.category": "轻量翻译",
+  "models.hy18.headline": "轻巧快速的翻译",
+  "models.hy18.hardwareGuide": "想减轻电脑负担，可以从这款模型开始。",
+  "models.hy18.description": "轻量多语言翻译模型，以较低的内存负担快速处理日常翻译。",
+  "models.hy18.memoryGuide": "运行时显示实际RAM和VRAM使用量。",
+  "models.hy18.benefit1": "采用Q4_K_M压缩的轻量翻译模型",
+  "models.hy18.benefit2": "使用自定义翻译指令和术语词典",
+  "models.hy7.category": "品质优先翻译",
+  "models.hy7.headline": "捕捉细腻语意的翻译",
+  "models.hy7.hardwareGuide": "显存较充裕时，推荐选择这款模型。",
+  "models.hy7.description": "更大的多语言翻译模型，适合复杂句子和上下文，注重翻译准确性与表达。",
+  "models.hy7.memoryGuide": "运行时显示实际RAM和VRAM使用量。",
+  "models.hy7.benefit1": "注重翻译质量的更大模型",
+  "models.hy7.benefit2": "使用自定义翻译指令和术语词典"
 }

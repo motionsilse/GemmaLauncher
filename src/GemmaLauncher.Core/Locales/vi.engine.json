@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "Tên tệp mô hình không hợp lệ.",
   "engine.catalog.invalidProfile": "Thiết lập chạy mô hình không hợp lệ.",
   "engine.catalog.invalidDownload": "Dung lượng tải xuống hoặc thông tin xác minh không hợp lệ.",
-  "engine.catalog.httpsRequired": "Chỉ hỗ trợ địa chỉ HTTPS."
+  "engine.catalog.httpsRequired": "Chỉ hỗ trợ địa chỉ HTTPS.",
+  "engine.library.architecture": "Bộ máy này không tải được kiến trúc: {0}. Hãy chọn GGUF tạo văn bản được hỗ trợ.",
+  "engine.library.cacheFlash": "Bộ nhớ đệm KV lượng tử hóa cần Flash Attention. Hãy bật hoặc chọn f16.",
+  "engine.library.gatewayError": "Máy chủ mô hình không xử lý được yêu cầu. Kiểm tra trạng thái và nhật ký.",
+  "engine.library.glossaryFormat": "Dùng hai cột: thuật ngữ nguồn và bản dịch, cách nhau bằng dấu phẩy hoặc tab.",
+  "engine.library.hfAccess": "Kho này cần phê duyệt truy cập. Tải GGUF bằng tài khoản của bạn rồi kết nối tệp cục bộ.",
+  "engine.library.hfMetadata": "Kho không cung cấp thông tin tệp mô hình hợp lệ.",
+  "engine.library.hfNoFiles": "Không tìm thấy GGUF có thông tin xác minh trong kho này.",
+  "engine.library.hfRange": "Không thể kiểm tra nếu chưa tải toàn bộ tệp. Hãy tải trước rồi kết nối GGUF cục bộ.",
+  "engine.library.hfUrl": "Nhập địa chỉ kho Hugging Face hoặc owner/model.",
+  "engine.library.incompatibleMtp": "MTP này không tương thích. Chọn Gemma 4 assistant có từ vựng và kích thước đích khớp với mô hình chính.",
+  "engine.library.invalidGguf": "GGUF này không đầy đủ hoặc không hợp lệ. Kiểm tra tệp hoặc tải lại.",
+  "engine.library.invalidOptions": "Kiểm tra cài đặt GPU, bộ nhớ đệm, suy luận, bản nháp và mẫu hội thoại.",
+  "engine.library.invalidPreset": "Kiểm tra tên cấu hình, chỉ dẫn, từ điển và giới hạn số.",
+  "engine.library.localMissing": "Tệp đã kết nối bị thiếu hoặc thay đổi: {0}. Hãy kết nối lại GGUF.",
+  "engine.library.mainFirst": "Cài đặt hoặc kết nối mô hình chính trước khi gắn tệp MTP.",
+  "engine.library.presetRequest": "Cấu hình này cần văn bản hoặc tin nhắn người dùng. Yêu cầu chỉ có token số không dùng được cấu hình văn bản.",
+  "engine.library.split": "Đây là một phần của GGUF chia nhỏ. Hãy chọn mô hình GGUF chỉ có một tệp."
 }

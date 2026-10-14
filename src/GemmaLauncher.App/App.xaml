@@ -14,6 +14,38 @@
         <SolidColorBrush x:Key="SoftBrush" Color="#EAF0E4" />
         <SolidColorBrush x:Key="LineBrush" Color="#DCE3D7" />
         <BooleanToVisibilityConverter x:Key="BoolVisibility" />
+        <Style x:Key="FormField" TargetType="TextBox">
+            <Setter Property="Padding" Value="10,8" />
+            <Setter Property="MinHeight" Value="40" />
+            <Setter Property="Background" Value="{StaticResource PaperBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource InkBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="NavigationItem" TargetType="TabItem">
+            <Setter Property="Foreground" Value="{StaticResource InkBrush}" />
+            <Setter Property="Padding" Value="18,10" />
+            <Setter Property="Template">
+                <Setter.Value><ControlTemplate TargetType="TabItem">
+                    <Border x:Name="TabBorder" Background="Transparent" CornerRadius="6" Padding="{TemplateBinding Padding}" Margin="0,0,6,0">
+                        <ContentPresenter x:Name="TabHeader" ContentSource="Header" RecognizesAccessKey="True" VerticalAlignment="Center" TextElement.Foreground="{StaticResource MutedBrush}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True"><Setter TargetName="TabBorder" Property="Background" Value="{StaticResource SoftBrush}" /><Setter TargetName="TabHeader" Property="TextElement.Foreground" Value="{StaticResource AccentBrush}" /><Setter TargetName="TabHeader" Property="TextElement.FontWeight" Value="SemiBold" /></Trigger>
+                        <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="TabBorder" Property="Background" Value="{StaticResource SoftBrush}" /></Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate></Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="NavigationTabs" TargetType="TabControl">
+            <Setter Property="ItemContainerStyle" Value="{StaticResource NavigationItem}" />
+            <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="TabControl">
+                <Grid><Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                    <TabPanel IsItemsHost="True" Margin="0,0,0,16" KeyboardNavigation.TabIndex="0" />
+                    <ContentPresenter Grid.Row="1" ContentSource="SelectedContent" />
+                </Grid>
+            </ControlTemplate></Setter.Value></Setter>
+        </Style>
 
         <Style x:Key="KeyboardFocus">
             <Setter Property="Control.Template">

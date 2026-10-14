@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "Nama fail model tidak sah.",
   "engine.catalog.invalidProfile": "Tetapan enjin model tidak sah.",
   "engine.catalog.invalidDownload": "Maklumat saiz muat turun atau pengesahan tidak sah.",
-  "engine.catalog.httpsRequired": "Hanya alamat HTTPS disokong."
+  "engine.catalog.httpsRequired": "Hanya alamat HTTPS disokong.",
+  "engine.library.architecture": "Enjin ini tidak dapat memuatkan seni bina: {0}. Pilih GGUF penjanaan teks yang disokong.",
+  "engine.library.cacheFlash": "Cache KV terkuantum memerlukan Flash Attention. Aktifkannya atau pilih f16.",
+  "engine.library.gatewayError": "Pelayan model tidak dapat memproses permintaan. Semak status dan lognya.",
+  "engine.library.glossaryFormat": "Gunakan dua lajur: istilah asal dan terjemahan, dipisahkan dengan koma atau tab.",
+  "engine.library.hfAccess": "Repositori ini memerlukan kelulusan akses. Muat turun GGUF dengan akaun anda, kemudian sambungkan fail setempat.",
+  "engine.library.hfMetadata": "Repositori tidak memberikan maklumat fail model yang sah.",
+  "engine.library.hfNoFiles": "Tiada GGUF dengan maklumat pengesahan ditemui dalam repositori ini.",
+  "engine.library.hfRange": "Fail tidak dapat diperiksa tanpa dimuat turun sepenuhnya. Muat turun dahulu dan sambungkan GGUF setempat.",
+  "engine.library.hfUrl": "Masukkan alamat repositori Hugging Face atau owner/model.",
+  "engine.library.incompatibleMtp": "MTP ini tidak serasi. Pilih Gemma 4 assistant dengan kosa kata dan dimensi sasaran yang sepadan dengan model utama.",
+  "engine.library.invalidGguf": "GGUF ini tidak lengkap atau tidak sah. Semak fail atau muat turun semula.",
+  "engine.library.invalidOptions": "Semak tetapan GPU, cache, penaakulan, draf dan templat.",
+  "engine.library.invalidPreset": "Semak nama pratetap, arahan, kamus dan had angka.",
+  "engine.library.localMissing": "Fail yang disambungkan hilang atau berubah: {0}. Sambungkan semula GGUF.",
+  "engine.library.mainFirst": "Pasang atau sambungkan model utama sebelum fail MTP.",
+  "engine.library.presetRequest": "Pratetap ini memerlukan teks atau mesej pengguna. Permintaan token angka sahaja tidak boleh menggunakan pratetap teks.",
+  "engine.library.split": "Ini sebahagian daripada GGUF berpecah. Pilih model GGUF satu fail."
 }

@@ -18,6 +18,8 @@ public sealed class ServerSession : IServerSession
     private int _stopRequests;
     private bool _disposed;
     private Task? _disposeTask;
+    private RequestGateway? _gateway;
+    private LaunchConfiguration? _requestedConfiguration;
 
     public ServerSession() : this(TimeSpan.FromMinutes(3)) { }
 
@@ -29,12 +31,16 @@ public sealed class ServerSession : IServerSession
 
     public SessionStatus Status { get { lock (_sync) return _status; } }
     public event EventHandler<SessionStatus>? StatusChanged;
+    public void UpdatePreset(TaskPreset preset) => Volatile.Read(ref _gateway)?.UpdatePreset(preset);
 
     public static IReadOnlyList<string> BuildArguments(LaunchConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         var model = configuration.Model.Definition;
         var profile = model.Profile;
+        var options = configuration.LoadOptions;
+        options?.Validate();
+        configuration.Preset?.Validate();
         if (!profile.ContextSizes.Contains(configuration.Context) || configuration.Context <= 0)
             throw new ArgumentException(Localization.T("engine.session.invalidContext"), nameof(configuration));
         if (configuration.Port is < 1 or > 65535)
@@ -52,21 +58,24 @@ public sealed class ServerSession : IServerSession
             "--model", Path.GetFullPath(configuration.Model.ModelPath), "--alias", model.ApiModelId,
             "--host", "127.0.0.1", "--port", configuration.Port.ToString(CultureInfo.InvariantCulture),
             "--ctx-size", configuration.Context.ToString(CultureInfo.InvariantCulture),
-            "--n-gpu-layers", "all", "--flash-attn", "on", "--cache-type-k", "q8_0", "--cache-type-v", "q8_0",
+            "--n-gpu-layers", options?.GpuLayers ?? "all", "--flash-attn", options?.FlashAttention ?? "on",
+            "--cache-type-k", options?.CacheType ?? "q8_0", "--cache-type-v", options?.CacheType ?? "q8_0",
             "--batch-size", "512", "--ubatch-size", "256", "--parallel", "1", "--load-mode", "mmap",
-            "--lazy-mode", profile.Lazy, "--jinja", "--reasoning", "off", "--metrics",
+            "--lazy-mode", profile.Lazy, "--jinja", "--reasoning", options?.Reasoning ?? "off", "--metrics",
             "--temperature", profile.Temperature.ToString(CultureInfo.InvariantCulture),
             "--top-p", profile.TopP.ToString(CultureInfo.InvariantCulture),
             "--top-k", profile.TopK.ToString(CultureInfo.InvariantCulture),
             "--min-p", profile.MinP.ToString(CultureInfo.InvariantCulture),
-            "--repeat-penalty", "1.0", "--fit", "off"
+            "--repeat-penalty", profile.RepeatPenalty.ToString(CultureInfo.InvariantCulture), "--fit", options?.GpuLayers == "auto" ? "on" : "off"
         ];
-        if (configuration.Model.MtpPath is { } mtp)
+        if (!string.IsNullOrWhiteSpace(options?.ChatTemplate)) arguments.AddRange(["--chat-template", options.ChatTemplate]);
+        if (configuration.Model.MtpPath is { } mtp && options?.UseMtp != false)
         {
-            if (profile.MtpDraftMax is < 1 or > 32)
+            var draft = options?.DraftTokens ?? profile.MtpDraftMax;
+            if (draft is < 1 or > 32)
                 throw new ArgumentException(Localization.T("engine.session.invalidDraft"), nameof(configuration));
             arguments.AddRange(["--spec-draft-model", Path.GetFullPath(mtp), "--spec-type", "draft-mtp",
-                "--spec-draft-n-max", profile.MtpDraftMax.ToString(CultureInfo.InvariantCulture), "--spec-draft-ngl", "all"]);
+                "--spec-draft-n-max", draft.ToString(CultureInfo.InvariantCulture), "--spec-draft-ngl", options?.GpuLayers ?? "all"]);
         }
         else arguments.AddRange(["--spec-type", "none"]);
         return arguments.AsReadOnly();
@@ -87,7 +96,7 @@ public sealed class ServerSession : IServerSession
                 if (_stopRequests > 0) throw new OperationCanceledException(Localization.T("engine.session.startCancelled"));
                 if (_owned is not null && !_owned.Process.HasExited)
                 {
-                    if (_owned.Configuration == configuration && _status.State == ServerState.Running) return;
+                    if (_requestedConfiguration == configuration && _status.State == ServerState.Running) return;
                     throw new InvalidOperationException(Localization.T("engine.session.alreadyRunning"));
                 }
                 startup = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -99,8 +108,20 @@ public sealed class ServerSession : IServerSession
             SetStatus(new(ServerState.Starting, Localization.T("engine.session.preparing"), ModelId: configuration.Model.Definition.Id));
             RequireFile(configuration.RuntimeExecutable, Localization.T("engine.session.missingRuntime"));
             RequireFile(configuration.Model.ModelPath, Localization.T("engine.session.missingModel"));
-            if (configuration.Model.MtpPath is { } mtp) RequireFile(mtp, Localization.T("engine.session.missingMtp"));
+            if (configuration.Model.MtpPath is { } mtp && configuration.LoadOptions?.UseMtp != false) RequireFile(mtp, Localization.T("engine.session.missingMtp"));
             EnsurePortAvailable(configuration.Port);
+            var requested = configuration;
+            if (configuration.EnableGateway)
+            {
+                using var reservation = new TcpListener(IPAddress.Loopback, 0);
+                reservation.Start();
+                var backendPort = ((IPEndPoint)reservation.LocalEndpoint).Port;
+                reservation.Stop();
+                _gateway = new RequestGateway();
+                await _gateway.StartAsync(configuration.Port, backendPort, configuration.Preset ?? TaskPreset.Empty, startup.Token).ConfigureAwait(false);
+                configuration = configuration with { Port = backendPort };
+                arguments = BuildArguments(configuration);
+            }
             Directory.CreateDirectory(configuration.LogDirectory);
             TrimOldLogs(configuration.LogDirectory);
             logPath = Path.Combine(Path.GetFullPath(configuration.LogDirectory), $"server-{DateTime.Now:yyyyMMdd-HHmmss-fff}-{Guid.NewGuid():N}.log");
@@ -123,6 +144,7 @@ public sealed class ServerSession : IServerSession
                 if (!process.Start()) throw new IOException(Localization.T("engine.session.launchFailed"));
                 // Store ownership before assignment so even a failed Job assignment is cleaned up.
                 _owned = new(process, job, log, configuration);
+                _requestedConfiguration = requested;
                 _owned.Output = PumpAsync(process.StandardOutput, log, "out");
                 _owned.Error = PumpAsync(process.StandardError, log, "err");
                 job.Assign(process);
@@ -271,6 +293,15 @@ public sealed class ServerSession : IServerSession
     }
 
     private async Task CleanupOwnedAsync()
+    {
+        var gateway = _gateway;
+        _gateway = null;
+        _requestedConfiguration = null;
+        try { await CleanupProcessAsync().ConfigureAwait(false); }
+        finally { if (gateway is not null) await gateway.DisposeAsync().ConfigureAwait(false); }
+    }
+
+    private async Task CleanupProcessAsync()
     {
         var owned = _owned;
         if (owned is null) return;
