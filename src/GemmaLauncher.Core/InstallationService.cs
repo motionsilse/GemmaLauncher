@@ -74,6 +74,7 @@ public sealed class InstallationService : IInstallationService, IDisposable
                 cancellationToken.ThrowIfCancellationRequested();
                 var existing = await FindArtifactAsync(model, artifact, progress, cancellationToken);
                 if (existing is not null) { files.Add(artifact.Role, existing); continue; }
+                if (artifact.IsLocal) throw new FileNotFoundException(Localization.T("engine.library.localMissing", artifact.Filename));
                 var destination = ArtifactPath(model, artifact);
                 await DownloadVerifiedAsync(artifact.Url, artifact.Bytes, artifact.Sha256, destination, progress, cancellationToken);
                 files.Add(artifact.Role, destination);
@@ -384,7 +385,9 @@ public sealed class InstallationService : IInstallationService, IDisposable
         foreach (var artifact in model.Artifacts)
         {
             ValidateSegment(artifact.Filename);
-            ValidateArtifact(artifact.Url, artifact.Bytes, artifact.Sha256);
+            if (!artifact.IsLocal) ValidateArtifact(artifact.Url, artifact.Bytes, artifact.Sha256);
+            else if (artifact.Url.Length != 0 || artifact.Bytes <= 0 || artifact.Sha256.Length != 64 || artifact.Sha256.Any(c => !Uri.IsHexDigit(c)))
+                throw new InvalidDataException(Localization.T("engine.install.verificationRequired"));
         }
     }
 

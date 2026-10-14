@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "Un nom de fichier du modèle est invalide.",
   "engine.catalog.invalidProfile": "Les réglages d’exécution du modèle sont invalides.",
   "engine.catalog.invalidDownload": "La taille du téléchargement ou les données de vérification sont invalides.",
-  "engine.catalog.httpsRequired": "Seules les adresses HTTPS sont prises en charge."
+  "engine.catalog.httpsRequired": "Seules les adresses HTTPS sont prises en charge.",
+  "engine.library.architecture": "Ce moteur ne peut pas charger cette architecture : {0}. Choisissez un GGUF de génération de texte compatible.",
+  "engine.library.cacheFlash": "Le cache KV quantifié nécessite Flash Attention. Activez-le ou choisissez f16.",
+  "engine.library.gatewayError": "Le serveur du modèle ne peut pas traiter cette requête. Consultez son état et ses journaux.",
+  "engine.library.glossaryFormat": "Utilisez deux colonnes : terme source et traduction, séparées par une virgule ou une tabulation.",
+  "engine.library.hfAccess": "Ce dépôt nécessite une autorisation. Téléchargez le GGUF avec votre compte, puis associez le fichier local.",
+  "engine.library.hfMetadata": "Le dépôt n’a pas fourni d’informations valides sur les fichiers du modèle.",
+  "engine.library.hfNoFiles": "Aucun GGUF avec des informations de vérification n’a été trouvé dans ce dépôt.",
+  "engine.library.hfRange": "Impossible d’inspecter le fichier sans le télécharger entièrement. Téléchargez-le puis associez le GGUF local.",
+  "engine.library.hfUrl": "Saisissez l’URL du dépôt Hugging Face ou owner/model.",
+  "engine.library.incompatibleMtp": "Ce MTP est incompatible. Choisissez un assistant Gemma 4 dont le vocabulaire et les dimensions cibles correspondent au modèle principal.",
+  "engine.library.invalidGguf": "Ce GGUF est incomplet ou invalide. Vérifiez-le ou téléchargez-le à nouveau.",
+  "engine.library.invalidOptions": "Vérifiez les paramètres GPU, cache, raisonnement, brouillon et modèle de conversation.",
+  "engine.library.invalidPreset": "Vérifiez le nom du préréglage, les instructions, le dictionnaire et les limites numériques.",
+  "engine.library.localMissing": "Le fichier associé est absent ou modifié : {0}. Associez de nouveau le GGUF.",
+  "engine.library.mainFirst": "Installez ou associez le modèle principal avant son fichier MTP.",
+  "engine.library.presetRequest": "Ce préréglage nécessite du texte ou un message utilisateur. Les requêtes contenant uniquement des tokens numériques ne sont pas compatibles.",
+  "engine.library.split": "Ce fichier est une partie d’un GGUF fractionné. Choisissez un modèle GGUF en un seul fichier."
 }

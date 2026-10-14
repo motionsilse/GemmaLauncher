@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "Недопустимое имя файла модели.",
   "engine.catalog.invalidProfile": "Недопустимые настройки запуска модели.",
   "engine.catalog.invalidDownload": "Размер скачивания или данные проверки недопустимы.",
-  "engine.catalog.httpsRequired": "Поддерживаются только адреса HTTPS."
+  "engine.catalog.httpsRequired": "Поддерживаются только адреса HTTPS.",
+  "engine.library.architecture": "Этот движок не поддерживает архитектуру: {0}. Выберите совместимый GGUF для генерации текста.",
+  "engine.library.cacheFlash": "Квантованный KV-кеш требует Flash Attention. Включите его или выберите f16.",
+  "engine.library.gatewayError": "Сервер модели не смог обработать запрос. Проверьте состояние и журналы.",
+  "engine.library.glossaryFormat": "Используйте два столбца: исходный термин и перевод, разделённые запятой или табуляцией.",
+  "engine.library.hfAccess": "Для этого репозитория требуется разрешение. Скачайте GGUF со своей учётной записью и подключите локальный файл.",
+  "engine.library.hfMetadata": "Репозиторий не предоставил корректные сведения о файлах модели.",
+  "engine.library.hfNoFiles": "В репозитории нет GGUF с данными для проверки целостности.",
+  "engine.library.hfRange": "Не удалось проверить файл без полной загрузки. Сначала скачайте его, затем подключите локальный GGUF.",
+  "engine.library.hfUrl": "Введите адрес репозитория Hugging Face или owner/model.",
+  "engine.library.incompatibleMtp": "Этот MTP несовместим. Выберите Gemma 4 assistant с подходящим словарём и целевой размерностью.",
+  "engine.library.invalidGguf": "GGUF неполный или некорректный. Проверьте файл или скачайте его заново.",
+  "engine.library.invalidOptions": "Проверьте настройки GPU, кеша, рассуждения, черновика и шаблона.",
+  "engine.library.invalidPreset": "Проверьте имя пресета, инструкции, словарь и числовые ограничения.",
+  "engine.library.localMissing": "Подключённый файл отсутствует или изменён: {0}. Подключите GGUF заново.",
+  "engine.library.mainFirst": "Перед подключением MTP установите или подключите основную модель.",
+  "engine.library.presetRequest": "Пресету нужен текст или сообщение пользователя. Запросы только с числовыми токенами не поддерживают текстовые пресеты.",
+  "engine.library.split": "Это часть разделённого GGUF. Выберите модель GGUF в одном файле."
 }

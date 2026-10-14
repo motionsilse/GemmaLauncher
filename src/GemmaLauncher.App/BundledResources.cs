@@ -87,12 +87,18 @@ public static partial class BundledResources
             var notices = ReadText(noticesStream);
             foreach (var section in new[]
             {
-                "[Launcher/LICENSE]", "[Launcher/THIRD-PARTY-NOTICES.md]",
-                "[Microsoft.NETCore.App.Runtime.win-x64/LICENSE.TXT]",
-                "[Microsoft.WindowsDesktop.App.Runtime.win-x64/LICENSE]"
+                "[Launcher/LICENSE]", "[Launcher/THIRD-PARTY-NOTICES.md]"
             })
                 if (!notices.Contains(section, StringComparison.OrdinalIgnoreCase))
                     throw new InvalidDataException($"The bundled notices are missing {section}.");
+
+            if (AppAssembly.GetReferencedAssemblies().Any(name => name.Name is "PresentationFramework" or "PresentationCore" or "WindowsBase"))
+                throw new InvalidDataException("The launcher must not depend on WPF.");
+
+            // Probe the HTTP runtime inside the exact single EXE without launching model inference.
+            var gateway = new RequestGateway();
+            try { gateway.StartAsync(0, 1, TaskPreset.Empty).GetAwaiter().GetResult(); }
+            finally { gateway.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
 
             WriteReport(reportPath, new
             {
@@ -102,7 +108,10 @@ public static partial class BundledResources
                 modelIds = catalog.Models.Select(model => model.Id).ToArray(),
                 languageCount,
                 resourceNames = AppAssembly.GetManifestResourceNames().Concat(typeof(Core.Localization).Assembly.GetManifestResourceNames()).Order(StringComparer.Ordinal).ToArray(),
-                noticesLength = notices.Length
+                noticesLength = notices.Length,
+                deployment = "framework-dependent",
+                runtimeVersion = Environment.Version.ToString(),
+                requiredFrameworks = new[] { "Microsoft.NETCore.App 10.0", "Microsoft.WindowsDesktop.App 10.0", "Microsoft.AspNetCore.App 10.0" }
             });
             return 0;
         }

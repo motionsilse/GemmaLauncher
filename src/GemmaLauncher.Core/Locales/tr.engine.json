@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "Model dosyasının adı geçersiz.",
   "engine.catalog.invalidProfile": "Modelin çalışma ayarları geçersiz.",
   "engine.catalog.invalidDownload": "İndirme boyutu veya doğrulama bilgileri geçersiz.",
-  "engine.catalog.httpsRequired": "Yalnızca HTTPS adresleri desteklenir."
+  "engine.catalog.httpsRequired": "Yalnızca HTTPS adresleri desteklenir.",
+  "engine.library.architecture": "Bu motor şu mimariyi yükleyemiyor: {0}. Desteklenen bir metin üretimi GGUF dosyası seçin.",
+  "engine.library.cacheFlash": "Nicemlenmiş KV önbelleği Flash Attention gerektirir. Etkinleştirin veya f16 seçin.",
+  "engine.library.gatewayError": "Model sunucusu isteği işleyemedi. Durumu ve günlükleri kontrol edin.",
+  "engine.library.glossaryFormat": "Virgül veya sekmeyle ayrılmış iki sütun kullanın: kaynak terim ve çeviri.",
+  "engine.library.hfAccess": "Bu depo erişim onayı gerektiriyor. GGUF dosyasını hesabınızla indirip yerel dosyayı bağlayın.",
+  "engine.library.hfMetadata": "Depo geçerli model dosyası bilgileri sağlamadı.",
+  "engine.library.hfNoFiles": "Bu depoda doğrulama bilgileri bulunan GGUF dosyası yok.",
+  "engine.library.hfRange": "Dosya tamamen indirilmeden incelenemedi. Önce indirip yerel GGUF dosyasını bağlayın.",
+  "engine.library.hfUrl": "Hugging Face depo adresini veya owner/model girin.",
+  "engine.library.incompatibleMtp": "Bu MTP uyumlu değil. Ana modelin sözlüğüne ve hedef boyutlarına uygun bir Gemma 4 assistant seçin.",
+  "engine.library.invalidGguf": "Bu GGUF eksik veya geçersiz. Dosyayı kontrol edin ya da tekrar indirin.",
+  "engine.library.invalidOptions": "GPU, önbellek, akıl yürütme, taslak ve şablon ayarlarını kontrol edin.",
+  "engine.library.invalidPreset": "Ön ayar adını, talimatları, sözlüğü ve sayısal sınırları kontrol edin.",
+  "engine.library.localMissing": "Bağlı dosya eksik veya değişmiş: {0}. GGUF dosyasını yeniden bağlayın.",
+  "engine.library.mainFirst": "MTP dosyasını bağlamadan önce ana modeli kurun veya bağlayın.",
+  "engine.library.presetRequest": "Bu ön ayar metin veya kullanıcı mesajı gerektirir. Yalnızca sayısal token içeren istekler metin ön ayarlarını kullanamaz.",
+  "engine.library.split": "Bu, bölünmüş bir GGUF dosyasının parçası. Tek dosyalı bir GGUF modeli seçin."
 }

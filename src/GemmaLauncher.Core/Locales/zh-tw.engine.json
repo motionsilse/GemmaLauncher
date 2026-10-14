@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "模型檔案名稱無效。",
   "engine.catalog.invalidProfile": "模型的執行設定無效。",
   "engine.catalog.invalidDownload": "下載大小或驗證資訊無效。",
-  "engine.catalog.httpsRequired": "僅支援HTTPS位址。"
+  "engine.catalog.httpsRequired": "僅支援HTTPS位址。",
+  "engine.library.architecture": "此引擎無法載入該模型架構：{0}。請選擇支援的文字生成 GGUF。",
+  "engine.library.cacheFlash": "量化 KV 快取需要 Flash Attention。請啟用它或選擇 f16。",
+  "engine.library.gatewayError": "模型伺服器無法處理請求。請檢查狀態和記錄。",
+  "engine.library.glossaryFormat": "請使用原詞與譯詞兩欄，以逗號或定位字元分隔。",
+  "engine.library.hfAccess": "此儲存庫需要存取授權。請以自己的帳號下載 GGUF，再連接本機檔案。",
+  "engine.library.hfMetadata": "儲存庫未提供有效的模型檔案資訊。",
+  "engine.library.hfNoFiles": "此儲存庫中找不到含驗證資訊的 GGUF 檔案。",
+  "engine.library.hfRange": "無法在不完整下載的情況下檢查檔案。請先下載，再連接本機 GGUF。",
+  "engine.library.hfUrl": "請輸入 Hugging Face 儲存庫網址或 owner/model。",
+  "engine.library.incompatibleMtp": "此 MTP 檔案不相容。請選擇詞彙表和目標維度與主模型相符的 Gemma 4 assistant。",
+  "engine.library.invalidGguf": "這不是完整有效的 GGUF 模型。請檢查檔案或重新下載。",
+  "engine.library.invalidOptions": "請檢查 GPU、快取、推理、草稿與範本設定。",
+  "engine.library.invalidPreset": "請檢查預設名稱、指令、詞典與數值範圍。",
+  "engine.library.localMissing": "連接的檔案遺失或已變更：{0}。請重新連接 GGUF。",
+  "engine.library.mainFirst": "連接 MTP 前，請先安裝或連接主模型。",
+  "engine.library.presetRequest": "此預設需要文字提示或使用者訊息。僅含數字權杖的請求無法使用文字預設。",
+  "engine.library.split": "這是分割 GGUF 的一部分。請選擇單一檔案的 GGUF 模型。"
 }

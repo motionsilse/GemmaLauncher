@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "모델 파일 이름이 올바르지 않습니다.",
   "engine.catalog.invalidProfile": "모델 실행 설정이 올바르지 않습니다.",
   "engine.catalog.invalidDownload": "다운로드 크기 또는 검증 정보가 올바르지 않습니다.",
-  "engine.catalog.httpsRequired": "HTTPS 주소만 사용할 수 있습니다."
+  "engine.catalog.httpsRequired": "HTTPS 주소만 사용할 수 있습니다.",
+  "engine.library.architecture": "현재 엔진에서 실행할 수 없는 모델 구조입니다: {0}. 지원되는 텍스트 생성용 GGUF를 선택하세요.",
+  "engine.library.cacheFlash": "압축 KV 캐시에는 Flash Attention이 필요합니다. 켜거나 f16을 선택하세요.",
+  "engine.library.gatewayError": "모델 서버가 요청을 처리하지 못했습니다. 서버 상태와 실행 로그를 확인하세요.",
+  "engine.library.glossaryFormat": "원문과 번역 두 열을 쉼표나 탭으로 구분하세요.",
+  "engine.library.hfAccess": "접근 승인이 필요한 저장소입니다. 본인 계정으로 GGUF를 내려받은 뒤 로컬 파일을 연결하세요.",
+  "engine.library.hfMetadata": "저장소에서 올바른 모델 파일 정보를 받지 못했습니다.",
+  "engine.library.hfNoFiles": "이 저장소에서 검증 정보가 있는 GGUF 파일을 찾지 못했습니다.",
+  "engine.library.hfRange": "전체 다운로드 없이 파일을 확인할 수 없습니다. 먼저 내려받은 뒤 로컬 GGUF를 연결하세요.",
+  "engine.library.hfUrl": "Hugging Face 저장소 주소 또는 작성자/모델을 입력하세요.",
+  "engine.library.incompatibleMtp": "호환되지 않는 MTP 파일입니다. 본체와 어휘 및 대상 크기가 일치하는 Gemma 4 가속 파일을 선택하세요.",
+  "engine.library.invalidGguf": "완전한 GGUF 모델 파일이 아닙니다. 파일을 확인하거나 다시 내려받으세요.",
+  "engine.library.invalidOptions": "GPU·캐시·추론·예측 설정값을 확인하세요.",
+  "engine.library.invalidPreset": "작업 설정 이름, 지시문, 용어사전과 숫자 범위를 확인하세요.",
+  "engine.library.localMissing": "연결한 파일이 없거나 변경되었습니다: {0}. GGUF를 다시 연결하세요.",
+  "engine.library.mainFirst": "MTP 파일을 연결하기 전에 본체 모델을 설치하거나 연결하세요.",
+  "engine.library.presetRequest": "이 작업 설정에는 텍스트 프롬프트나 사용자 메시지가 필요합니다. 토큰 배열만 보내는 요청에는 텍스트 설정을 적용할 수 없습니다.",
+  "engine.library.split": "분할된 GGUF의 일부입니다. 단일 파일로 된 GGUF 모델을 선택하세요."
 }

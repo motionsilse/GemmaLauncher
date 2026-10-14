@@ -9,6 +9,13 @@ public sealed record LauncherSettings
     public Dictionary<string, int> Contexts { get; set; } = [];
     public List<string> ModelFolders { get; set; } = [];
     public Dictionary<string, string> ModelFiles { get; set; } = [];
+    public List<string> LibraryModelIds { get; set; } = [];
+    public List<TaskPreset> Presets { get; set; } = [];
+    public bool PresetsInitialized { get; set; }
+    public Dictionary<string, string> ModelPresets { get; set; } = [];
+    public Dictionary<string, ModelLoadOptions> LoadOptions { get; set; } = [];
+    public List<ModelDefinition> UserModels { get; set; } = [];
+    public Dictionary<string, ModelArtifact> MtpFiles { get; set; } = [];
 }
 
 public sealed class SettingsStore(LauncherPaths paths)
@@ -22,6 +29,20 @@ public sealed class SettingsStore(LauncherPaths paths)
             settings.Contexts ??= [];
             settings.ModelFolders ??= [];
             settings.ModelFiles ??= [];
+            settings.LibraryModelIds ??= [];
+            settings.Presets ??= [];
+            settings.ModelPresets ??= [];
+            settings.LoadOptions ??= [];
+            settings.UserModels ??= [];
+            settings.MtpFiles ??= [];
+            settings.Presets = settings.Presets.Where(preset =>
+            {
+                try { preset.Validate(); return true; } catch (Exception ex) when (ex is InvalidDataException or NullReferenceException) { return false; }
+            }).DistinctBy(preset => preset.Id).ToList();
+            foreach (var (id, options) in settings.LoadOptions.ToArray())
+            {
+                try { options.Validate(); } catch (Exception ex) when (ex is InvalidDataException or NullReferenceException) { settings.LoadOptions.Remove(id); }
+            }
             settings.LanguagePreference = string.IsNullOrWhiteSpace(settings.LanguagePreference)
                 ? "auto" : settings.LanguagePreference;
             return settings;

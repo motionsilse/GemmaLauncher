@@ -1,4 +1,4 @@
-using System.Windows;
+using System.Windows.Forms;
 
 namespace GemmaLauncher.App;
 
@@ -7,14 +7,15 @@ public static class Program
     [STAThread]
     public static int Main(string[] args)
     {
-        // These commands must work without creating WPF windows, loading settings or acquiring the instance mutex.
+        // Utility commands must not create windows, load settings or acquire the instance mutex.
         var isUtilityCommand = BundledResources.IsUtilityCommand(args);
         try
         {
             if (isUtilityCommand) return BundledResources.RunUtilityCommand(args);
-            var application = new App();
-            application.InitializeComponent();
-            return application.Run();
+            ApplicationConfiguration.Initialize();
+            using var application = new App(args);
+            if (application.Ready) Application.Run(application);
+            return 0;
         }
         catch (Exception exception)
         {
@@ -23,7 +24,7 @@ public static class Program
             {
                 try
                 {
-                    System.Windows.MessageBox.Show(exception.Message, "Gemma Launcher", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(exception.Message, "Gemma Launcher", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 catch (Exception) { }
             }

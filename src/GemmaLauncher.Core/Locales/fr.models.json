@@ -19,5 +19,19 @@
   "models.12b.hardwareGuide": "Pour des créations variées et des conversations sur un PC performant.",
   "models.12b.memoryGuide": "RAM ≈ 8,1 Go · VRAM ≈ 8,3 Go",
   "models.12b.benefit1": "Un ajustement sans censure pour s’exprimer plus librement",
-  "models.12b.benefit2": "Un ajustement de style qui donne de la personnalité à vos textes"
+  "models.12b.benefit2": "Un ajustement de style qui donne de la personnalité à vos textes",
+  "models.hy18.category": "Traduction légère",
+  "models.hy18.headline": "Traduction légère et rapide",
+  "models.hy18.hardwareGuide": "Commencez ici pour limiter la charge sur votre PC.",
+  "models.hy18.description": "Un modèle compact de traduction multilingue pour traduire rapidement avec moins de mémoire.",
+  "models.hy18.memoryGuide": "L’utilisation réelle de RAM et de VRAM s’affiche pendant l’exécution.",
+  "models.hy18.benefit1": "Modèle de traduction avec compression Q4_K_M",
+  "models.hy18.benefit2": "Utilisez vos propres instructions et termes",
+  "models.hy7.category": "Traduction axée sur la qualité",
+  "models.hy7.headline": "Une traduction qui saisit les nuances",
+  "models.hy7.hardwareGuide": "Recommandé si vous disposez de mémoire graphique en réserve.",
+  "models.hy7.description": "Un modèle multilingue plus grand pour les phrases complexes et le contexte, axé sur la précision et l’expression.",
+  "models.hy7.memoryGuide": "L’utilisation réelle de RAM et de VRAM s’affiche pendant l’exécution.",
+  "models.hy7.benefit1": "Un modèle plus grand axé sur la qualité",
+  "models.hy7.benefit2": "Utilisez vos propres instructions et termes"
 }

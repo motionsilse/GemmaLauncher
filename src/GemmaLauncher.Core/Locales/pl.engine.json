@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "Nazwa pliku modelu jest nieprawidłowa.",
   "engine.catalog.invalidProfile": "Ustawienia działania modelu są nieprawidłowe.",
   "engine.catalog.invalidDownload": "Rozmiar pobierania lub dane weryfikacji są nieprawidłowe.",
-  "engine.catalog.httpsRequired": "Obsługiwane są tylko adresy HTTPS."
+  "engine.catalog.httpsRequired": "Obsługiwane są tylko adresy HTTPS.",
+  "engine.library.architecture": "Ten silnik nie obsługuje architektury: {0}. Wybierz zgodny GGUF do generowania tekstu.",
+  "engine.library.cacheFlash": "Kwantyzowana pamięć KV wymaga Flash Attention. Włącz je lub wybierz f16.",
+  "engine.library.gatewayError": "Serwer modelu nie obsłużył żądania. Sprawdź jego stan i dzienniki.",
+  "engine.library.glossaryFormat": "Użyj dwóch kolumn: termin źródłowy i tłumaczenie, oddzielonych przecinkiem lub tabulatorem.",
+  "engine.library.hfAccess": "To repozytorium wymaga zgody na dostęp. Pobierz GGUF ze swojego konta, a następnie połącz lokalny plik.",
+  "engine.library.hfMetadata": "Repozytorium nie udostępniło prawidłowych informacji o plikach modelu.",
+  "engine.library.hfNoFiles": "W repozytorium nie znaleziono GGUF z danymi weryfikacyjnymi.",
+  "engine.library.hfRange": "Nie można sprawdzić pliku bez pobrania go w całości. Najpierw go pobierz, a następnie połącz lokalny GGUF.",
+  "engine.library.hfUrl": "Wpisz adres repozytorium Hugging Face lub owner/model.",
+  "engine.library.incompatibleMtp": "Ten MTP jest niezgodny. Wybierz Gemma 4 assistant ze słownikiem i wymiarami docelowymi zgodnymi z modelem głównym.",
+  "engine.library.invalidGguf": "GGUF jest niekompletny lub nieprawidłowy. Sprawdź plik albo pobierz go ponownie.",
+  "engine.library.invalidOptions": "Sprawdź ustawienia GPU, pamięci podręcznej, rozumowania, szkicu i szablonu.",
+  "engine.library.invalidPreset": "Sprawdź nazwę presetu, instrukcje, słownik i zakresy liczb.",
+  "engine.library.localMissing": "Połączony plik zniknął lub został zmieniony: {0}. Połącz GGUF ponownie.",
+  "engine.library.mainFirst": "Zainstaluj lub połącz główny model przed dodaniem jego pliku MTP.",
+  "engine.library.presetRequest": "Ten preset wymaga tekstu lub wiadomości użytkownika. Żądania zawierające tylko tokeny liczbowe nie obsługują presetów tekstowych.",
+  "engine.library.split": "To część podzielonego GGUF. Wybierz model GGUF w jednym pliku."
 }

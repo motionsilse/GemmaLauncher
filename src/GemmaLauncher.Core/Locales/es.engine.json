@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "Un nombre de archivo del modelo no es válido.",
   "engine.catalog.invalidProfile": "La configuración de ejecución del modelo no es válida.",
   "engine.catalog.invalidDownload": "El tamaño de la descarga o los datos de verificación no son válidos.",
-  "engine.catalog.httpsRequired": "Solo se admiten direcciones HTTPS."
+  "engine.catalog.httpsRequired": "Solo se admiten direcciones HTTPS.",
+  "engine.library.architecture": "Este motor no puede cargar esta arquitectura: {0}. Elige un GGUF de generación de texto compatible.",
+  "engine.library.cacheFlash": "La caché KV cuantizada requiere Flash Attention. Actívalo o elige f16.",
+  "engine.library.gatewayError": "El servidor no pudo procesar la solicitud. Revisa su estado y sus registros.",
+  "engine.library.glossaryFormat": "Usa dos columnas: término original y traducción, separadas por comas o tabulaciones.",
+  "engine.library.hfAccess": "Este repositorio requiere autorización. Descarga el GGUF con tu cuenta y conecta el archivo local.",
+  "engine.library.hfMetadata": "El repositorio no proporcionó información válida de los archivos del modelo.",
+  "engine.library.hfNoFiles": "No se encontraron archivos GGUF con datos de verificación en este repositorio.",
+  "engine.library.hfRange": "No se pudo inspeccionar el archivo sin descargarlo completo. Descárgalo primero y conecta el GGUF local.",
+  "engine.library.hfUrl": "Introduce la URL del repositorio de Hugging Face o owner/model.",
+  "engine.library.incompatibleMtp": "Este MTP no es compatible. Elige un asistente Gemma 4 cuyo vocabulario y dimensiones de destino coincidan con el modelo principal.",
+  "engine.library.invalidGguf": "El GGUF está incompleto o no es válido. Comprueba el archivo o vuelve a descargarlo.",
+  "engine.library.invalidOptions": "Revisa los ajustes de GPU, caché, razonamiento, borrador y plantilla.",
+  "engine.library.invalidPreset": "Revisa el nombre del preajuste, las instrucciones, el diccionario y los límites numéricos.",
+  "engine.library.localMissing": "El archivo conectado falta o cambió: {0}. Vuelve a conectar el GGUF.",
+  "engine.library.mainFirst": "Instala o conecta el modelo principal antes de su archivo MTP.",
+  "engine.library.presetRequest": "Este preajuste necesita texto o un mensaje de usuario. Las solicitudes con solo tokens numéricos no admiten preajustes de texto.",
+  "engine.library.split": "Esta es una parte de un GGUF dividido. Elige un modelo GGUF de un solo archivo."
 }

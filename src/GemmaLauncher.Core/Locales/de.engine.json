@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "Ein Modelldateiname ist ungültig.",
   "engine.catalog.invalidProfile": "Die Ausführungseinstellungen des Modells sind ungültig.",
   "engine.catalog.invalidDownload": "Die Downloadgröße oder die Prüfdaten sind ungültig.",
-  "engine.catalog.httpsRequired": "Es werden nur HTTPS-Adressen unterstützt."
+  "engine.catalog.httpsRequired": "Es werden nur HTTPS-Adressen unterstützt.",
+  "engine.library.architecture": "Diese Architektur kann der Server nicht laden: {0}. Wählen Sie ein unterstütztes GGUF zur Texterzeugung.",
+  "engine.library.cacheFlash": "Quantisierter KV-Cache benötigt Flash Attention. Aktivieren Sie es oder wählen Sie f16.",
+  "engine.library.gatewayError": "Der Modellserver konnte die Anfrage nicht bearbeiten. Prüfen Sie Status und Protokolle.",
+  "engine.library.glossaryFormat": "Verwenden Sie zwei Spalten: Ausgangsbegriff und Übersetzung, durch Komma oder Tabulator getrennt.",
+  "engine.library.hfAccess": "Dieses Repository erfordert eine Freigabe. Laden Sie das GGUF mit Ihrem Konto herunter und verknüpfen Sie die lokale Datei.",
+  "engine.library.hfMetadata": "Das Repository hat keine gültigen Modelldateiinformationen geliefert.",
+  "engine.library.hfNoFiles": "In diesem Repository wurden keine GGUF-Dateien mit Prüfinformationen gefunden.",
+  "engine.library.hfRange": "Die Datei lässt sich ohne vollständigen Download nicht prüfen. Laden Sie sie zuerst herunter und verknüpfen Sie das lokale GGUF.",
+  "engine.library.hfUrl": "Geben Sie die Hugging-Face-Repository-URL oder owner/model ein.",
+  "engine.library.incompatibleMtp": "Diese MTP-Datei ist nicht kompatibel. Wählen Sie einen Gemma-4-Assistenten mit passendem Vokabular und passenden Zieldimensionen.",
+  "engine.library.invalidGguf": "Das GGUF ist unvollständig oder ungültig. Prüfen Sie die Datei oder laden Sie sie erneut herunter.",
+  "engine.library.invalidOptions": "Prüfen Sie GPU-, Cache-, Denk-, Entwurfs- und Vorlageneinstellungen.",
+  "engine.library.invalidPreset": "Prüfen Sie Profilname, Anweisungen, Wörterbuch und Zahlenbereiche.",
+  "engine.library.localMissing": "Die verknüpfte Datei fehlt oder wurde geändert: {0}. Verknüpfen Sie das GGUF erneut.",
+  "engine.library.mainFirst": "Installieren oder verknüpfen Sie zuerst das Hauptmodell und danach die MTP-Datei.",
+  "engine.library.presetRequest": "Dieses Profil benötigt Text oder eine Benutzernachricht. Anfragen nur mit numerischen Tokens können keine Textprofile verwenden.",
+  "engine.library.split": "Dies ist ein Teil eines aufgeteilten GGUF. Wählen Sie ein GGUF-Modell in einer einzelnen Datei."
 }

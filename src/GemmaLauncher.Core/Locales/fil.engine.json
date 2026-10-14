@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "Hindi wasto ang pangalan ng file ng modelo.",
   "engine.catalog.invalidProfile": "Hindi wasto ang mga setting ng engine ng modelo.",
   "engine.catalog.invalidDownload": "Hindi wasto ang laki ng download o impormasyon sa beripikasyon.",
-  "engine.catalog.httpsRequired": "Mga HTTPS address lang ang sinusuportahan."
+  "engine.catalog.httpsRequired": "Mga HTTPS address lang ang sinusuportahan.",
+  "engine.library.architecture": "Hindi ma-load ng engine ang arkitekturang ito: {0}. Pumili ng suportadong GGUF para sa pagbuo ng teksto.",
+  "engine.library.cacheFlash": "Kailangan ng Flash Attention para sa quantized KV cache. I-on ito o piliin ang f16.",
+  "engine.library.gatewayError": "Hindi naproseso ng model server ang kahilingan. Tingnan ang status at mga log.",
+  "engine.library.glossaryFormat": "Gumamit ng dalawang column: orihinal na termino at salin, na pinaghihiwalay ng kuwit o tab.",
+  "engine.library.hfAccess": "Kailangan ng pahintulot sa repositoryong ito. I-download ang GGUF gamit ang iyong account, saka ikonekta ang lokal na file.",
+  "engine.library.hfMetadata": "Walang wastong impormasyon ng model file na ibinigay ang repositoryo.",
+  "engine.library.hfNoFiles": "Walang GGUF na may impormasyon sa pag-verify sa repositoryong ito.",
+  "engine.library.hfRange": "Hindi masuri ang file nang hindi ito dina-download nang buo. I-download muna, saka ikonekta ang lokal na GGUF.",
+  "engine.library.hfUrl": "Ilagay ang URL ng Hugging Face repository o owner/model.",
+  "engine.library.incompatibleMtp": "Hindi tugma ang MTP na ito. Pumili ng Gemma 4 assistant na kapareho ng bokabularyo at target dimensions ng pangunahing model.",
+  "engine.library.invalidGguf": "Hindi kumpleto o wasto ang GGUF na ito. Suriin ang file o i-download muli.",
+  "engine.library.invalidOptions": "Suriin ang mga setting ng GPU, cache, pangangatwiran, draft at template.",
+  "engine.library.invalidPreset": "Suriin ang pangalan ng preset, mga tagubilin, diksyunaryo at limitasyon ng mga numero.",
+  "engine.library.localMissing": "Nawawala o nabago ang nakakonektang file: {0}. Ikonekta muli ang GGUF.",
+  "engine.library.mainFirst": "I-install o ikonekta muna ang pangunahing model bago ang MTP file nito.",
+  "engine.library.presetRequest": "Kailangan ng teksto o mensahe ng user para sa preset na ito. Hindi puwedeng gumamit ng text preset ang mga kahilingang puro numeric token.",
+  "engine.library.split": "Bahagi ito ng hinating GGUF. Pumili ng GGUF model na nasa iisang file."
 }

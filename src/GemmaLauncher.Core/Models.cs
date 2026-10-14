@@ -7,6 +7,7 @@ public sealed record ModelArtifact
     public required string Url { get; init; }
     public required string Sha256 { get; init; }
     public long Bytes { get; init; }
+    public bool IsLocal { get; init; }
 }
 
 public sealed record ModelProfile
@@ -19,12 +20,21 @@ public sealed record ModelProfile
     public double TopP { get; init; } = .95;
     public int TopK { get; init; } = 64;
     public double MinP { get; init; } = .05;
+    public double RepeatPenalty { get; init; } = 1;
 }
 
 public sealed record ModelDefinition
 {
     public required string Id { get; init; }
     public required string DisplayName { get; init; }
+    public string FamilyId { get; init; } = "";
+    public string FamilyName { get; init; } = "";
+    public int FamilyOrder { get; init; }
+    public string Variant { get; init; } = "";
+    public string LocalizationPrefix { get; init; } = "";
+    public string Origin { get; init; } = "catalog";
+    public string Architecture { get; init; } = "";
+    public bool HasChatTemplate { get; init; } = true;
     public string Credit { get; init; } = "";
     public required string ApiModelId { get; init; }
     public required string Category { get; init; }
@@ -83,7 +93,12 @@ public interface IInstallationService
 
 public enum ServerState { Stopped, Starting, Running, Stopping, Faulted }
 public sealed record SessionStatus(ServerState State, string Message, int? ProcessId = null, string? ModelId = null);
-public sealed record LaunchConfiguration(InstalledModel Model, string RuntimeExecutable, int Context, string LogDirectory, int Port = 8080);
+public sealed record LaunchConfiguration(InstalledModel Model, string RuntimeExecutable, int Context, string LogDirectory, int Port = 8080)
+{
+    public ModelLoadOptions? LoadOptions { get; init; }
+    public TaskPreset? Preset { get; init; }
+    public bool EnableGateway { get; init; }
+}
 
 public interface IServerSession : IAsyncDisposable
 {

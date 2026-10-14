@@ -67,5 +67,22 @@
   "engine.catalog.invalidFilename": "Nama file model tidak valid.",
   "engine.catalog.invalidProfile": "Pengaturan mesin model tidak valid.",
   "engine.catalog.invalidDownload": "Informasi ukuran unduhan atau verifikasi tidak valid.",
-  "engine.catalog.httpsRequired": "Hanya alamat HTTPS yang didukung."
+  "engine.catalog.httpsRequired": "Hanya alamat HTTPS yang didukung.",
+  "engine.library.architecture": "Mesin ini tidak dapat memuat arsitektur: {0}. Pilih GGUF pembuat teks yang didukung.",
+  "engine.library.cacheFlash": "Cache KV terkuantisasi memerlukan Flash Attention. Aktifkan atau pilih f16.",
+  "engine.library.gatewayError": "Server model tidak dapat memproses permintaan. Periksa status dan lognya.",
+  "engine.library.glossaryFormat": "Gunakan dua kolom: istilah sumber dan terjemahan, dipisahkan koma atau tab.",
+  "engine.library.hfAccess": "Repositori ini memerlukan izin akses. Unduh GGUF dengan akun Anda, lalu hubungkan berkas lokal.",
+  "engine.library.hfMetadata": "Repositori tidak menyediakan informasi berkas model yang valid.",
+  "engine.library.hfNoFiles": "Tidak ditemukan GGUF dengan informasi verifikasi di repositori ini.",
+  "engine.library.hfRange": "Berkas tidak dapat diperiksa tanpa mengunduhnya secara lengkap. Unduh dahulu, lalu hubungkan GGUF lokal.",
+  "engine.library.hfUrl": "Masukkan alamat repositori Hugging Face atau owner/model.",
+  "engine.library.incompatibleMtp": "MTP ini tidak kompatibel. Pilih Gemma 4 assistant dengan kosakata dan dimensi target yang sesuai dengan model utama.",
+  "engine.library.invalidGguf": "GGUF ini tidak lengkap atau tidak valid. Periksa berkas atau unduh ulang.",
+  "engine.library.invalidOptions": "Periksa pengaturan GPU, cache, penalaran, draf, dan templat.",
+  "engine.library.invalidPreset": "Periksa nama preset, instruksi, kamus, dan batas angka.",
+  "engine.library.localMissing": "Berkas yang terhubung hilang atau berubah: {0}. Hubungkan kembali GGUF.",
+  "engine.library.mainFirst": "Pasang atau hubungkan model utama sebelum menghubungkan MTP.",
+  "engine.library.presetRequest": "Preset ini memerlukan teks atau pesan pengguna. Permintaan yang hanya berisi token angka tidak dapat memakai preset teks.",
+  "engine.library.split": "Ini adalah bagian dari GGUF yang terpecah. Pilih model GGUF satu berkas."
 }

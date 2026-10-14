@@ -1,0 +1,603 @@
+{
+  "date": "2026-10-14 Asia/Seoul",
+  "baselineCommit": "860170b",
+  "publicBaselineCommit": "f6f0c5409fc21e200881b8d2906233aac12e3e0c",
+  "sdk": "10.0.401",
+  "runtime": "10.0.12",
+  "method": "Release UI harness; identical catalog, selected model, 1080x860 window, fresh settings, 5s warm-up + 10s observation per state; three processes per variant. No GC or working set trimming.",
+  "limitations": "Simulated inference session targets a separate idle child. These samples exclude actual model and gateway execution. GPU probes use a private inactive desktop and exclude DWM attribution.",
+  "baseline": [
+    {
+      "runtime": "10.0.12",
+      "window": "1080x860",
+      "sampleSeconds": 10,
+      "warmupSeconds": 5,
+      "inference": "Separate idle child process, no model loaded. Launcher-only telemetry overhead; not real llama.cpp inference.",
+      "samples": [
+        {
+          "state": "visible-idle",
+          "elapsedMs": 10093.348,
+          "cpuMs": 31.25,
+          "workingSetBytes": 165512806.4,
+          "privateBytes": 114823987.2,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 64,
+          "userObjects": 69,
+          "wpfModules": [
+            "PresentationFramework.dll",
+            "PresentationCore.dll",
+            "PresentationNative_cor3.dll",
+            "wpfgfx_cor3.dll",
+            "PresentationFramework.Aero2.dll",
+            "PresentationFramework.resources.dll",
+            "PresentationCore.resources.dll",
+            "PresentationFramework-SystemXmlLinq.dll",
+            "PresentationFramework-SystemXml.dll"
+          ],
+          "childWorkingSetBytes": 23678976,
+          "childPrivateBytes": 6541312
+        },
+        {
+          "state": "hidden-idle",
+          "elapsedMs": 10083.8908,
+          "cpuMs": 62.5,
+          "workingSetBytes": 165351833.6,
+          "privateBytes": 113178624,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 64,
+          "userObjects": 68,
+          "wpfModules": [
+            "PresentationFramework.dll",
+            "PresentationCore.dll",
+            "PresentationNative_cor3.dll",
+            "wpfgfx_cor3.dll",
+            "PresentationFramework.Aero2.dll",
+            "PresentationFramework.resources.dll",
+            "PresentationCore.resources.dll",
+            "PresentationFramework-SystemXmlLinq.dll",
+            "PresentationFramework-SystemXml.dll"
+          ],
+          "childWorkingSetBytes": 23617536,
+          "childPrivateBytes": 6414336
+        },
+        {
+          "state": "visible-simulated-server",
+          "elapsedMs": 10088.4092,
+          "cpuMs": 171.875,
+          "workingSetBytes": 176430694.4,
+          "privateBytes": 121991987.2,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 64,
+          "userObjects": 68,
+          "wpfModules": [
+            "PresentationFramework.dll",
+            "PresentationCore.dll",
+            "PresentationNative_cor3.dll",
+            "wpfgfx_cor3.dll",
+            "PresentationFramework.Aero2.dll",
+            "PresentationFramework.resources.dll",
+            "PresentationCore.resources.dll",
+            "PresentationFramework-SystemXmlLinq.dll",
+            "PresentationFramework-SystemXml.dll"
+          ],
+          "childWorkingSetBytes": 23617536,
+          "childPrivateBytes": 6414336
+        },
+        {
+          "state": "hidden-simulated-server",
+          "elapsedMs": 10093.8429,
+          "cpuMs": 62.5,
+          "workingSetBytes": 176066150.4,
+          "privateBytes": 121460326.4,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 64,
+          "userObjects": 68,
+          "wpfModules": [
+            "PresentationFramework.dll",
+            "PresentationCore.dll",
+            "PresentationNative_cor3.dll",
+            "wpfgfx_cor3.dll",
+            "PresentationFramework.Aero2.dll",
+            "PresentationFramework.resources.dll",
+            "PresentationCore.resources.dll",
+            "PresentationFramework-SystemXmlLinq.dll",
+            "PresentationFramework-SystemXml.dll"
+          ],
+          "childWorkingSetBytes": 23617536,
+          "childPrivateBytes": 6414336
+        }
+      ]
+    },
+    {
+      "runtime": "10.0.12",
+      "window": "1080x860",
+      "sampleSeconds": 10,
+      "warmupSeconds": 5,
+      "inference": "Separate idle child process, no model loaded. Launcher-only telemetry overhead; not real llama.cpp inference.",
+      "samples": [
+        {
+          "state": "visible-idle",
+          "elapsedMs": 10104.8553,
+          "cpuMs": 125,
+          "workingSetBytes": 165438668.8,
+          "privateBytes": 114231705.6,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 64,
+          "userObjects": 69,
+          "wpfModules": [
+            "PresentationFramework.dll",
+            "PresentationCore.dll",
+            "PresentationNative_cor3.dll",
+            "wpfgfx_cor3.dll",
+            "PresentationFramework.Aero2.dll",
+            "PresentationFramework.resources.dll",
+            "PresentationCore.resources.dll",
+            "PresentationFramework-SystemXmlLinq.dll",
+            "PresentationFramework-SystemXml.dll"
+          ],
+          "childWorkingSetBytes": 23736320,
+          "childPrivateBytes": 6594560
+        },
+        {
+          "state": "hidden-idle",
+          "elapsedMs": 10122.6881,
+          "cpuMs": 93.75,
+          "workingSetBytes": 164876697.6,
+          "privateBytes": 112022323.2,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 64,
+          "userObjects": 68,
+          "wpfModules": [
+            "PresentationFramework.dll",
+            "PresentationCore.dll",
+            "PresentationNative_cor3.dll",
+            "wpfgfx_cor3.dll",
+            "PresentationFramework.Aero2.dll",
+            "PresentationFramework.resources.dll",
+            "PresentationCore.resources.dll",
+            "PresentationFramework-SystemXmlLinq.dll",
+            "PresentationFramework-SystemXml.dll"
+          ],
+          "childWorkingSetBytes": 23674880,
+          "childPrivateBytes": 6467584
+        },
+        {
+          "state": "visible-simulated-server",
+          "elapsedMs": 10103.8946,
+          "cpuMs": 62.5,
+          "workingSetBytes": 176228352,
+          "privateBytes": 120751718.4,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 64,
+          "userObjects": 68,
+          "wpfModules": [
+            "PresentationFramework.dll",
+            "PresentationCore.dll",
+            "PresentationNative_cor3.dll",
+            "wpfgfx_cor3.dll",
+            "PresentationFramework.Aero2.dll",
+            "PresentationFramework.resources.dll",
+            "PresentationCore.resources.dll",
+            "PresentationFramework-SystemXmlLinq.dll",
+            "PresentationFramework-SystemXml.dll"
+          ],
+          "childWorkingSetBytes": 23674880,
+          "childPrivateBytes": 6467584
+        },
+        {
+          "state": "hidden-simulated-server",
+          "elapsedMs": 10082.676,
+          "cpuMs": 31.25,
+          "workingSetBytes": 175788032,
+          "privateBytes": 120383488,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 64,
+          "userObjects": 68,
+          "wpfModules": [
+            "PresentationFramework.dll",
+            "PresentationCore.dll",
+            "PresentationNative_cor3.dll",
+            "wpfgfx_cor3.dll",
+            "PresentationFramework.Aero2.dll",
+            "PresentationFramework.resources.dll",
+            "PresentationCore.resources.dll",
+            "PresentationFramework-SystemXmlLinq.dll",
+            "PresentationFramework-SystemXml.dll"
+          ],
+          "childWorkingSetBytes": 23674880,
+          "childPrivateBytes": 6467584
+        }
+      ]
+    },
+    {
+      "runtime": "10.0.12",
+      "window": "1080x860",
+      "sampleSeconds": 10,
+      "warmupSeconds": 5,
+      "inference": "Separate idle child process, no model loaded. Launcher-only telemetry overhead; not real llama.cpp inference.",
+      "samples": [
+        {
+          "state": "visible-idle",
+          "elapsedMs": 10085.5402,
+          "cpuMs": 31.25,
+          "workingSetBytes": 165160960,
+          "privateBytes": 114360729.6,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 64,
+          "userObjects": 68,
+          "wpfModules": [
+            "PresentationFramework.dll",
+            "PresentationCore.dll",
+            "PresentationNative_cor3.dll",
+            "wpfgfx_cor3.dll",
+            "PresentationFramework.Aero2.dll",
+            "PresentationFramework.resources.dll",
+            "PresentationCore.resources.dll",
+            "PresentationFramework-SystemXmlLinq.dll",
+            "PresentationFramework-SystemXml.dll"
+          ],
+          "childWorkingSetBytes": 23592960,
+          "childPrivateBytes": 6467584
+        },
+        {
+          "state": "hidden-idle",
+          "elapsedMs": 10094.0017,
+          "cpuMs": 78.125,
+          "workingSetBytes": 165028249.6,
+          "privateBytes": 112777625.6,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 64,
+          "userObjects": 68,
+          "wpfModules": [
+            "PresentationFramework.dll",
+            "PresentationCore.dll",
+            "PresentationNative_cor3.dll",
+            "wpfgfx_cor3.dll",
+            "PresentationFramework.Aero2.dll",
+            "PresentationFramework.resources.dll",
+            "PresentationCore.resources.dll",
+            "PresentationFramework-SystemXmlLinq.dll",
+            "PresentationFramework-SystemXml.dll"
+          ],
+          "childWorkingSetBytes": 23531520,
+          "childPrivateBytes": 6340608
+        },
+        {
+          "state": "visible-simulated-server",
+          "elapsedMs": 10086.1068,
+          "cpuMs": 93.75,
+          "workingSetBytes": 175989555.2,
+          "privateBytes": 121588940.8,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 64,
+          "userObjects": 68,
+          "wpfModules": [
+            "PresentationFramework.dll",
+            "PresentationCore.dll",
+            "PresentationNative_cor3.dll",
+            "wpfgfx_cor3.dll",
+            "PresentationFramework.Aero2.dll",
+            "PresentationFramework.resources.dll",
+            "PresentationCore.resources.dll",
+            "PresentationFramework-SystemXmlLinq.dll",
+            "PresentationFramework-SystemXml.dll"
+          ],
+          "childWorkingSetBytes": 23531520,
+          "childPrivateBytes": 6340608
+        },
+        {
+          "state": "hidden-simulated-server",
+          "elapsedMs": 10081.1535,
+          "cpuMs": 62.5,
+          "workingSetBytes": 175529574.4,
+          "privateBytes": 120617779.2,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 64,
+          "userObjects": 68,
+          "wpfModules": [
+            "PresentationFramework.dll",
+            "PresentationCore.dll",
+            "PresentationNative_cor3.dll",
+            "wpfgfx_cor3.dll",
+            "PresentationFramework.Aero2.dll",
+            "PresentationFramework.resources.dll",
+            "PresentationCore.resources.dll",
+            "PresentationFramework-SystemXmlLinq.dll",
+            "PresentationFramework-SystemXml.dll"
+          ],
+          "childWorkingSetBytes": 23531520,
+          "childPrivateBytes": 6340608
+        }
+      ]
+    }
+  ],
+  "winforms": [
+    {
+      "runtime": "10.0.12",
+      "window": "1080x860",
+      "sampleSeconds": 10,
+      "warmupSeconds": 5,
+      "inference": "Separate idle child process, no model loaded. Launcher-only telemetry overhead; not real llama.cpp inference.",
+      "samples": [
+        {
+          "state": "visible-idle",
+          "elapsedMs": 10107.9703,
+          "cpuMs": 62.5,
+          "workingSetBytes": 98086502.4,
+          "privateBytes": 37432934.4,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 88,
+          "userObjects": 108,
+          "wpfModules": [],
+          "childWorkingSetBytes": 25812992,
+          "childPrivateBytes": 7503872
+        },
+        {
+          "state": "hidden-idle",
+          "elapsedMs": 10142.3527,
+          "cpuMs": 46.875,
+          "workingSetBytes": 98424422.4,
+          "privateBytes": 37205196.8,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 88,
+          "userObjects": 107,
+          "wpfModules": [],
+          "childWorkingSetBytes": 25751552,
+          "childPrivateBytes": 7376896
+        },
+        {
+          "state": "visible-simulated-server",
+          "elapsedMs": 10072.0983,
+          "cpuMs": 46.875,
+          "workingSetBytes": 107960320,
+          "privateBytes": 43824742.4,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 89,
+          "userObjects": 110,
+          "wpfModules": [],
+          "childWorkingSetBytes": 25751552,
+          "childPrivateBytes": 7376896
+        },
+        {
+          "state": "hidden-simulated-server",
+          "elapsedMs": 10083.9788,
+          "cpuMs": 15.625,
+          "workingSetBytes": 107517952,
+          "privateBytes": 43068620.8,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 89,
+          "userObjects": 107,
+          "wpfModules": [],
+          "childWorkingSetBytes": 25751552,
+          "childPrivateBytes": 7376896
+        }
+      ]
+    },
+    {
+      "runtime": "10.0.12",
+      "window": "1080x860",
+      "sampleSeconds": 10,
+      "warmupSeconds": 5,
+      "inference": "Separate idle child process, no model loaded. Launcher-only telemetry overhead; not real llama.cpp inference.",
+      "samples": [
+        {
+          "state": "visible-idle",
+          "elapsedMs": 10108.7133,
+          "cpuMs": 78.125,
+          "workingSetBytes": 100902912,
+          "privateBytes": 37785600,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 88,
+          "userObjects": 107,
+          "wpfModules": [],
+          "childWorkingSetBytes": 25849856,
+          "childPrivateBytes": 7557120
+        },
+        {
+          "state": "hidden-idle",
+          "elapsedMs": 10126.5854,
+          "cpuMs": 93.75,
+          "workingSetBytes": 100688281.6,
+          "privateBytes": 37431296,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 88,
+          "userObjects": 106,
+          "wpfModules": [],
+          "childWorkingSetBytes": 25788416,
+          "childPrivateBytes": 7430144
+        },
+        {
+          "state": "visible-simulated-server",
+          "elapsedMs": 10127.5404,
+          "cpuMs": 125,
+          "workingSetBytes": 109156761.6,
+          "privateBytes": 44143001.6,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 90,
+          "userObjects": 108,
+          "wpfModules": [],
+          "childWorkingSetBytes": 25788416,
+          "childPrivateBytes": 7430144
+        },
+        {
+          "state": "hidden-simulated-server",
+          "elapsedMs": 10115.9971,
+          "cpuMs": 62.5,
+          "workingSetBytes": 108607488,
+          "privateBytes": 43215667.2,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 90,
+          "userObjects": 106,
+          "wpfModules": [],
+          "childWorkingSetBytes": 25788416,
+          "childPrivateBytes": 7430144
+        }
+      ]
+    },
+    {
+      "runtime": "10.0.12",
+      "window": "1080x860",
+      "sampleSeconds": 10,
+      "warmupSeconds": 5,
+      "inference": "Separate idle child process, no model loaded. Launcher-only telemetry overhead; not real llama.cpp inference.",
+      "samples": [
+        {
+          "state": "visible-idle",
+          "elapsedMs": 10148.4491,
+          "cpuMs": 78.125,
+          "workingSetBytes": 97966080,
+          "privateBytes": 37210112,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 88,
+          "userObjects": 107,
+          "wpfModules": [],
+          "childWorkingSetBytes": 25841664,
+          "childPrivateBytes": 7610368
+        },
+        {
+          "state": "hidden-idle",
+          "elapsedMs": 10123.4827,
+          "cpuMs": 62.5,
+          "workingSetBytes": 98285977.6,
+          "privateBytes": 37117132.8,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 88,
+          "userObjects": 106,
+          "wpfModules": [],
+          "childWorkingSetBytes": 25780224,
+          "childPrivateBytes": 7483392
+        },
+        {
+          "state": "visible-simulated-server",
+          "elapsedMs": 10091.1615,
+          "cpuMs": 31.25,
+          "workingSetBytes": 107937792,
+          "privateBytes": 43880038.4,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 90,
+          "userObjects": 108,
+          "wpfModules": [],
+          "childWorkingSetBytes": 25780224,
+          "childPrivateBytes": 7483392
+        },
+        {
+          "state": "hidden-simulated-server",
+          "elapsedMs": 10121.3668,
+          "cpuMs": 46.875,
+          "workingSetBytes": 107551129.6,
+          "privateBytes": 43216486.4,
+          "ioReadBytes": 0,
+          "ioWriteBytes": 0,
+          "ioReadOperations": 0,
+          "ioWriteOperations": 0,
+          "gdiObjects": 90,
+          "userObjects": 106,
+          "wpfModules": [],
+          "childWorkingSetBytes": 25780224,
+          "childPrivateBytes": 7483392
+        }
+      ]
+    }
+  ],
+  "graphics": {
+    "baseline": [
+      {
+        "DedicatedGpuBytes": 20373504,
+        "SharedGpuBytes": 3624960,
+        "environment": "Private, inactive Windows desktop. Null means no matching WDDM counter; it does not mean zero usage."
+      },
+      {
+        "DedicatedGpuBytes": 20377600,
+        "SharedGpuBytes": 3624960,
+        "environment": "Private, inactive Windows desktop. Null means no matching WDDM counter; it does not mean zero usage."
+      }
+    ],
+    "native": [
+      {
+        "DedicatedGpuBytes": 0,
+        "SharedGpuBytes": 0,
+        "environment": "Private, inactive Windows desktop. Null means no matching WDDM counter; it does not mean zero usage."
+      },
+      {
+        "DedicatedGpuBytes": 0,
+        "SharedGpuBytes": 0,
+        "environment": "Private, inactive Windows desktop. Null means no matching WDDM counter; it does not mean zero usage."
+      }
+    ]
+  },
+  "packageBytes": {
+    "baselineSelfContained": 87657076,
+    "baselineFrameworkDependent": 1136285,
+    "winformsFrameworkDependent": 988829
+  },
+  "releaseSha256": "621875aa5589b021d86fdc9f4b8bce1036a38c7a563b3e630aa3fe7075639483"
+}
