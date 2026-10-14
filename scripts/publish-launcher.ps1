@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [ValidatePattern('^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$')]
-    [string]$Version = '0.2.0-preview.2',
+    [string]$Version = '0.2.0-preview.3',
     [string]$DotnetPath = 'dotnet',
     [string]$PythonPath = 'python'
 )
@@ -55,48 +55,23 @@ $null = New-Item -ItemType Directory -Path $distributionPath -Force
 $null = New-Item -ItemType Directory -Path $publishPath
 
 try {
-    & $DotnetPath restore $projectPath -r win-x64 -p:SelfContained=true -p:PublishSingleFile=true
+    & $DotnetPath restore $projectPath -r win-x64 -p:SelfContained=false -p:PublishSingleFile=true
     if ($LASTEXITCODE -ne 0) { throw "dotnet restore failed with exit code $LASTEXITCODE." }
 
-    # Bundle notices from the exact runtime packages selected for this publish.
-    $packArguments = @(
-        'msbuild', $projectPath, '-nologo', '-target:ResolveFrameworkReferences',
-        '-getItem:ResolvedRuntimePack', '-property:RuntimeIdentifier=win-x64',
-        '-property:SelfContained=true', '-property:Configuration=Release'
-    )
-    $packOutput = & $DotnetPath @packArguments
-    if ($LASTEXITCODE -ne 0) { throw 'Could not locate the runtime license packages.' }
-    $packResult = ($packOutput -join [Environment]::NewLine) | ConvertFrom-Json
-    $runtimePacks = @($packResult.Items.ResolvedRuntimePack)
-    foreach ($requiredPack in @('Microsoft.NETCore.App.Runtime.win-x64', 'Microsoft.WindowsDesktop.App.Runtime.win-x64', 'Microsoft.AspNetCore.App.Runtime.win-x64')) {
-        if ($requiredPack -notin $runtimePacks.Identity) { throw "Runtime package is missing: $requiredPack" }
-    }
+    # Framework-dependent: installed .NET owns runtime files and their notices.
     $notices = [Text.StringBuilder]::new()
     foreach ($sourceName in @('LICENSE', 'THIRD-PARTY-NOTICES.md')) {
         $null = $notices.AppendLine("[Launcher/$sourceName]")
         $null = $notices.AppendLine([IO.File]::ReadAllText((Get-WorkspacePath $sourceName)))
         $null = $notices.AppendLine()
     }
-    foreach ($runtimePack in ($runtimePacks | Sort-Object Identity)) {
-        $noticeFiles = @(Get-ChildItem -LiteralPath $runtimePack.PackageDirectory -File |
-            Where-Object { $_.Name -match '^(LICENSE|THIRD[-_]?PARTY[-_]?NOTICES)(\.(TXT|MD))?$' } |
-            Sort-Object Name)
-        if (@($noticeFiles | Where-Object { $_.Name -match '^LICENSE(\.(TXT|MD))?$' }).Count -eq 0) {
-            throw "Runtime license is missing: $($runtimePack.Identity)"
-        }
-        foreach ($noticeFile in $noticeFiles) {
-            $null = $notices.AppendLine("[$($runtimePack.Identity)/$($noticeFile.Name)]")
-            $null = $notices.AppendLine([IO.File]::ReadAllText($noticeFile.FullName))
-            $null = $notices.AppendLine()
-        }
-    }
     [IO.File]::WriteAllText($noticesPath, $notices.ToString(), [Text.UTF8Encoding]::new($false))
 
     $publishArguments = @(
-        'publish', $projectPath, '-c', 'Release', '-r', 'win-x64', '--self-contained', 'true',
+        'publish', $projectPath, '-c', 'Release', '-r', 'win-x64', '--self-contained', 'false',
         '--no-restore', '--output', $publishPath,
-        '-p:PublishSingleFile=true', '-p:IncludeNativeLibrariesForSelfExtract=true',
-        '-p:EnableCompressionInSingleFile=true', '-p:PublishTrimmed=false',
+        '-p:PublishSingleFile=true', '-p:IncludeNativeLibrariesForSelfExtract=false',
+        '-p:EnableCompressionInSingleFile=false', '-p:PublishTrimmed=false',
         '-p:DebugType=None', '-p:DebugSymbols=false',
         "-p:LauncherNoticesFile=$noticesPath", "-p:Version=$Version"
     )

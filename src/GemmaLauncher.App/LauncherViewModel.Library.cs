@@ -173,7 +173,7 @@ public sealed partial class LauncherViewModel
             _settings.SelectedModelId = previousId;
             if (!wasRegistered) _settings.LibraryModelIds.Remove(model.Id);
             Note(T("ui.note.saveFailed", ex.Message));
-            // Restore the bound selector if WPF already displayed the rejected candidate.
+            // Restore the bound selector if it already displayed the rejected candidate.
             OnPropertyChanged(nameof(SelectedModel));
             return false;
         }
@@ -283,8 +283,8 @@ public sealed partial class LauncherViewModel
 
     private void ImportGlossary()
     {
-        var picker = new Microsoft.Win32.OpenFileDialog { Filter = "CSV / TSV (*.csv;*.tsv)|*.csv;*.tsv", CheckFileExists = true };
-        if (picker.ShowDialog() != true) return;
+        using var picker = new System.Windows.Forms.OpenFileDialog { Filter = "CSV / TSV (*.csv;*.tsv)|*.csv;*.tsv", CheckFileExists = true };
+        if (picker.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
         try
         {
             if (new FileInfo(picker.FileName).Length > 4_000_000) throw new InvalidDataException(T("engine.library.invalidPreset"));
@@ -369,18 +369,19 @@ public sealed partial class LauncherViewModel
 
     private void ChooseMtp()
     {
-        var picker = new Microsoft.Win32.OpenFileDialog { Title = T("ui.library.connectMtp"), Filter = T("ui.picker.ggufFilter"), CheckFileExists = true };
-        if (picker.ShowDialog() != true || !CanSelectModel) return;
+        using var picker = new System.Windows.Forms.OpenFileDialog { Title = T("ui.library.connectMtp"), Filter = T("ui.picker.ggufFilter"), CheckFileExists = true };
+        if (picker.ShowDialog() != System.Windows.Forms.DialogResult.OK || !CanSelectModel) return;
+        var mtpPath = picker.FileName;
         BeginOperation(async token =>
         {
             var model = SelectedModel!;
             var mainOnly = model with { Artifacts = [model.Artifacts.Single(a => a.Role == "model")], Profile = model.Profile with { MtpDraftMax = 0 } };
             var installed = await _installer.FindAsync(mainOnly, token) ?? throw new FileNotFoundException(T("engine.library.mainFirst"));
             _progressMessage = T("ui.library.inspecting"); Refresh();
-            var artifact = await ModelImportService.ImportMtpAsync(installed.ModelPath, picker.FileName, token);
+            var artifact = await ModelImportService.ImportMtpAsync(installed.ModelPath, mtpPath, token);
             var previous = _settings.MtpFiles.GetValueOrDefault(model.Id);
             var hadPath = _settings.ModelFiles.TryGetValue(artifact.Sha256, out var oldPath);
-            _settings.MtpFiles[model.Id] = artifact; _settings.ModelFiles[artifact.Sha256] = Path.GetFullPath(picker.FileName);
+            _settings.MtpFiles[model.Id] = artifact; _settings.ModelFiles[artifact.Sha256] = Path.GetFullPath(mtpPath);
             try { _store.Save(_settings); }
             catch { if (previous is null) _settings.MtpFiles.Remove(model.Id); else _settings.MtpFiles[model.Id] = previous; if (hadPath) _settings.ModelFiles[artifact.Sha256] = oldPath!; else _settings.ModelFiles.Remove(artifact.Sha256); throw; }
             await ScanSelectedAsync(model); Note(T("ui.library.added"));

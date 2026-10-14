@@ -7,11 +7,13 @@ One Windows EXE, an extensible model library, and reusable prompts and glossarie
 ## Getting started
 
 1. Download the Windows x64 EXE from [Releases](https://github.com/motionsilse/GemmaLauncher/releases).
-2. Run it directly. No ZIP extraction, companion folder or separate .NET installation is needed.
+2. Install the **.NET 10 Desktop Runtime (x64)** and **ASP.NET Core Runtime 10 (x64)**, then run the EXE. The .NET 10 SDK also includes both. .NET 8 alone is insufficient. No ZIP extraction or companion folder is needed.
 3. In **Models**, compare the options and choose **Select this model**. In **Run**, review the settings and choose **Download and start**, or **Start server** if the files are ready.
 4. Choose **Open Web UI**, or connect another app using the API address and model name shown in **Run**.
 
 The first download needs internet access and sufficient disk space. Keep your graphics card's Vulkan driver current. If Microsoft Visual C++ x64 runtime components are missing, the launcher links to Microsoft's installer; that installer may require administrator approval.
+
+Runtime installers: [Microsoft .NET downloads](https://dotnet.microsoft.com/en-us/download/dotnet/10.0). Choose both Windows x64 runtimes; the Desktop installer includes the base .NET runtime. See [Microsoft's installation guide](https://learn.microsoft.com/en-us/dotnet/core/install/windows#choose-the-correct-runtime).
 
 Selecting or adding a model saves it in **My models** and opens **Run**. Both screens use the same registered models, including those awaiting download. File status shows what is ready or needs attention. Browsing other variants keeps the execution selection unchanged; downloads and running servers retain their cancel or stop control across tabs.
 
@@ -71,7 +73,9 @@ python -m unittest discover -s tests/scripts
 powershell -ExecutionPolicy Bypass -File scripts/publish-launcher.ps1
 ```
 
-The publish script checks the catalog and 17 locales, builds a self-contained single EXE under `dist`, bundles runtime notices, and verifies the exact package in an otherwise empty directory. Registrations live in `config/launcher-models.json`; regenerate after editing registrations or English model copy with `python scripts/create-product-catalog.py`.
+The publish script checks the catalog and 17 locales, builds a framework-dependent single EXE under `dist`, bundles launcher notices, and verifies the exact package and HTTP gateway in an otherwise empty directory using the installed .NET 10 runtimes. The UI uses WinForms; it does not reference WPF. Server memory telemetry runs only while Run is visible (not minimized or hidden in the tray). Registrations live in `config/launcher-models.json`; regenerate after editing registrations or English model copy with `python scripts/create-product-catalog.py`.
+
+To run the UI harness without showing test windows on your desktop, use `pwsh -File scripts/run-isolated-ui-tests.ps1 -Executable tests/GemmaLauncher.UiTests/bin/Release/net10.0-windows/GemmaLauncher.UiTests.exe`. It creates a private Windows desktop and temporary model settings. It does not start the production launcher, acquire its instance mutex or run real inference.
 
 Use `--data-dir "D:\GemmaLauncherData" --model-folder "D:\Models"` for custom data locations, or `--licenses` for embedded notices. Source uses the [MIT license](LICENSE): free use, modification and redistribution, including commercial use, with copyright and license attribution retained. Models and dependencies have their own [terms and notices](THIRD-PARTY-NOTICES.md).
 
@@ -86,7 +90,7 @@ Windows EXE 하나로 시작하고, 원하는 모델을 추가하고, 저장한 
 ## 시작하기
 
 1. [Releases](https://github.com/motionsilse/GemmaLauncher/releases)에서 Windows x64 EXE를 내려받습니다.
-2. EXE를 바로 실행합니다. 압축 해제, 별도 폴더나 .NET 설치가 필요하지 않습니다.
+2. **.NET 10 Desktop Runtime(x64)**과 **ASP.NET Core Runtime 10(x64)**을 설치한 뒤 EXE를 실행합니다. .NET 10 SDK에도 둘 다 포함됩니다. .NET 8만 설치되어 있으면 실행할 수 없습니다. 압축 해제나 별도 폴더는 필요하지 않습니다.
 3. **모델**에서 용도와 크기를 비교하고 **이 모델 선택**을 누릅니다. **실행** 화면에서 설정을 확인한 뒤 **다운로드하고 시작**, 파일이 준비되어 있다면 **서버 켜기**를 누르세요.
 4. **Web UI 열기**로 대화하거나, **실행** 화면의 API 주소와 모델 이름을 다른 앱에 입력하세요.
 
@@ -140,6 +144,6 @@ Windows 표시 언어를 자동으로 사용하고 지원하지 않는 언어는
 
 ## 소스와 이용 조건
 
-Windows, .NET 10 SDK와 Python 3에서 위의 빌드 명령을 실행합니다. 배포 스크립트는 모델 목록과 17개 언어를 검사하고 `dist`에 단일 EXE와 SHA-256 파일을 만듭니다. EXE에는 .NET 실행 환경과 라이선스 고지가 포함되며 다른 파일이 없는 폴더에서 패키지를 검증합니다. 모델 등록 정보는 `config/launcher-models.json`에 있습니다.
+Windows, .NET 10 SDK와 Python 3에서 위의 빌드 명령을 실행합니다. 배포 스크립트는 모델 목록과 17개 언어를 검사하고 `dist`에 단일 EXE와 SHA-256 파일을 만듭니다. 시스템 .NET 10을 사용하며 런타임은 번들하지 않습니다. 런처 라이선스 고지를 포함하고 다른 파일이 없는 폴더에서 패키지와 HTTP 중계를 검증합니다. 화면은 WPF 의존성이 없는 WinForms를 사용하고, 서버 메모리 조회는 실행 화면이 보일 때만 동작합니다. 모델 등록 정보는 `config/launcher-models.json`에 있습니다.
 
 `--data-dir "D:\GemmaLauncherData" --model-folder "D:\Models"`로 저장 위치를 지정하고 `--licenses`로 내장 고지를 엽니다. 런처 소스는 [MIT 라이선스](LICENSE)로 상업적 이용을 포함해 자유롭게 사용·수정·재배포할 수 있습니다. 원래 저작권 표시와 라이선스 문구는 유지해야 합니다. 모델과 구성 요소에는 각각의 [별도 이용 조건](THIRD-PARTY-NOTICES.md)이 적용됩니다.

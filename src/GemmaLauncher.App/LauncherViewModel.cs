@@ -30,7 +30,13 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
     private bool _rebuildingChoices;
     private bool _deferSettingsSave;
     private bool _settingsSavePending;
-    private readonly System.Windows.Threading.DispatcherTimer _memoryTimer = new() { Interval = TimeSpan.FromSeconds(2) };
+    private readonly System.Windows.Forms.Timer _memoryTimer = new() { Interval = 2000 };
+    private readonly SynchronizationContext _uiContext = SynchronizationContext.Current ?? new System.Windows.Forms.WindowsFormsSynchronizationContext();
+    private readonly int _uiThread = Environment.CurrentManagedThreadId;
+    private bool _metricsVisible;
+    private ProcessMetrics? _metrics;
+    private int? _metricsPid;
+    private Task? _memoryRead;
     private bool _readingMemory;
     private string? _memoryUsage;
     private long? _privateRamBytes;
@@ -136,7 +142,7 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
         _session.StatusChanged += OnSessionStatus;
         PrimaryCommand = Command(_ => Primary(), _ => !_scanning && _session.Status.State != ServerState.Stopping && !_isDisposed && (HasSelectedModel || _busy || CanOpenWebUi));
         RestartCommand = Command(_ => BeginOperation(RestartAsync), _ => HasPendingContext && !_busy);
-        CopyApiCommand = Command(_ => { try { System.Windows.Clipboard.SetText(ApiAddress); Note(T("ui.note.copied")); } catch (Exception ex) { Note(T("ui.note.copyFailed", ex.Message)); } });
+        CopyApiCommand = Command(_ => { try { System.Windows.Forms.Clipboard.SetText(ApiAddress); Note(T("ui.note.copied")); } catch (Exception ex) { Note(T("ui.note.copyFailed", ex.Message)); } });
         OpenWebUiCommand = Command(_ => OpenLink("http://127.0.0.1:8080/"), _ => CanOpenWebUi);
         ManageModelsCommand = Command(_ => { PageIndex = 1; ModelPageIndex = 0; });
         SelectModelCommand = Command(value => { if (value is ModelDefinition model) SelectedModel = model; }, _ => CanSelectModel);
@@ -152,14 +158,12 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
         var savedModel = LibraryModels.FirstOrDefault(card => card.Definition.Id == settings.SelectedModelId) ?? LibraryModels.FirstOrDefault();
         if (savedModel is not null) { if (!TrySelectModel(savedModel.Definition)) PageIndex = 1; }
         else { PageIndex = 1; SaveSettings(); }
-        _memoryTimer.Tick += async (_, _) => await ReadMemoryAsync();
-        _memoryTimer.Start();
+        _memoryTimer.Tick += (_, _) => QueueMemoryRead();
     }
 
     private void OnLanguageChanged(object? sender, EventArgs args)
     {
-        var dispatcher = System.Windows.Application.Current?.Dispatcher;
-        if (dispatcher is not null && !dispatcher.CheckAccess()) { dispatcher.BeginInvoke(() => OnLanguageChanged(sender, args)); return; }
+        if (Environment.CurrentManagedThreadId != _uiThread) { _uiContext.Post(_ => OnLanguageChanged(sender, args), null); return; }
         if (_isDisposed) return;
         _settings.LanguagePreference = Core.Localization.Current.Selection;
         SaveSettings();
@@ -297,23 +301,66 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
 
     private void OnSessionStatus(object? sender, SessionStatus status)
     {
-        var dispatcher = System.Windows.Application.Current.Dispatcher;
-        if (!dispatcher.CheckAccess()) { dispatcher.BeginInvoke(() => OnSessionStatus(sender, status)); return; }
+        if (Environment.CurrentManagedThreadId != _uiThread) { _uiContext.Post(_ => OnSessionStatus(sender, status), null); return; }
         if (_isDisposed) return;
         if (status.State == ServerState.Faulted) _error = status.Message;
         if (status.State is ServerState.Starting or ServerState.Stopping) _progressMessage = status.Message;
-        if (status.State != ServerState.Running) _memoryUsage = null;
+        if (status.State != ServerState.Running) { _memoryUsage = null; _privateRamBytes = null; }
         Refresh();
-        if (status.State == ServerState.Running) _ = ReadMemoryAsync();
+        UpdateMetricsActivity();
     }
+
+    public bool IsTelemetryActive => _memoryTimer.Enabled;
+
+    public void SetMetricsVisible(bool visible)
+    {
+        if (_isDisposed || _metricsVisible == visible) return;
+        _metricsVisible = visible;
+        UpdateMetricsActivity();
+    }
+
+    private void UpdateMetricsActivity()
+    {
+        if (!_isDisposed && _metricsVisible && CanOpenWebUi)
+        {
+            _memoryTimer.Start();
+            QueueMemoryRead();
+        }
+        else
+        {
+            _memoryTimer.Stop();
+            _ = ReleaseInactiveMetricsAsync();
+        }
+    }
+
+    private void QueueMemoryRead()
+    {
+        if (!_readingMemory) _memoryRead = ReadMemoryAsync();
+    }
+
+    private async Task ReleaseInactiveMetricsAsync()
+    {
+        if (_memoryRead is { } read) await read;
+        if (!_metricsVisible || !CanOpenWebUi || _isDisposed) ReleaseMetrics();
+    }
+
+    private void ReleaseMetrics()
+    {
+        _metrics?.Dispose(); _metrics = null; _metricsPid = null;
+    }
+
     private async Task ReadMemoryAsync()
     {
-        if (_readingMemory || _isDisposed || !CanOpenWebUi || _session.Status.ProcessId is not int pid) return;
+        if (_readingMemory || !_metricsVisible || _isDisposed || !CanOpenWebUi || _session.Status.ProcessId is not int pid) return;
         _readingMemory = true;
         try
         {
-            var sample = await Task.Run(() => { using var metrics = new ProcessMetrics(pid); return metrics.Read(); });
-            if (!_isDisposed && CanOpenWebUi && _session.Status.ProcessId == pid)
+            var sample = await Task.Run(() =>
+            {
+                if (_metricsPid != pid) { ReleaseMetrics(); _metrics = new ProcessMetrics(pid); _metricsPid = pid; }
+                return _metrics!.Read();
+            });
+            if (!_isDisposed && _metricsVisible && CanOpenWebUi && _session.Status.ProcessId == pid)
             {
                 _memoryUsage = $"RAM {sample.WorkingSetBytes / 1_000_000_000d:0.0} GB";
                 if (sample.DedicatedGpuBytes is long gpu) _memoryUsage += $" · VRAM {gpu / 1_000_000_000d:0.0} GB";
@@ -346,12 +393,12 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
     }
     private void ChooseModelFile()
     {
-        var picker = new Microsoft.Win32.OpenFileDialog
+        using var picker = new System.Windows.Forms.OpenFileDialog
         {
             Title = T("ui.picker.gguf"), Filter = T("ui.picker.ggufFilter"),
             DefaultExt = ".gguf", CheckFileExists = true, Multiselect = false
         };
-        if (picker.ShowDialog() != true || !CanSelectModel) return;
+        if (picker.ShowDialog() != System.Windows.Forms.DialogResult.OK || !CanSelectModel) return;
         _ = ConnectModelFileAsync(picker.FileName);
     }
 
@@ -423,9 +470,9 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
 
     private void ChooseModelFolder()
     {
-        var picker = new Microsoft.Win32.OpenFolderDialog { Title = T("ui.picker.modelFolder") };
-        if (picker.ShowDialog() != true || !CanSelectModel) return;
-        if (!_settings.ModelFolders.Contains(picker.FolderName, StringComparer.OrdinalIgnoreCase)) _settings.ModelFolders.Add(picker.FolderName);
+        using var picker = new System.Windows.Forms.FolderBrowserDialog { Description = T("ui.picker.modelFolder"), UseDescriptionForTitle = true };
+        if (picker.ShowDialog() != System.Windows.Forms.DialogResult.OK || !CanSelectModel) return;
+        if (!_settings.ModelFolders.Contains(picker.SelectedPath, StringComparer.OrdinalIgnoreCase)) _settings.ModelFolders.Add(picker.SelectedPath);
         SaveSettings();
         _scan = ReplaceInstallerAndScanAsync();
         Note(T("ui.note.folderConnected"));
@@ -460,8 +507,8 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
     }
     private void ImportCatalog()
     {
-        var picker = new Microsoft.Win32.OpenFileDialog { Title = T("ui.picker.catalog"), Filter = T("ui.picker.catalogFilter") };
-        if (picker.ShowDialog() != true || !CanSelectModel) return;
+        using var picker = new System.Windows.Forms.OpenFileDialog { Title = T("ui.picker.catalog"), Filter = T("ui.picker.catalogFilter") };
+        if (picker.ShowDialog() != System.Windows.Forms.DialogResult.OK || !CanSelectModel) return;
         try
         {
             var extra = CatalogLoader.Load(picker.FileName);
@@ -486,6 +533,9 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
         if (_isDisposed) return;
         _isDisposed = true;
         _memoryTimer.Stop();
+        _memoryTimer.Dispose();
+        if (_memoryRead is { } read) await read;
+        ReleaseMetrics();
         Core.Localization.Current.LanguageChanged -= OnLanguageChanged;
         _scanCancellation?.Cancel(); _operationCancellation?.Cancel();
         if (_operation is not null) await _operation;
