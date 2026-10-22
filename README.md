@@ -6,7 +6,7 @@ One Windows EXE, an extensible model library, and reusable prompts and glossarie
 
 ## Getting started
 
-1. Download the Windows x64 EXE from [Releases](https://github.com/motionsilse/GemmaLauncher/releases).
+1. Download the Windows x64 EXE from the [latest stable release](https://github.com/motionsilse/GemmaLauncher/releases/latest).
 2. Install the **.NET 10 Desktop Runtime (x64)** and **ASP.NET Core Runtime 10 (x64)**, then run the EXE. The .NET 10 SDK also includes both. .NET 8 alone is insufficient. No ZIP extraction or companion folder is needed.
 3. In **Models**, compare the options and choose **Select this model**. In **Run**, review the settings and choose **Download and start**, or **Start server** if the files are ready.
 4. Choose **Open Web UI**, or connect another app using the API address and model name shown in **Run**.
@@ -89,7 +89,7 @@ Windows EXE 하나로 시작하고, 원하는 모델을 추가하고, 저장한 
 
 ## 시작하기
 
-1. [Releases](https://github.com/motionsilse/GemmaLauncher/releases)에서 Windows x64 EXE를 내려받습니다.
+1. [최신 정식 릴리즈](https://github.com/motionsilse/GemmaLauncher/releases/latest)에서 Windows x64 EXE를 내려받습니다.
 2. **.NET 10 Desktop Runtime(x64)**과 **ASP.NET Core Runtime 10(x64)**을 설치한 뒤 EXE를 실행합니다. .NET 10 SDK에도 둘 다 포함됩니다. .NET 8만 설치되어 있으면 실행할 수 없습니다. 압축 해제나 별도 폴더는 필요하지 않습니다.
 3. **모델**에서 용도와 크기를 비교하고 **이 모델 선택**을 누릅니다. **실행** 화면에서 설정을 확인한 뒤 **다운로드하고 시작**, 파일이 준비되어 있다면 **서버 켜기**를 누르세요.
 4. **Web UI 열기**로 대화하거나, **실행** 화면의 API 주소와 모델 이름을 다른 앱에 입력하세요.
