@@ -5,7 +5,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <AssemblyName>GemmaLauncher</AssemblyName>
-    <Version>0.2.0-preview.3</Version>
+    <Version>0.2.0</Version>
     <StartupObject>GemmaLauncher.App.Program</StartupObject>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets/launcher.ico</ApplicationIcon>
