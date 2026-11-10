@@ -30,6 +30,7 @@ public sealed class LauncherDialog : Form
         var stop = Ui.Button(); stop.Name = "DialogSessionAction"; _bindings.Text(stop, () => vm.PrimaryLabel); _bindings.Command(stop, vm.PrimaryCommand); running.Controls.Add(stop, 1, 0);
         _bindings.Visible(running, () => vm.IsBusy || vm.IsServerRunning);
         root.Controls.Add(running, 0, 0); root.Controls.Add(Content, 0, 1); root.Controls.Add(Actions, 0, 2); Controls.Add(root); _bindings.Start();
+        if (vm.BackgroundOperationsFactory is not null) { running.Visible = false; root.Controls.Remove(running); running.Dispose(); root.Controls.Add(vm.BackgroundOperationsFactory(), 0, 0); }
     }
     public Button AddAction(string text, DialogResult result, bool primary = false)
     {

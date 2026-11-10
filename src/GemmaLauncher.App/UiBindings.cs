@@ -7,7 +7,7 @@ using static GemmaLauncher.Core.Localization;
 namespace GemmaLauncher.App;
 
 // Explicit bindings keep native controls small and make rejected selections reversible.
-internal sealed class UiBindings(Control owner, LauncherViewModel viewModel) : IDisposable
+internal sealed class UiBindings(Control owner, INotifyPropertyChanged viewModel) : IDisposable
 {
     private readonly List<Action> _updates = [];
     private Action? _memoryUpdate;
@@ -39,10 +39,10 @@ internal sealed class UiBindings(Control owner, LauncherViewModel viewModel) : I
     }
     public void Watch(Action update) => _updates.Add(update);
     public void Text(Control control, Func<string> value) => Watch(() => { var text = value(); if (control.Text != text) control.Text = text; });
-    public void MemoryText(Control control, Func<string>? format = null)
+    public void MemoryText(Control control, Func<string> format)
     {
-        _memoryUpdate += () => { var text = format?.Invoke() ?? viewModel.MemoryUsage; if (control.Text != text) control.Text = text; };
-        Text(control, () => format?.Invoke() ?? viewModel.MemoryUsage);
+        _memoryUpdate += () => { var text = format(); if (control.Text != text) control.Text = text; };
+        Text(control, format);
     }
     public void Localize(Control control, string key)
     {
@@ -95,7 +95,7 @@ internal sealed class UiBindings(Control owner, LauncherViewModel viewModel) : I
             if (!_refreshing && combo.SelectedItem is T value) { select(value); RequestRefresh(); }
         };
     }
-    public void Models(ModelChoiceList list)
+    public void Models(ModelChoiceList list, LauncherViewModel viewModel)
     {
         Watch(() =>
         {

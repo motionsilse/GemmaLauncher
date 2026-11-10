@@ -20,6 +20,8 @@ public sealed record LauncherSettings
     public string AnisDirection { get; set; } = "auto";
     public string AnisDevice { get; set; } = "auto";
     public bool CloseToTray { get; set; } = true;
+    public string ActiveFeature { get; set; } = "local";
+    public bool IntegrationNoticeShown { get; set; }
 }
 
 public sealed class SettingsStore(LauncherPaths paths)

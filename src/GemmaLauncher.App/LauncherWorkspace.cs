@@ -17,7 +17,7 @@ public sealed class LauncherWorkspace : LauncherPage
         catalog.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         catalog.RowStyles.Add(new RowStyle(SizeType.AutoSize)); catalog.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); catalog.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         var label = Ui.Label(); Bindings.Localize(label, "ui.model.choose"); Ui.SetFont(label, 12, FontStyle.Bold); label.Margin = new Padding(16, 12, 8, 16); catalog.Controls.Add(label, 0, 0);
-        var models = new ModelChoiceList(); Bindings.Models(models); Bindings.Enabled(models, () => vm.CanSelectModel);
+        var models = new ModelChoiceList(); Bindings.Models(models, vm); Bindings.Enabled(models, () => vm.CanSelectModel);
         catalog.Controls.Add(models, 0, 1); columns.Controls.Add(catalog, 0, 0);
         var add = Ui.Button(); Bindings.Localize(add, "ui.files.add"); Bindings.Command(add, vm.AddModelCommand); add.Margin = new Padding(12, 10, 12, 6); add.Anchor = AnchorStyles.Left; catalog.Controls.Add(add, 0, 2);
         var details = Ui.Stack(); columns.Controls.Add(Ui.Scroll(details), 1, 0);

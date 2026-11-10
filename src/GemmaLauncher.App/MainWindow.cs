@@ -14,6 +14,7 @@ public sealed class MainWindow : Form
     private int _shownPage = -1;
     private readonly Panel _secondaryOperationHost = new() { Dock = DockStyle.Top, AutoSize = true, Margin = Padding.Empty };
     private readonly RunOperationPanel _operationPanel;
+    private Panel? _externalOperationHost;
     private readonly uint _activateMessage;
     private readonly uint _legacyActivateMessage;
     private readonly Func<PresetEditDecision>? _previousPresetResolver;
@@ -24,7 +25,7 @@ public sealed class MainWindow : Form
     public event EventHandler? ExitRequested;
     public int CreatedPageCount => _pages.Count(page => page is not null);
 
-    public MainWindow(LauncherViewModel viewModel, uint activateMessage = 0, uint legacyActivateMessage = 0)
+    public MainWindow(LauncherViewModel viewModel, uint activateMessage = 0, uint legacyActivateMessage = 0, bool embedded = false)
     {
         _activateMessage = activateMessage; _legacyActivateMessage = legacyActivateMessage;
         _viewModel = viewModel; _bindings = new(this, viewModel); _operationPanel = new(viewModel, CommitEditors);
@@ -36,10 +37,10 @@ public sealed class MainWindow : Form
         viewModel.RequestAnisAccess ??= token => LauncherDialogs.AnisAccess(viewModel, this, token);
         AutoScaleMode = AutoScaleMode.Dpi; AutoScaleDimensions = new SizeF(96, 96);
         Font = _uiFont; BackColor = Ui.Paper; ForeColor = Ui.Ink;
-        Size = new Size(1040, 840); MinimumSize = new Size(720, 560);
+        Size = new Size(1040, 840); MinimumSize = embedded ? Size.Empty : new Size(720, 560);
         StartPosition = FormStartPosition.CenterScreen;
         Icon = Icon.ExtractAssociatedIcon(Environment.ProcessPath!);
-        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, Padding = new Padding(24, 18, 24, 12) };
+        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, Padding = embedded ? new Padding(0, 8, 0, 0) : new Padding(24, 18, 24, 12) };
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize)); root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize)); root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
@@ -50,13 +51,14 @@ public sealed class MainWindow : Form
         back.Click += (_, _) => { CommitEditors(); viewModel.PageIndex = 0; };
         _bindings.Visible(back, () => viewModel.PageIndex != 0); brand.Controls.Add(back);
         var title = Ui.Label(); Ui.SetFont(title, 19, FontStyle.Bold); title.Margin = new Padding(0, 2, 16, 4);
-        _bindings.Text(title, () => viewModel.PageIndex switch { 1 => T("ui.files.add"), 2 => T("ui.library.presets"), _ => T("ui.app.title") });
+        _bindings.Text(title, () => viewModel.PageIndex switch { 1 => T("ui.files.add"), 2 => T("ui.library.presets"), _ => T(embedded ? "ui.loader.local" : "ui.app.title") });
         brand.Controls.Add(title); header.Controls.Add(brand, 0, 0);
         var settings = Ui.Button(); settings.Name = "AppSettings"; _bindings.Localize(settings, "ui.settings.title");
         settings.Click += (_, _) => { using var dialog = CreateSettingsDialog(); dialog.ShowDialog(this); };
         header.Controls.Add(settings, 1, 0); root.Controls.Add(header, 0, 0);
+        if (embedded) settings.Visible = false;
         _bindings.Watch(ShowPage); root.Controls.Add(_workspace, 0, 1);
-        _bindings.Visible(_secondaryOperationHost, () => (viewModel.PageIndex != 0 || UseCompactLayout) && viewModel.ShowOperation);
+        _bindings.Visible(_secondaryOperationHost, () => _externalOperationHost is null && (viewModel.PageIndex != 0 || UseCompactLayout) && viewModel.ShowOperation);
         root.Controls.Add(_secondaryOperationHost, 0, 2);
         var footer = Ui.Label(); footer.ForeColor = Ui.Muted; Ui.SetFont(footer, 8.5f); footer.Margin = new Padding(0, 10, 0, 0);
         _bindings.Text(footer, () => viewModel.StatusNote + (viewModel.StatusNote.Length > 0 ? "\n" : "") + "by Drugged Cat   ·   " + T(viewModel.IsServerRunning && viewModel.CloseToTray ? "ui.footer.background" : "ui.connection.localOnly"));
@@ -86,15 +88,16 @@ public sealed class MainWindow : Form
         _shownPage = index; PlaceOperationPanel(); _pages[index]!.Visible = true; _pages[index]!.BringToFront(); UpdateTelemetry();
     }
     private bool UseCompactLayout => ClientSize.Width * 96f / DeviceDpi < 900 || ClientSize.Height * 96f / DeviceDpi < 650;
+    public void AttachOperationPanel(Panel host) { _externalOperationHost = host; PlaceOperationPanel(); _bindings.RequestRefresh(); }
     private void PlaceOperationPanel()
     {
         if (_shownPage < 0) return;
-        var host = _shownPage == 0 && !UseCompactLayout ? ((LauncherWorkspace)_pages[0]!).OperationHost : _secondaryOperationHost;
+        var host = _externalOperationHost ?? (_shownPage == 0 && !UseCompactLayout ? ((LauncherWorkspace)_pages[0]!).OperationHost : _secondaryOperationHost);
         if (_operationPanel.Parent == host) return;
         _operationPanel.Parent?.Controls.Remove(_operationPanel); host.Controls.Add(_operationPanel);
     }
     private void UpdateTelemetry() => _viewModel.SetMetricsVisible(Visible && WindowState != FormWindowState.Minimized && _viewModel.PageIndex == 0);
-    protected override void OnShown(EventArgs e) { WindowLayout.FitToWorkArea(this, Screen.FromControl(this).WorkingArea); base.OnShown(e); }
+    protected override void OnShown(EventArgs e) { if (TopLevel) WindowLayout.FitToWorkArea(this, Screen.FromControl(this).WorkingArea); base.OnShown(e); }
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
         if (keyData == (Keys.Control | Keys.Q)) { CommitEditors(); ExitRequested?.Invoke(this, EventArgs.Empty); return true; }

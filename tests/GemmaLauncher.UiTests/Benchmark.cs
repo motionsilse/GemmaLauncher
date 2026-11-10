@@ -10,7 +10,8 @@ public static partial class Program
     private static async Task StartupChildAsync(string reportPath, long started)
     {
         await using var fixture = new Fixture();
-        using var window = new MainWindow(fixture.ViewModel);
+        await using var shell = BenchmarkShell(fixture);
+        using var window = new LoaderWindow(shell);
         var painted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         window.Paint += (_, _) => window.BeginInvoke(() => painted.TrySetResult());
         window.Show();
@@ -44,7 +45,8 @@ public static partial class Program
 #if WPF_BASELINE
         var window = new MainWindow { DataContext = fixture.ViewModel, Width = 1080, Height = 860 };
 #else
-        using var window = new MainWindow(fixture.ViewModel) { Size = new System.Drawing.Size(1080, 860) };
+        await using var shell = BenchmarkShell(fixture);
+        using var window = new LoaderWindow(shell) { Size = new System.Drawing.Size(1080, 860) };
 #endif
         try
         {
@@ -66,7 +68,8 @@ public static partial class Program
 #if WPF_BASELINE
         var window = new MainWindow { DataContext = vm, Width = 1080, Height = 860 };
 #else
-        using var window = new MainWindow(vm) { Size = new System.Drawing.Size(1080, 860) };
+        await using var shell = BenchmarkShell(fixture);
+        using var window = new LoaderWindow(shell) { Size = new System.Drawing.Size(1080, 860) };
 #endif
         using var child = Process.Start(new ProcessStartInfo(Environment.ProcessPath!) { ArgumentList = { "--metrics-child" }, UseShellExecute = false, CreateNoWindow = true })!;
         fixture.Session.ProcessId = child.Id;

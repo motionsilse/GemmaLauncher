@@ -48,5 +48,19 @@ public static partial class AccountTests
         catch (ConnectionFailure error) when (error.Code == "proxy_response_too_large") { }
         await using var untouched = new AccountConnection(Path.Combine(root, "unused"));
         Assert(!untouched.IsReady && !untouched.IsRunning && !Directory.Exists(Path.Combine(root, "unused")), "Lazy connection must have no writes");
+        var state = new string('a',32);
+        await using var callback = await AccountCallback.StartAsync(state,0);
+        using var callbackHttp = new HttpClient(new SocketsHttpHandler { UseProxy = false });
+        using var invalid = await callbackHttp.GetAsync(callback.Address + "?state=wrong&code=fixture");
+        Assert(invalid.StatusCode == HttpStatusCode.BadRequest, "Invalid state must not complete callback");
+        using var accepted = await callbackHttp.GetAsync(callback.Address + "?state=" + state + "&code=fixture");
+        Assert(accepted.IsSuccessStatusCode && (await callback.WaitAsync(default)).Code == "fixture", "Accept matching state once");
+        using var duplicate = await callbackHttp.GetAsync(callback.Address + "?state=" + state + "&code=fixture");
+        Assert(duplicate.StatusCode == HttpStatusCode.Conflict, "Reject repeated callback");
+        var brokenRoot = Path.Combine(root,"bad-runtime"); using var store = new AccountStateStore(brokenRoot); using var ownership = store.AcquireOwnership();
+        var brokenExe = Path.Combine(brokenRoot,"bad.exe"); File.WriteAllBytes(brokenExe,[1,2,3]);
+        await using var badHost = new AccountHost(store,brokenExe,43219);
+        try { await badHost.StartAsync(); throw new Exception("Corrupt executable accepted"); }
+        catch (ConnectionFailure failure) when (failure.Code == "runtime_checksum_mismatch") { }
     }
 }

@@ -27,6 +27,9 @@ public static partial class Program
             {
                 if (args.Contains("--check-dispatcher-failure")) throw new InvalidOperationException("Intentional dispatcher failure.");
                 TestBundledResources();
+                if (args.Contains("--loader-tests")) { await TestLoaderAsync(); return; }
+                if (args.Contains("--render-loader")) { await RenderLoaderAsync(); return; }
+                if (args.Contains("--account-first-use-smoke")) { await AccountFirstUseAsync(); return; }
                 Localization.Current.SetLanguage("ko");
                 if (args.Length == 2 && args[0] == "--startup-benchmark") { await StartupBenchmarkAsync(args[1]); return; }
                 if (args.Length == 3 && args[0] == "--startup-child") { await StartupChildAsync(args[1], long.Parse(args[2])); return; }
@@ -34,6 +37,7 @@ public static partial class Program
                 if (args.Length == 2 && args[0] == "--benchmark") { await BenchmarkAsync(args[1]); return; }
                 if (args.Length == 2 && args[0] == "--graphics-probe") { await GraphicsProbeAsync(args[1]); return; }
                 if (args.Contains("--render")) { await RenderWorkspaceAsync(); return; }
+                await TestLoaderAsync();
                 Console.WriteLine("TestDirectCatalogAsync");
                 await TestDirectCatalogAsync();
                 Console.WriteLine("TestUnsavedPresetIsNotRegisteredAsync");

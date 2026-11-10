@@ -39,6 +39,7 @@ public sealed class AccountConnection : IAccountConnection
             if (summary.State is SavedAccountState.Multiple or SavedAccountState.Unreadable) throw new ConnectionFailure(summary.State == SavedAccountState.Multiple ? "multiple_accounts" : "account_unreadable");
             if (browser is null && summary.State != SavedAccountState.Available) throw new ConnectionFailure("login_required");
             if (browser is not null && summary.State != SavedAccountState.Missing) throw new ConnectionFailure("account_already_saved");
+            _ = store.ReadOrCreateLocalKey();
             installer ??= new(new LauncherPaths(store.DirectoryPath), discoverExistingModels: false);
             var executable = await new AccountRuntime(store, installer).EnsureAsync(progress, token);
             host = new(store, executable, port);
@@ -72,14 +73,20 @@ public sealed class AccountConnection : IAccountConnection
     private async Task StopHostAsync(bool release = true)
     {
         ready = false; monitor.Change(Timeout.Infinite, Timeout.Infinite);
-        if (host is not null)
+        try
         {
-            var owned = host;
-            try { await owned.DisposeAsync(); }
-            finally { if (!owned.IsRunning) host = null; }
+            if (host is not null)
+            {
+                var owned = host;
+                try { await owned.DisposeAsync(); }
+                finally { if (!owned.IsRunning) host = null; }
+            }
         }
-        if (host is null && release) { ownership?.Dispose(); ownership = null; }
-        StatusChanged?.Invoke(this, EventArgs.Empty);
+        finally
+        {
+            if (host is null && release) { ownership?.Dispose(); ownership = null; }
+            StatusChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
     public async Task StopAsync(CancellationToken ct)
     {
