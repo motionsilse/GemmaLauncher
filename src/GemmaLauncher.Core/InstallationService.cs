@@ -22,13 +22,13 @@ public sealed class InstallationService : IInstallationService, IDisposable
     private sealed record VerifiedFile(long Bytes, long LastWriteTicks, string Sha256);
     private sealed record RuntimeReceipt(string PackageSha256, Dictionary<string, string> Files);
 
-    public InstallationService(LauncherPaths paths, HttpClient? httpClient = null, IEnumerable<string>? searchDirectories = null, IReadOnlyDictionary<string, string>? modelFiles = null)
+    public InstallationService(LauncherPaths paths, HttpClient? httpClient = null, IEnumerable<string>? searchDirectories = null, IReadOnlyDictionary<string, string>? modelFiles = null, bool discoverExistingModels = true)
     {
         this.paths = paths;
         ownsClient = httpClient is null;
         client = httpClient ?? new HttpClient { Timeout = Timeout.InfiniteTimeSpan };
         this.searchDirectories = (searchDirectories ?? []).Select(Path.GetFullPath)
-            .Concat(FindWinGetModelDirectories()).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+            .Concat(discoverExistingModels ? FindWinGetModelDirectories() : []).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
         this.modelFiles = modelFiles ?? new Dictionary<string, string>();
     }
 
@@ -370,7 +370,8 @@ public sealed class InstallationService : IInstallationService, IDisposable
     {
         var executable = ContainedPath(directory, executableRelativePath);
         var executableDirectory = Path.GetDirectoryName(executable)!;
-        foreach (var path in new[] { executable }.Concat(new[] { "llama-server-impl.dll", "llama.dll", "llama-common.dll", "ggml.dll", "ggml-base.dll", "ggml-vulkan.dll" }.Select(name => Path.Combine(executableDirectory, name))))
+        var libraries = executableRelativePath == "uv.exe" ? Array.Empty<string>() : ["llama-server-impl.dll", "llama.dll", "llama-common.dll", "ggml.dll", "ggml-base.dll", "ggml-vulkan.dll"];
+        foreach (var path in new[] { executable }.Concat(libraries.Select(name => Path.Combine(executableDirectory, name))))
         {
             using var input = File.OpenRead(path);
             if (input.Length < 64 || input.ReadByte() != 'M' || input.ReadByte() != 'Z') throw new InvalidDataException(Localization.T("engine.install.invalidRuntimeFile"));

@@ -8,7 +8,8 @@ public static class CatalogTests
     {
         var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
         var catalog = CatalogLoader.Load(Path.Combine(root, "src/GemmaLauncher.App/Assets/catalog.json"));
-        if (catalog.Models.Length != 5 || catalog.Models[0].Profile.Lazy != "on" || catalog.Models[1].Profile.Lazy != "on" || catalog.Models[2].Profile.MtpDraftMax != 4) throw new Exception("Model defaults were lost.");
+        if (catalog.Models.Length != 6 || catalog.Models[^1].Id != "anis-trans") throw new Exception("All five existing choices and ANIS must be built in, with ANIS last.");
+        if (catalog.Models.Length != 6 || catalog.Models[0].Profile.Lazy != "on" || catalog.Models[1].Profile.Lazy != "on" || catalog.Models[2].Profile.MtpDraftMax != 4) throw new Exception("Model defaults were lost.");
         foreach (var hy in catalog.Models.Where(model => model.FamilyId == "hy-mt2"))
             if (hy.Profile.Lazy != "off" || hy.Artifacts.Length != 1 || hy.Profile.MtpDraftMax != 0 || hy.Profile.TopP != .6 || hy.Profile.Temperature != .7 || hy.Profile.RepeatPenalty != 1.05)
                 throw new Exception("HY-MT2 must retain independent translation defaults without MTP.");

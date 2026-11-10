@@ -6,6 +6,9 @@ try
     if (args.Contains("--check-failure")) throw new InvalidOperationException("Deliberate test runner failure for exit-boundary verification.");
     if (await SessionTests.TryRunChildAsync(args)) return;
     Localization.Current.SetLanguage("ko");
+    if (args.Contains("--anis-tests")) { await AnisTests.RunAsync(); Console.WriteLine("ANIS tests passed."); return; }
+    if (args.Contains("--anis-runtime-smoke")) { await AnisTests.RuntimeSmokeAsync(); return; }
+    if (args.Contains("--catalog-tests")) { await CatalogTests.RunAsync(); Console.WriteLine("Catalog tests passed."); return; }
     if (args.Length == 2 && args[0] == "--inspect-gguf") { var info = GgufMetadata.Read(args[1]); Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(info with { ChatTemplate = "" })); return; }
     if (args.Contains("--hf-smoke")) { await HuggingFaceTests.SmokeAsync(); return; }
     await HuggingFaceTests.RunAsync();
@@ -17,6 +20,8 @@ try
     if (args.Contains("--gateway-tests")) { await GatewayTests.RunAsync(); Console.WriteLine("Gateway tests passed."); return; }
     await GatewayTests.RunAsync();
     Console.WriteLine("Gateway tests passed.");
+    await AnisTests.RunAsync();
+    Console.WriteLine("ANIS tests passed.");
     await LibraryTests.RunAsync();
     Console.WriteLine("Library tests passed.");
     await InstallationTests.RunAsync();

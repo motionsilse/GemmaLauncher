@@ -84,5 +84,13 @@
   "engine.library.localMissing": "Fail yang disambungkan hilang atau berubah: {0}. Sambungkan semula GGUF.",
   "engine.library.mainFirst": "Pasang atau sambungkan model utama sebelum fail MTP.",
   "engine.library.presetRequest": "Pratetap ini memerlukan teks atau mesej pengguna. Permintaan token angka sahaja tidak boleh menggunakan pratetap teks.",
-  "engine.library.split": "Ini sebahagian daripada GGUF berpecah. Pilih model GGUF satu fail."
+  "engine.library.split": "Ini sebahagian daripada GGUF berpecah. Pilih model GGUF satu fail.",
+  "engine.anis.accessRequired": "ANIS model access is required. Connect an approved Hugging Face read token.",
+  "engine.anis.invalidFile": "The ANIS file failed verification: {0}",
+  "engine.anis.invalidFolder": "This is not a complete, supported ANIS model folder.",
+  "engine.anis.invalidSource": "The official ANIS program package is invalid.",
+  "engine.anis.invalidRuntime": "ANIS runtime settings are invalid.",
+  "engine.anis.runtime": "Preparing the private ANIS execution environment. Python commands are not required.",
+  "engine.anis.runtimeFailed": "The ANIS runtime could not be prepared (exit {0}). See anis-prepare.log.",
+  "engine.session.memoryFailed": "There is not enough memory to load the model. Adjust the context length or execution device, then run again."
 }

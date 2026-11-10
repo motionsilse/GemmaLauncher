@@ -22,7 +22,7 @@ public sealed class ModelPresentation(ModelDefinition definition) : ObservableOb
         _ => "ui.library.checkFiles"
     });
     public ModelDefinition Definition { get; } = definition;
-    public string DisplayName => Definition.DisplayName;
+    public string DisplayName => Definition.Engine == "anis" ? Text("name", Definition.DisplayName) : Definition.DisplayName;
     public string Variant => Definition.Variant.Length > 0 ? Definition.Variant : DisplayName;
     public bool IsUserModel => Definition.Origin != "catalog";
     public string OriginLabel => Core.Localization.T(IsUserModel ? "ui.library.userModel" : "ui.library.recommended");
@@ -52,7 +52,7 @@ public sealed class ModelPresentation(ModelDefinition definition) : ObservableOb
 
     public void RefreshLanguage()
     {
-        foreach (var property in new[] { nameof(FileStateLabel), nameof(OriginLabel), nameof(Category), nameof(Headline), nameof(Description), nameof(HardwareGuide), nameof(MemoryGuide), nameof(Benefits) })
+        foreach (var property in new[] { nameof(DisplayName), nameof(FileStateLabel), nameof(OriginLabel), nameof(Category), nameof(Headline), nameof(Description), nameof(HardwareGuide), nameof(MemoryGuide), nameof(Benefits) })
             OnPropertyChanged(property);
     }
 }

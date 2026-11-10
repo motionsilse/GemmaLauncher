@@ -39,10 +39,10 @@ internal sealed class UiBindings(Control owner, LauncherViewModel viewModel) : I
     }
     public void Watch(Action update) => _updates.Add(update);
     public void Text(Control control, Func<string> value) => Watch(() => { var text = value(); if (control.Text != text) control.Text = text; });
-    public void MemoryText(Control control)
+    public void MemoryText(Control control, Func<string>? format = null)
     {
-        _memoryUpdate += () => { var text = viewModel.MemoryUsage; if (control.Text != text) control.Text = text; };
-        Text(control, () => viewModel.MemoryUsage);
+        _memoryUpdate += () => { var text = format?.Invoke() ?? viewModel.MemoryUsage; if (control.Text != text) control.Text = text; };
+        Text(control, () => format?.Invoke() ?? viewModel.MemoryUsage);
     }
     public void Localize(Control control, string key)
     {
@@ -95,26 +95,76 @@ internal sealed class UiBindings(Control owner, LauncherViewModel viewModel) : I
             if (!_refreshing && combo.SelectedItem is T value) { select(value); RequestRefresh(); }
         };
     }
+    public void Models(ModelChoiceList list)
+    {
+        Watch(() =>
+        {
+            var values = viewModel.ModelCards.OrderBy(card => card.IsUserModel).ThenBy(card => card.IsUserModel ? 0 : card.Definition.FamilyOrder).ToArray();
+            if (!list.Items.Cast<ModelPresentation>().SequenceEqual(values))
+            {
+                list.BeginUpdate(); list.Items.Clear(); list.Items.AddRange(values); list.EndUpdate();
+            }
+            if (!Equals(list.SelectedItem, viewModel.SelectedPresentation)) list.SelectedItem = viewModel.SelectedPresentation;
+            list.AccessibleName = T("ui.model.choose");
+            list.Invalidate();
+        });
+        list.SelectedIndexChanged += (_, _) =>
+        {
+            if (!_refreshing && list.SelectedItem is ModelPresentation card)
+            {
+                viewModel.SelectedModel = card.Definition;
+                RequestRefresh();
+            }
+        };
+    }
 }
 
 internal static class Ui
 {
-    public static readonly Color Paper = Color.FromArgb(247, 248, 242);
-    public static readonly Color Ink = Color.FromArgb(35, 52, 42);
-    public static TableLayoutPanel Stack() => new() { ColumnCount = 1, Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, Padding = new Padding(12), BackColor = Paper, ColumnStyles = { new ColumnStyle(SizeType.Percent, 100) } };
+    public static readonly Color Paper = Color.FromArgb(244, 246, 243);
+    public static readonly Color Ink = Color.FromArgb(32, 48, 39);
+    public static readonly Color Muted = Color.FromArgb(100, 113, 105);
+    public static readonly Color Green = Color.FromArgb(39, 94, 66);
+    public static readonly Color Tint = Color.FromArgb(229, 239, 231);
+    public static readonly Color Line = Color.FromArgb(216, 224, 217);
+    public static TableLayoutPanel Stack() => new() { ColumnCount = 1, Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, Padding = new Padding(20), BackColor = Color.White, ColumnStyles = { new ColumnStyle(SizeType.Percent, 100) } };
     public static Panel Scroll(TableLayoutPanel stack)
     {
-        var panel = new Panel { Dock = DockStyle.Fill, AutoScroll = true, BackColor = Paper };
+        var panel = new Panel { Dock = DockStyle.Fill, AutoScroll = true, BackColor = Color.White, Margin = new Padding(0) };
         panel.Controls.Add(stack); return panel;
     }
     public static void Add(TableLayoutPanel stack, Control control)
     {
-        control.Margin = new Padding(0, 4, 0, 8);
+        control.Margin = new Padding(0, 3, 0, 6);
         control.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-        stack.Controls.Add(control, 0, stack.RowCount++);
+        var row = stack.RowCount++;
+        while (stack.RowStyles.Count <= row) stack.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        stack.Controls.Add(control, 0, row);
     }
     public static Label Label(string text = "") => new() { Text = text, AutoSize = true, UseMnemonic = false, ForeColor = Ink, Dock = DockStyle.Top };
-    public static Button Button() => new() { AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, MinimumSize = new Size(100, 32), Padding = new Padding(8, 4, 8, 4), UseVisualStyleBackColor = true };
+    public static Button Button()
+    {
+        var button = new Button { AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, MinimumSize = new Size(92, 36), Padding = new Padding(12, 5, 12, 5), FlatStyle = FlatStyle.Flat, BackColor = Color.White, ForeColor = Green, Cursor = Cursors.Hand };
+        button.FlatAppearance.BorderColor = Line; button.FlatAppearance.MouseOverBackColor = Tint;
+        return button;
+    }
+    public static void Primary(Button button)
+    {
+        void RefreshState()
+        {
+            button.BackColor = button.Enabled ? Green : Line;
+            button.ForeColor = button.Enabled ? Color.White : Muted;
+            button.Cursor = button.Enabled ? Cursors.Hand : Cursors.Default;
+        }
+        button.EnabledChanged += (_, _) => RefreshState(); RefreshState();
+        button.FlatAppearance.BorderSize = 0; button.FlatAppearance.MouseOverBackColor = Color.FromArgb(28, 76, 51);
+        button.MinimumSize = new Size(160, 46); SetFont(button, 11, FontStyle.Bold);
+    }
+    public static void SetFont(Control control, float size, FontStyle style = FontStyle.Regular)
+    {
+        var font = new Font("Segoe UI", size, style); control.Font = font;
+        control.Disposed += (_, _) => font.Dispose();
+    }
     public static ComboBox Combo(string name) => new() { Name = name, DropDownStyle = ComboBoxStyle.DropDownList, Dock = DockStyle.Top, IntegralHeight = false, DropDownHeight = 280 };
     public static TextBox TextBox(bool multiline = false) => new() { Multiline = multiline, AcceptsReturn = multiline, ScrollBars = multiline ? ScrollBars.Vertical : ScrollBars.None, Height = multiline ? 120 : 28, Dock = DockStyle.Top };
 }
@@ -143,7 +193,7 @@ public abstract class LauncherPage : UserControl
     }
     protected ComboBox Choice<T>(TableLayoutPanel stack, string name, string key, Func<IEnumerable<T>> items, Func<T?> selected, Action<T> select, Func<T,string> label) where T : class
     {
-        Heading(stack, key); var combo = Ui.Combo(name); Bindings.Watch(() => combo.AccessibleName = Core.Localization.T(key));
+        var heading = Heading(stack, key); var combo = Ui.Combo(name); combo.Tag = heading; Bindings.Watch(() => combo.AccessibleName = Core.Localization.T(key));
         Bindings.Choice(combo, items, selected, select, label); Ui.Add(stack, combo); return combo;
     }
     protected TextBox Edit(TableLayoutPanel stack, string key, Func<string> get, Action<string> set, bool multiline = false)

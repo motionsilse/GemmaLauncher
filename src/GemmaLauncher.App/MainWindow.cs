@@ -8,12 +8,18 @@ public sealed class MainWindow : Form
 {
     private readonly LauncherViewModel _viewModel;
     private readonly UiBindings _bindings;
-    private readonly Font _uiFont = new("Segoe UI", 10);
-    private readonly TabControl _tabs = new() { Dock = DockStyle.Fill, Name = "WorkspaceTabs" };
+    private readonly Font _uiFont = new("Segoe UI", 10.5f);
+    private readonly Panel _workspace = new() { Dock = DockStyle.Fill, Margin = new Padding(0, 14, 0, 12) };
     private readonly LauncherPage?[] _pages = new LauncherPage?[3];
-    private bool _switching;
+    private int _shownPage = -1;
+    private readonly Panel _secondaryOperationHost = new() { Dock = DockStyle.Top, AutoSize = true, Margin = Padding.Empty };
+    private readonly RunOperationPanel _operationPanel;
     private readonly uint _activateMessage;
     private readonly uint _legacyActivateMessage;
+    private readonly Func<PresetEditDecision>? _previousPresetResolver;
+    private readonly Func<string, bool>? _previousDeleteConfirmation;
+    private readonly Action? _previousCommit;
+    private readonly Func<CancellationToken, Task<AnisAccessInput?>>? _previousAnisAccess;
     public event EventHandler? ActivationRequested;
     public event EventHandler? ExitRequested;
     public int CreatedPageCount => _pages.Count(page => page is not null);
@@ -21,75 +27,78 @@ public sealed class MainWindow : Form
     public MainWindow(LauncherViewModel viewModel, uint activateMessage = 0, uint legacyActivateMessage = 0)
     {
         _activateMessage = activateMessage; _legacyActivateMessage = legacyActivateMessage;
-        _viewModel = viewModel; _bindings = new(this, viewModel);
-        AutoScaleMode = AutoScaleMode.Dpi;
-        AutoScaleDimensions = new SizeF(96, 96);
-        Font = _uiFont;
-        BackColor = Ui.Paper; ForeColor = Ui.Ink;
-        Size = new Size(1080, 860); MinimumSize = new Size(640, 480);
+        _viewModel = viewModel; _bindings = new(this, viewModel); _operationPanel = new(viewModel, CommitEditors);
+        _previousPresetResolver = viewModel.ResolvePresetEdits; _previousDeleteConfirmation = viewModel.ConfirmPresetDeletion; _previousCommit = viewModel.CommitPresetEdits;
+        viewModel.ResolvePresetEdits ??= () => LauncherDialogs.ResolvePreset(viewModel, this);
+        viewModel.ConfirmPresetDeletion ??= name => LauncherDialogs.DeletePreset(viewModel, this, name);
+        viewModel.CommitPresetEdits = CommitEditors;
+        _previousAnisAccess = viewModel.RequestAnisAccess;
+        viewModel.RequestAnisAccess ??= token => LauncherDialogs.AnisAccess(viewModel, this, token);
+        AutoScaleMode = AutoScaleMode.Dpi; AutoScaleDimensions = new SizeF(96, 96);
+        Font = _uiFont; BackColor = Ui.Paper; ForeColor = Ui.Ink;
+        Size = new Size(1040, 840); MinimumSize = new Size(720, 560);
         StartPosition = FormStartPosition.CenterScreen;
         Icon = Icon.ExtractAssociatedIcon(Environment.ProcessPath!);
-        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, Padding = new Padding(12) };
+        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, Padding = new Padding(24, 18, 24, 12) };
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize)); root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize)); root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        var header = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 2 };
-        header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); header.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 210));
-        var title = Ui.Label(); _bindings.Text(title, () => T("ui.app.title") + " · by Drugged Cat");
-        var language = Ui.Combo("LanguageSelector");
-        _bindings.Choice(language, () => viewModel.LanguageOptions.Select(option => option.Code), () => viewModel.LanguageSelection,
-            value => { CommitEditors(); viewModel.LanguageSelection = value; }, code => viewModel.LanguageOptions.First(option => option.Code == code).Name);
-        _bindings.Watch(() => language.AccessibleName = T("ui.language.label"));
-        header.Controls.Add(title, 0, 0); header.Controls.Add(language, 1, 0); root.Controls.Add(header, 0, 0);
-        foreach (var key in new[] { "ui.library.run", "ui.library.models", "ui.library.presets" })
-        {
-            var tab = new TabPage { BackColor = Ui.Paper, Padding = new Padding(4) };
-            _bindings.Localize(tab, key); _tabs.TabPages.Add(tab);
-        }
-        _tabs.Selecting += (_, _) => CommitEditors();
-        _tabs.SelectedIndexChanged += (_, _) => { if (!_switching) viewModel.PageIndex = _tabs.SelectedIndex; ShowPage(); };
-        _bindings.Watch(() =>
-        {
-            _switching = true;
-            try { _tabs.SelectedIndex = Math.Clamp(viewModel.PageIndex, 0, 2); ShowPage(); }
-            finally { _switching = false; }
-        });
-        root.Controls.Add(_tabs, 0, 1);
-        var operation = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 2, Padding = new Padding(8) };
-        operation.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); operation.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 240));
-        var status = Ui.Label(); _bindings.Text(status, () => (viewModel.ShowOperationModel ? viewModel.SelectedModel?.DisplayName + "\n" : "") + viewModel.StatusTitle + "\n" + viewModel.StatusDescription);
-        var actions = Ui.Stack();
-        var progress = new ProgressBar { Name = "OperationProgress", Height = 16, Dock = DockStyle.Top };
-        _bindings.Watch(() => { progress.Style = viewModel.IsIndeterminate ? ProgressBarStyle.Marquee : ProgressBarStyle.Continuous; progress.Value = (int)Math.Clamp(viewModel.ProgressPercent, 0, 100); });
-        _bindings.Visible(progress, () => viewModel.IsProgressVisible); Ui.Add(actions, progress);
-        var prerequisite = Ui.Button(); _bindings.Localize(prerequisite, "ui.runtime.install"); _bindings.Command(prerequisite, viewModel.InstallPrerequisiteCommand); _bindings.Visible(prerequisite, () => viewModel.NeedsRuntimePrerequisite); Ui.Add(actions, prerequisite);
-        var primary = Ui.Button(); primary.Name = "PrimaryAction"; _bindings.Text(primary, () => viewModel.PrimaryLabel); _bindings.Command(primary, viewModel.PrimaryCommand, before: CommitEditors); _bindings.Visible(primary, () => viewModel.ShowPrimaryAction); Ui.Add(actions, primary);
-        operation.Controls.Add(status, 0, 0); operation.Controls.Add(actions, 1, 0); _bindings.Visible(operation, () => viewModel.ShowOperation);
-        root.Controls.Add(operation, 0, 2);
-        var footer = Ui.Label(); _bindings.Text(footer, () => viewModel.StatusNote + (viewModel.StatusNote.Length > 0 ? "\n" : "") + T("ui.footer.background") + "  " + T("ui.footer.exit"));
+        var header = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 2, Margin = Padding.Empty };
+        header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); header.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        var brand = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Fill, WrapContents = false, Margin = Padding.Empty };
+        var back = Ui.Button(); back.Name = "BackToLauncher"; _bindings.Localize(back, "ui.navigation.backToModels");
+        back.Click += (_, _) => { CommitEditors(); viewModel.PageIndex = 0; };
+        _bindings.Visible(back, () => viewModel.PageIndex != 0); brand.Controls.Add(back);
+        var title = Ui.Label(); Ui.SetFont(title, 19, FontStyle.Bold); title.Margin = new Padding(0, 2, 16, 4);
+        _bindings.Text(title, () => viewModel.PageIndex switch { 1 => T("ui.files.add"), 2 => T("ui.library.presets"), _ => T("ui.app.title") });
+        brand.Controls.Add(title); header.Controls.Add(brand, 0, 0);
+        var settings = Ui.Button(); settings.Name = "AppSettings"; _bindings.Localize(settings, "ui.settings.title");
+        settings.Click += (_, _) => { using var dialog = CreateSettingsDialog(); dialog.ShowDialog(this); };
+        header.Controls.Add(settings, 1, 0); root.Controls.Add(header, 0, 0);
+        _bindings.Watch(ShowPage); root.Controls.Add(_workspace, 0, 1);
+        _bindings.Visible(_secondaryOperationHost, () => (viewModel.PageIndex != 0 || UseCompactLayout) && viewModel.ShowOperation);
+        root.Controls.Add(_secondaryOperationHost, 0, 2);
+        var footer = Ui.Label(); footer.ForeColor = Ui.Muted; Ui.SetFont(footer, 8.5f); footer.Margin = new Padding(0, 10, 0, 0);
+        _bindings.Text(footer, () => viewModel.StatusNote + (viewModel.StatusNote.Length > 0 ? "\n" : "") + "by Drugged Cat   ·   " + T(viewModel.IsServerRunning && viewModel.CloseToTray ? "ui.footer.background" : "ui.connection.localOnly"));
         root.Controls.Add(footer, 0, 3); Controls.Add(root);
         _bindings.Text(this, () => T("ui.app.title"));
-        VisibleChanged += (_, _) => UpdateTelemetry(); Resize += (_, _) => UpdateTelemetry();
+        VisibleChanged += (_, _) => UpdateTelemetry(); Resize += (_, _) => { PlaceOperationPanel(); _bindings.RequestRefresh(); UpdateTelemetry(); };
         _bindings.Start();
     }
-
+    public LauncherDialog CreateSettingsDialog()
+    {
+        var dialog = new LauncherDialog(_viewModel, T("ui.settings.title"), new Size(580, 360));
+        dialog.Content.Controls.Add(new AppSettingsView(_viewModel));
+        dialog.AddAction(T("ui.close"), DialogResult.OK, true); return dialog;
+    }
     private void CommitEditors() { ValidateChildren(); if (_pages[2] is PresetEditorView presets) presets.CommitEdits(); }
     private void ShowPage()
     {
-        var index = _tabs.SelectedIndex;
-        if (index < 0) return;
+        var index = Math.Clamp(_viewModel.PageIndex, 0, 2);
+        if (_shownPage == index) return;
+        CommitEditors();
+        if (_shownPage >= 0) _pages[_shownPage]!.Visible = false;
         if (_pages[index] is null)
         {
             _pages[index] = index switch { 0 => new LauncherWorkspace(_viewModel), 1 => new ModelLibraryView(_viewModel), _ => new PresetEditorView(_viewModel) };
-            _tabs.TabPages[index].Controls.Add(_pages[index]!);
+            _workspace.Controls.Add(_pages[index]!);
         }
-        UpdateTelemetry();
+        _shownPage = index; PlaceOperationPanel(); _pages[index]!.Visible = true; _pages[index]!.BringToFront(); UpdateTelemetry();
     }
-    private void UpdateTelemetry() => _viewModel.SetMetricsVisible(Visible && WindowState != FormWindowState.Minimized && _tabs.SelectedIndex == 0);
+    private bool UseCompactLayout => ClientSize.Width * 96f / DeviceDpi < 900 || ClientSize.Height * 96f / DeviceDpi < 650;
+    private void PlaceOperationPanel()
+    {
+        if (_shownPage < 0) return;
+        var host = _shownPage == 0 && !UseCompactLayout ? ((LauncherWorkspace)_pages[0]!).OperationHost : _secondaryOperationHost;
+        if (_operationPanel.Parent == host) return;
+        _operationPanel.Parent?.Controls.Remove(_operationPanel); host.Controls.Add(_operationPanel);
+    }
+    private void UpdateTelemetry() => _viewModel.SetMetricsVisible(Visible && WindowState != FormWindowState.Minimized && _viewModel.PageIndex == 0);
     protected override void OnShown(EventArgs e) { WindowLayout.FitToWorkArea(this, Screen.FromControl(this).WorkingArea); base.OnShown(e); }
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
         if (keyData == (Keys.Control | Keys.Q)) { CommitEditors(); ExitRequested?.Invoke(this, EventArgs.Empty); return true; }
+        if (keyData == Keys.Escape && _viewModel.PageIndex != 0) { CommitEditors(); _viewModel.PageIndex = 0; return true; }
         return base.ProcessCmdKey(ref msg, keyData);
     }
     protected override void WndProc(ref Message m)
@@ -99,7 +108,7 @@ public sealed class MainWindow : Form
     }
     protected override void Dispose(bool disposing)
     {
-        if (disposing) { _viewModel.SetMetricsVisible(false); _bindings.Dispose(); Icon?.Dispose(); }
+        if (disposing) { _viewModel.SetMetricsVisible(false); _bindings.Dispose(); Icon?.Dispose(); _viewModel.ResolvePresetEdits = _previousPresetResolver; _viewModel.ConfirmPresetDeletion = _previousDeleteConfirmation; _viewModel.CommitPresetEdits = _previousCommit; _viewModel.RequestAnisAccess = _previousAnisAccess; }
         base.Dispose(disposing);
         if (disposing) _uiFont.Dispose();
     }

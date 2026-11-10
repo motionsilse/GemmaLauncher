@@ -33,7 +33,21 @@ Windows용 단일 EXE는 PC에 설치된 .NET 10 Desktop Runtime과 ASP.NET Core
 | 12B MTP | [unsloth/gemma-4-12B-it-qat-GGUF](https://huggingface.co/unsloth/gemma-4-12B-it-qat-GGUF) |
 | HY-MT2 1.8B Q4_K_M | [unsloth/Hy-MT2-1.8B-GGUF](https://huggingface.co/unsloth/Hy-MT2-1.8B-GGUF) |
 | HY-MT2 7B Q4_K_M | [unsloth/Hy-MT2-7B-GGUF](https://huggingface.co/unsloth/Hy-MT2-7B-GGUF) |
+| ANIS Trans (일본어 전용) | [ANIS · jintigers/anis-trans](https://huggingface.co/jintigers/anis-trans) |
 
 기본 모델 카탈로그의 `sourceUrl`과 `licenseUrl`에도 각 출처가 기록되어 있습니다. 추가 모델은 해당 모델의 카탈로그와 원본 저장소의 조건을 확인하세요.
+
+## ANIS Trans 선택 시 준비하는 프로그램
+
+ANIS Trans의 모델과 함께 배포되는 실행 프로그램은 ANIS의 저작물이며 런처의 MIT 라이선스와 별개입니다. 런처는 [공식 프로그램](https://github.com/jintigers/anis-trans/tree/1165f0cda25a9afdd0c8e0491038e949d9446e6e)을 수정하지 않고 다운로드해 실행하며 원본 고지를 유지합니다. [ANIS Trans 라이선스 한국어 정본](https://github.com/jintigers/anis-trans/blob/1165f0cda25a9afdd0c8e0491038e949d9446e6e/LICENSE-ko.md)을 확인하세요. 비영리 이용과 영리 이용의 조건이 다르며 영리 이용은 ANIS와 별도 계약이 필요합니다. 가중치와 공식 프로그램은 이 런처 EXE에 포함하거나 미러링하지 않습니다. 최초 다운로드에 필요한 공식 접근 신청과 이용 조건 확인은 사용자가 진행합니다.
+
+전용 실행 환경에 필요한 아래 구성 요소도 공식 배포 경로에서 받으며 EXE에 포함하지 않습니다. 시스템 Python과 분리된 폴더에 설치하며 원본 라이선스 파일을 유지합니다.
+
+- [uv](https://github.com/astral-sh/uv) — [라이선스](https://github.com/astral-sh/uv#license)
+- [Python](https://www.python.org/) — [라이선스](https://docs.python.org/3/license.html)
+- [CTranslate2](https://github.com/OpenNMT/CTranslate2) — [라이선스](https://github.com/OpenNMT/CTranslate2/blob/master/LICENSE)
+- [SentencePiece](https://github.com/google/sentencepiece) — [라이선스](https://github.com/google/sentencepiece/blob/master/LICENSE)
+- [NumPy](https://numpy.org/) — [라이선스](https://numpy.org/doc/stable/license.html)
+- [PyYAML](https://pyyaml.org/) — [라이선스](https://github.com/yaml/pyyaml/blob/main/LICENSE)
 
 Gemma는 모델 이름을 식별하기 위해 사용합니다. 이 런처는 Google의 공식 제품이 아니며, 원본 모델·튜닝·실행 엔진의 제작자와 독립된 프로젝트입니다.

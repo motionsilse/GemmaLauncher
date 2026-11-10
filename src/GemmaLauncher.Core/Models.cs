@@ -36,6 +36,7 @@ public sealed record ModelDefinition
     public string Architecture { get; init; } = "";
     public bool HasChatTemplate { get; init; } = true;
     public string Credit { get; init; } = "";
+    public string Engine { get; init; } = "llama";
     public required string ApiModelId { get; init; }
     public required string Category { get; init; }
     public required string Headline { get; init; }
@@ -92,12 +93,15 @@ public interface IInstallationService
 }
 
 public enum ServerState { Stopped, Starting, Running, Stopping, Faulted }
+public sealed class ModelLoadMemoryException(Exception inner) : IOException(Localization.T("engine.session.memoryFailed"), inner);
 public sealed record SessionStatus(ServerState State, string Message, int? ProcessId = null, string? ModelId = null);
 public sealed record LaunchConfiguration(InstalledModel Model, string RuntimeExecutable, int Context, string LogDirectory, int Port = 8080)
 {
     public ModelLoadOptions? LoadOptions { get; init; }
     public TaskPreset? Preset { get; init; }
     public bool EnableGateway { get; init; }
+    public string? BackendSourceDirectory { get; init; }
+    public string AnisDevice { get; init; } = "auto";
 }
 
 public interface IServerSession : IAsyncDisposable

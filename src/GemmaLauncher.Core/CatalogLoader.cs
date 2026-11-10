@@ -27,6 +27,12 @@ public static partial class CatalogLoader
         var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var model in catalog.Models)
         {
+            if (model.Engine is not ("llama" or "anis")) throw new InvalidDataException(Localization.T("engine.catalog.unsupported"));
+            if (model.Engine == "anis" && (model.Id != "anis-trans" || model.Artifacts is not { Length: 1 } || model.Artifacts[0].Role != "model" ||
+                model.Artifacts[0].IsLocal || model.Artifacts[0].Sha256 != AnisBackend.ModelFiles.Single(file => file.Path == "ct2/model.bin").Hash ||
+                model.Artifacts[0].Bytes != AnisBackend.ModelFiles.Single(file => file.Path == "ct2/model.bin").Bytes || model.Artifacts[0].Filename != "model.bin" ||
+                model.Artifacts[0].Url != AnisBackend.ModelPage + "/resolve/" + AnisBackend.ModelRevision + "/ct2/model.bin"))
+                throw new InvalidDataException(Localization.T("engine.catalog.invalidFiles"));
             if (!SafeIdentifier(model.Id) || !ids.Add(model.Id) || string.IsNullOrWhiteSpace(model.DisplayName) || model.DisplayName.Length > 200 || model.DisplayName.Any(char.IsControl) ||
                 string.IsNullOrWhiteSpace(model.ApiModelId) || model.ApiModelId.Any(char.IsControl) || model.ApiModelId.Contains(','))
                 throw new InvalidDataException(Localization.T("engine.catalog.invalidIdentity"));

@@ -107,6 +107,7 @@ public sealed class App : ApplicationContext
         _toggle!.Text = _viewModel.PrimaryLabel;
         _toggle.Enabled = !_exiting && _viewModel.PrimaryCommand.CanExecute(null);
         _web!.Enabled = !_exiting && _viewModel.CanOpenWebUi;
+        _web.Visible = !_viewModel.IsAnis;
         _web.Text = T("ui.connection.web");
         _open!.Text = T("ui.tray.open");
         _exit!.Text = T("ui.tray.exit");
@@ -118,7 +119,9 @@ public sealed class App : ApplicationContext
         if (_exitComplete) return;
         e.Cancel = true;
         if (_exiting) return;
-        if (e.CloseReason is CloseReason.WindowsShutDown or CloseReason.TaskManagerClosing) { _ = ExitAsync(); return; }
+        if (e.CloseReason is CloseReason.WindowsShutDown or CloseReason.TaskManagerClosing) { _ = ExitAsync(false); return; }
+        if (_viewModel is not null && !_viewModel.ResolvePendingPreset()) return;
+        if (_viewModel?.CloseToTray == false) { _ = ExitAsync(); return; }
         _window!.Hide();
         if (!_hideNoticeShown && _tray is not null)
         {
@@ -135,9 +138,10 @@ public sealed class App : ApplicationContext
         _window.Activate();
     }
 
-    private async Task ExitAsync()
+    private async Task ExitAsync(bool resolvePreset = true)
     {
         if (_exiting) return;
+        if (resolvePreset && _viewModel is not null && !_viewModel.ResolvePendingPreset()) return;
         _exiting = true;
         if (_window is not null) _window.Enabled = false;
         UpdateTray(this, EventArgs.Empty);

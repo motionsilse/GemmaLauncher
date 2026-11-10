@@ -20,7 +20,19 @@ public sealed partial class LauncherViewModel
     private string _hfAddress = "";
     private HuggingFaceFile? _selectedHfFile;
     private readonly HuggingFaceModels _huggingFace = new();
-    public int PageIndex { get => _pageIndex; set { if (Set(ref _pageIndex, value)) RefreshPageProperties(); } }
+    private string _loadOptionsFeedback = "";
+    public string LoadOptionsFeedback => Core.Localization.Current.Retranslate(_loadOptionsFeedback);
+    public int PageIndex
+    {
+        get => _pageIndex;
+        set
+        {
+            if (value == _pageIndex) return;
+            if (_pageIndex == 2 && value != 2 && !SavePendingPreset()) { OnPropertyChanged(); return; }
+            if (value == 2 && EditingPreset is null) LoadPresetEditor(Presets.FirstOrDefault(p => p.Id != "none"));
+            if (Set(ref _pageIndex, value)) RefreshPageProperties();
+        }
+    }
     public int ModelPageIndex { get => _modelPageIndex; set => Set(ref _modelPageIndex, value); }
     public ObservableCollection<ModelFamily> Families { get; } = [];
     public ObservableCollection<PresetChoice> Presets { get; } = [];
@@ -52,29 +64,36 @@ public sealed partial class LauncherViewModel
     public ICommand ConnectMtpCommand { get; private set; } = null!;
     public ICommand ResetLoadOptionsCommand { get; private set; } = null!;
     public ICommand RemoveLibraryModelCommand { get; private set; } = null!;
-    public bool CanEditPreset => SelectedPreset is { Id: not "none" } && !IsBusy;
+    public bool CanEditPreset => EditingPreset is not null && !IsBusy;
     public bool CanChangePreset => !IsBusy;
     public PresetChoice? SelectedPreset
     {
         get => _selectedPreset;
         set
         {
-            if (value is null || ReferenceEquals(_selectedPreset, value) || !SavePendingPreset()) return;
-            Set(ref _selectedPreset, value);
-            if (SelectedModel is not null) _settings.ModelPresets[SelectedModel.Id] = value.Id;
-            LoadPresetEditor();
-            if (_session is ServerSession session) session.UpdatePreset(value.Preset);
-            SaveSettings(); Refresh();
+            if (value is null || ReferenceEquals(_selectedPreset, value)) return;
+            if (!SavePendingPreset()) { OnPropertyChanged(); return; }
+            var references = new Dictionary<string, string>(_settings.ModelPresets);
+            if (SelectedModel is not null) references[SelectedModel.Id] = value.Id;
+            try { _store.Save(_settings with { ModelPresets = references }); }
+            catch (Exception ex) { Note(T("ui.note.saveFailed", ex.Message)); OnPropertyChanged(); return; }
+            _settings.ModelPresets = references; _selectedPreset = value;
+            OnPropertyChanged();
+            LoadPresetEditor(value.Id == "none" ? null : value);
+            UpdateLivePreset(); Refresh();
         }
     }
-    public string PresetName { get => _presetName; set => Set(ref _presetName, value); }
-    public string PresetPrompt { get => _presetPrompt; set => Set(ref _presetPrompt, value); }
-    public string PresetTemperature { get => _presetTemperature; set => Set(ref _presetTemperature, value); }
-    public string PresetTopP { get => _presetTopP; set => Set(ref _presetTopP, value); }
-    public string PresetMaxTokens { get => _presetMaxTokens; set => Set(ref _presetMaxTokens, value); }
+
+    public string PresetName { get => _presetName; set { if (Set(ref _presetName, value)) RefreshPresetProperties(); } }
+    public string PresetPrompt { get => _presetPrompt; set { if (Set(ref _presetPrompt, value)) RefreshPresetProperties(); } }
+    public string PresetTemperature { get => _presetTemperature; set { if (Set(ref _presetTemperature, value)) RefreshPresetProperties(); } }
+    public string PresetTopP { get => _presetTopP; set { if (Set(ref _presetTopP, value)) RefreshPresetProperties(); } }
+    public string PresetMaxTokens { get => _presetMaxTokens; set { if (Set(ref _presetMaxTokens, value)) RefreshPresetProperties(); } }
     public string[] GpuLayerChoices { get; } = ["auto", "all", "0", "8", "16", "24", "32", "48", "64"];
     public string[] CacheChoices { get; } = ["f16", "q8_0", "q4_0"];
     public string[] ToggleChoices { get; } = ["auto", "on", "off"];
+    public string ToggleLabel(string value) => T("ui.option." + value);
+    public string GpuLayerLabel(string value) => value switch { "auto" => ToggleLabel(value) + " (auto)", "all" => T("ui.option.all") + " (all)", "0" => "CPU (0)", _ => value };
     private ModelLoadOptions LoadOptions => SelectedModel is null ? new() : _settings.LoadOptions.GetValueOrDefault(SelectedModel.Id) ?? ModelLoadOptions.For(SelectedModel);
     public string GpuLayers { get => LoadOptions.GpuLayers; set => ChangeOptions(LoadOptions with { GpuLayers = value }); }
     public string CacheType { get => LoadOptions.CacheType; set => ChangeOptions(LoadOptions with { CacheType = value, FlashAttention = value != "f16" ? "on" : LoadOptions.FlashAttention }); }
@@ -121,30 +140,22 @@ public sealed partial class LauncherViewModel
         {
             var model = value is ModelPresentation card ? card.Definition : value as ModelDefinition;
             if (model is not null && TrySelectModel(model)) PageIndex = 0;
-        }, _ => CanSelectModel);
+        }, value => CanSelectModel && (value is ModelPresentation card && Models.Contains(card.Definition) || value is ModelDefinition model && Models.Contains(model)));
         AddModelCommand = Command(_ => { PageIndex = 1; ModelPageIndex = 2; });
         FindHuggingFaceCommand = Command(_ => BeginOperation(FindHuggingFaceAsync, false), _ => CanSelectModel);
         AddHuggingFaceCommand = Command(_ => { if (SavePendingPreset()) BeginOperation(AddHuggingFaceAsync, false); }, _ => CanSelectModel && SelectedHuggingFaceFile is not null);
-        NewPresetCommand = Command(_ =>
-        {
-            if (!SavePendingPreset()) return;
-            var preset = new TaskPreset { Name = T("ui.library.newPreset") };
-            _settings.Presets.Add(preset); var choice = new PresetChoice(preset); Presets.Add(choice); SelectedPreset = choice;
-        }, _ => !IsBusy);
-        SavePresetCommand = Command(_ => SavePreset(), _ => CanEditPreset);
-        DeletePresetCommand = Command(_ =>
-        {
-            if (SelectedPreset is not { Id: not "none" } selected) return;
-            _settings.Presets.RemoveAll(preset => preset.Id == selected.Id);
-            foreach (var model in _settings.ModelPresets.Where(pair => pair.Value == selected.Id).Select(pair => pair.Key).ToArray()) _settings.ModelPresets.Remove(model);
-            _selectedPreset = null; SelectedPreset = Presets[0]; Presets.Remove(selected); SaveSettings();
-        }, _ => CanEditPreset);
+        Glossary.CollectionChanged += (_, _) => TrackGlossaryChanges();
+        NewPresetCommand = Command(_ => { if (SavePendingPreset()) BeginPresetDraft(); }, _ => !IsBusy);
+        DuplicatePresetCommand = Command(_ => DuplicatePreset(), _ => CanEditPreset);
+        SavePresetCommand = Command(_ => { if (SavePreset(true)) PageIndex = 0; }, _ => CanEditPreset);
+        DeletePresetCommand = Command(_ => DeletePreset(), _ => CanEditPreset && EditingPreset is not null && Presets.Contains(EditingPreset));
         ImportGlossaryCommand = Command(_ => ImportGlossary(), _ => CanEditPreset);
         ConnectMtpCommand = Command(_ => ChooseMtp(), _ => CanSelectModel && HasSelectedModel);
         ResetLoadOptionsCommand = Command(_ =>
         {
             if (SelectedModel is null) return;
             _settings.LoadOptions.Remove(SelectedModel.Id); _settings.MtpFiles.Remove(SelectedModel.Id);
+            _loadOptionsFeedback = ""; _statusNote = "";
             SaveSettings(); RefreshLibraryProperties(); _scan = ScanSelectedAsync(SelectedModel);
         }, _ => CanSelectModel && HasSelectedModel);
         RemoveLibraryModelCommand = Command(value => RemoveModel(value as ModelPresentation), value => CanSelectModel && value is ModelPresentation { IsUserModel: true });
@@ -177,7 +188,7 @@ public sealed partial class LauncherViewModel
             OnPropertyChanged(nameof(SelectedModel));
             return false;
         }
-        _error = ""; _statusNote = ""; _prerequisiteDownload = null;
+        _error = ""; _statusNote = ""; _loadOptionsFeedback = ""; _prerequisiteDownload = null;
         SyncLibrary();
         ApplyModelSelection(model);
         Refresh(); _scan = ScanSelectedAsync(model);
@@ -186,6 +197,7 @@ public sealed partial class LauncherViewModel
 
     private ModelFileState UnavailableFileState(ModelDefinition model)
     {
+        if (model.Engine == "anis") return string.IsNullOrWhiteSpace(_settings.AnisModelFolder) ? ModelFileState.DownloadNeeded : ModelFileState.ReconnectRequired;
         var local = model.Artifacts.Where(artifact => artifact.IsLocal).ToArray();
         return local.Length == model.Artifacts.Length || local.Any(artifact => !File.Exists(_settings.ModelFiles.GetValueOrDefault(artifact.Sha256)))
             ? ModelFileState.ReconnectRequired : ModelFileState.DownloadNeeded;
@@ -213,72 +225,35 @@ public sealed partial class LauncherViewModel
     private void RefreshLibraryProperties()
     {
         SyncLibrary();
+        OnPropertyChanged(nameof(LoadOptionsFeedback));
         foreach (var property in new[] { nameof(LibraryModels), nameof(HasLibraryModels), nameof(ShowOperation), nameof(CanEditPreset), nameof(CanChangePreset), nameof(GpuLayers), nameof(CacheType), nameof(FlashAttention), nameof(Reasoning), nameof(UseMtp), nameof(DraftTokens), nameof(ChatTemplate), nameof(HasMtp), nameof(MtpLabel), nameof(TemplateHint) }) OnPropertyChanged(property);
     }
 
     private void ChangeOptions(ModelLoadOptions options)
     {
-        if (SelectedModel is null || !CanSelectModel) return;
+        if (SelectedModel is null || !CanChangeLoadOptions) return;
         try
         {
+            _loadOptionsFeedback = "";
             options.Validate();
             var changedMtp = options.UseMtp != LoadOptions.UseMtp;
-            _settings.LoadOptions[SelectedModel.Id] = options; SaveSettings();
-            if (changedMtp) _scan = ScanSelectedAsync(SelectedModel);
+            var updated = _settings with { LoadOptions = new(_settings.LoadOptions) { [SelectedModel.Id] = options } };
+            _store.Save(updated); _settings.LoadOptions = updated.LoadOptions; _statusNote = "";
+            if (changedMtp && CanSelectModel) _scan = ScanSelectedAsync(SelectedModel);
         }
-        catch (InvalidDataException ex) { Note(ex.Message); }
-        RefreshLibraryProperties();
+        catch (Exception ex) { _loadOptionsFeedback = ex.Message; Note(ex.Message); }
+        RefreshLibraryProperties(); Refresh();
     }
 
     private ModelDefinition EffectiveModel(ModelDefinition model)
     {
+        if (model.Engine == "anis") return model;
         var options = _settings.LoadOptions.GetValueOrDefault(model.Id) ?? ModelLoadOptions.For(model);
         var mtp = _settings.MtpFiles.GetValueOrDefault(model.Id) ?? model.Artifacts.FirstOrDefault(a => a.Role == "mtp");
         var desiredMtp = options.UseMtp ? mtp : null;
         if (ReferenceEquals(desiredMtp, model.Artifacts.FirstOrDefault(a => a.Role == "mtp")) && model.Profile.MtpDraftMax == (desiredMtp is null ? 0 : options.DraftTokens)) return model;
         return model with { Artifacts = options.UseMtp && mtp is not null ? [model.Artifacts.Single(a => a.Role == "model"), mtp] : [model.Artifacts.Single(a => a.Role == "model")],
             Profile = model.Profile with { MtpDraftMax = options.UseMtp && mtp is not null ? options.DraftTokens : 0 } };
-    }
-
-    private void LoadPresetEditor()
-    {
-        var preset = SelectedPreset?.Preset ?? TaskPreset.Empty;
-        PresetName = preset.Id == "none" ? T("ui.library.defaults") : preset.Name; PresetPrompt = preset.Prompt;
-        var culture = System.Globalization.CultureInfo.InvariantCulture;
-        PresetTemperature = preset.Temperature?.ToString(culture) ?? ""; PresetTopP = preset.TopP?.ToString(culture) ?? ""; PresetMaxTokens = preset.MaxTokens?.ToString(culture) ?? "";
-        Glossary.Clear(); foreach (var entry in preset.Glossary) Glossary.Add(new() { Source = entry.Source, Target = entry.Target });
-    }
-
-    private bool SavePendingPreset()
-    {
-        if (SelectedPreset is not { Id: not "none" } selected) return true;
-        var preset = selected.Preset;
-        var rows = Glossary.Where(row => row.Source.Length > 0 || row.Target.Length > 0).Select(row => new GlossaryEntry(row.Source.Trim(), row.Target.Trim()));
-        var culture = System.Globalization.CultureInfo.InvariantCulture;
-        var dirty = PresetName != preset.Name || PresetPrompt != preset.Prompt || !rows.SequenceEqual(preset.Glossary) ||
-            PresetTemperature != (preset.Temperature?.ToString(culture) ?? "") || PresetTopP != (preset.TopP?.ToString(culture) ?? "") || PresetMaxTokens != (preset.MaxTokens?.ToString(culture) ?? "");
-        return !dirty || SavePreset();
-    }
-
-    private bool SavePreset()
-    {
-        if (SelectedPreset is not { Id: not "none" } selected) return true;
-        try
-        {
-            var updated = selected.Preset with { Name = PresetName.Trim(), Prompt = PresetPrompt,
-                Glossary = Glossary.Where(row => row.Source.Length > 0 || row.Target.Length > 0).Select(row => new GlossaryEntry(row.Source.Trim(), row.Target.Trim())).ToArray(),
-                Temperature = Number(PresetTemperature), TopP = Number(PresetTopP), MaxTokens = string.IsNullOrWhiteSpace(PresetMaxTokens) ? null : int.Parse(PresetMaxTokens, System.Globalization.CultureInfo.InvariantCulture) };
-            updated.Validate();
-            var index = _settings.Presets.FindIndex(preset => preset.Id == updated.Id);
-            var previous = _settings.Presets[index]; _settings.Presets[index] = updated;
-            try { _store.Save(_settings); } catch { _settings.Presets[index] = previous; throw; }
-            selected.Preset = updated; selected.RefreshLanguage();
-            if (_session is ServerSession session) session.UpdatePreset(updated);
-            Note(T("ui.library.presetSaved"));
-            return true;
-        }
-        catch (Exception ex) { Note(ex is FormatException or OverflowException ? T("engine.library.invalidPreset") : ex.Message); return false; }
-        static double? Number(string value) => string.IsNullOrWhiteSpace(value) ? null : double.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
     }
 
     private void ImportGlossary()

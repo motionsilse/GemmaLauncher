@@ -128,7 +128,7 @@
         ],
         "lazy": "auto",
         "mtpDraftMax": 4,
-        "temperature": 1.0,
+        "temperature": 1,
         "topP": 0.95,
         "topK": 64,
         "minP": 0.05
@@ -255,6 +255,52 @@
       "benefits": [
         "A larger model for quality-focused translation",
         "Use your own translation instructions and terminology"
+      ]
+    },
+    {
+      "id": "anis-trans",
+      "displayName": "ANIS Trans (Japanese only)",
+      "apiModelId": "anis-trans:auto",
+      "engine": "anis",
+      "familyId": "anis-trans",
+      "familyName": "ANIS Trans",
+      "familyOrder": 3,
+      "variant": "Japanese ↔ Korean",
+      "localizationPrefix": "models.anis",
+      "architecture": "ctranslate2",
+      "credit": "ANIS · jintigers",
+      "sourceUrl": "https://huggingface.co/jintigers/anis-trans",
+      "licenseUrl": "https://huggingface.co/jintigers/anis-trans/blob/main/LICENSE-ko.md",
+      "profile": {
+        "defaultContext": 1024,
+        "contextSizes": [
+          1024
+        ],
+        "lazy": "off",
+        "mtpDraftMax": 0,
+        "temperature": 0,
+        "topP": 1,
+        "topK": 1,
+        "minP": 0,
+        "repeatPenalty": 1
+      },
+      "artifacts": [
+        {
+          "role": "model",
+          "filename": "model.bin",
+          "url": "https://huggingface.co/jintigers/anis-trans/resolve/c99c0367790cb82e76bb4edc948b5d6353e29454/ct2/model.bin",
+          "bytes": 300265575,
+          "sha256": "07212fcad6655f632de0345713981d8e171d8891b71039289125d79c3ae8bcde"
+        }
+      ],
+      "category": "Japanese ↔ Korean",
+      "headline": "Translation for Japanese and Korean games",
+      "description": "A specialized Japanese ↔ Korean translation model by ANIS. First download requires official access approval.",
+      "hardwareGuide": "CPU supported; NVIDIA CUDA is optional with automatic CPU fallback.",
+      "memoryGuide": "CPU memory about 1 GB (author estimate)",
+      "benefits": [
+        "Loads the model and exposes an OpenAI-compatible API",
+        "Official upstream program; no separate translation GUI"
       ]
     }
   ]

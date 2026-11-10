@@ -33,5 +33,13 @@
   "models.hy7.description": "複雑な文や文脈を扱い、翻訳の正確さと表現を重視する大きな多言語翻訳モデルです。",
   "models.hy7.memoryGuide": "実際のRAM・VRAM使用量は実行中に表示します。",
   "models.hy7.benefit1": "翻訳品質を重視する大きなモデル",
-  "models.hy7.benefit2": "独自の翻訳指示と用語集を使えます"
+  "models.hy7.benefit2": "独自の翻訳指示と用語集を使えます",
+  "models.anis.name": "ANIS Trans (日本語専用)",
+  "models.anis.category": "日本語 ↔ 韓国語",
+  "models.anis.headline": "日本語・韓国語のゲーム台詞翻訳",
+  "models.anis.description": "ANISによる日本語 ↔ 韓国語の翻訳専用モデルです。初回ダウンロードには公式の利用条件確認とアクセス権限が必要です。",
+  "models.anis.hardwareGuide": "CPUに対応。NVIDIA CUDAの初期化に失敗するとCPUを使用します。",
+  "models.anis.memoryGuide": "CPUメモリ約1 GB・作者による参考値",
+  "models.anis.benefit1": "モデルを読み込みOpenAI互換APIを提供",
+  "models.anis.benefit2": "公式APIサーバーのみを起動し、別の翻訳GUIは開きません"
 }

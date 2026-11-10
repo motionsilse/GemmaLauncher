@@ -24,6 +24,6 @@ public sealed class GlossaryRow : ObservableObject
 {
     private string _source = "";
     private string _target = "";
-    public string Source { get => _source; set => Set(ref _source, value); }
-    public string Target { get => _target; set => Set(ref _target, value); }
+    public string Source { get => _source; set => Set(ref _source, value ?? ""); }
+    public string Target { get => _target; set => Set(ref _target, value ?? ""); }
 }

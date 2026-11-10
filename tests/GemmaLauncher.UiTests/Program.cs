@@ -11,6 +11,7 @@ public static partial class Program
     [STAThread]
     public static int Main(string[] args)
     {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
         if (args.Contains("--metrics-child")) { Thread.Sleep(180000); return 0; }
         ApplicationConfiguration.Initialize();
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
@@ -27,8 +28,20 @@ public static partial class Program
                 if (args.Contains("--check-dispatcher-failure")) throw new InvalidOperationException("Intentional dispatcher failure.");
                 TestBundledResources();
                 Localization.Current.SetLanguage("ko");
+                if (args.Contains("--first-download-smoke")) { await FirstDownloadSmokeAsync(); return; }
                 if (args.Length == 2 && args[0] == "--benchmark") { await BenchmarkAsync(args[1]); return; }
                 if (args.Length == 2 && args[0] == "--graphics-probe") { await GraphicsProbeAsync(args[1]); return; }
+                if (args.Contains("--render")) { await RenderWorkspaceAsync(); return; }
+                Console.WriteLine("TestDirectCatalogAsync");
+                await TestDirectCatalogAsync();
+                Console.WriteLine("TestUnsavedPresetIsNotRegisteredAsync");
+                await TestUnsavedPresetIsNotRegisteredAsync();
+                Console.WriteLine("TestPresetDraftLifecycleAsync");
+                await TestPresetDraftLifecycleAsync();
+                Console.WriteLine("TestDialogStopPreservesDraftAsync");
+                await TestDialogStopPreservesDraftAsync();
+                Console.WriteLine("TestRecoveryRoutingAsync");
+                await TestRecoveryRoutingAsync();
                 Console.WriteLine("TestRunningContextAndRestartAsync");
                 await TestRunningContextAndRestartAsync();
                 Console.WriteLine("TestCancelledStartAsync");
@@ -70,12 +83,121 @@ public static partial class Program
         foreach (Control child in parent.Controls)
             foreach (var control in Controls(child)) yield return control;
     }
+    private static async Task RenderWorkspaceAsync()
+    {
+        await using var fixture = new Fixture(fresh: true); var vm = fixture.ViewModel;
+        await UntilAsync(() => !vm.IsBusy);
+        using var window = new MainWindow(vm); window.Show(); await Task.Delay(80);
+        window.Size = new System.Drawing.Size(1040, 840);
+        var directory = Path.Combine(Root, "artifacts/ux-redesign"); Directory.CreateDirectory(directory);
+        async Task CaptureAsync(Form form, string file)
+        {
+            await Task.Delay(150);
+            using var bitmap = new System.Drawing.Bitmap(form.Width, form.Height);
+            form.DrawToBitmap(bitmap, new System.Drawing.Rectangle(System.Drawing.Point.Empty, form.Size));
+            bitmap.Save(Path.Combine(directory, file));
+        }
+        await CaptureAsync(window, "main.png");
+        vm.SelectedModel = vm.Models.Single(model => model.Engine == "anis"); await UntilAsync(() => !vm.IsBusy);
+        await CaptureAsync(window, "anis.png");
+        vm.SelectedModel = vm.Models[0]; await UntilAsync(() => !vm.IsBusy);
+        using (var settings = window.CreateSettingsDialog())
+        {
+            settings.Show(window); await CaptureAsync(settings, "settings.png");
+            vm.CloseToTray = false; await CaptureAsync(settings, "settings-exit.png");
+            Assert(Controls(settings).Any(control => control.Text == Localization.T("ui.settings.closeExits")) && !Controls(settings).Any(control => control.Text == Localization.T("ui.footer.exit")), "The close-window explanation must match the actual preference.");
+            vm.CloseToTray = true; settings.Close();
+        }
+        using (var capture = new System.Windows.Forms.Timer { Interval = 150 })
+        {
+            capture.Tick += async (_, _) =>
+            {
+                capture.Stop(); var dialog = Application.OpenForms.OfType<LauncherDialog>().Single();
+                await CaptureAsync(dialog, "load-options.png");
+                vm.FlashAttention = "off"; await CaptureAsync(dialog, "load-options-validation.png");
+                vm.FlashAttention = "on"; dialog.Close();
+            };
+            capture.Start(); Controls(window).OfType<Button>().Single(control => control.Name == "AdvancedToggle").PerformClick();
+        }
+        vm.SelectedPreset = vm.Presets.Single(p => p.Id == "translation");
+        vm.Glossary.Add(new() { Source = "Traveler", Target = "여행자" });
+        foreach (var page in new[] { 0, 1, 2 })
+        {
+            vm.PageIndex = page; await Task.Delay(150);
+            await CaptureAsync(window, $"page-{page}.png");
+        }
+        Controls(window).OfType<TabControl>().Single(control => control.Name == "PresetEditorTabs").SelectedIndex = 1;
+        await CaptureAsync(window, "glossary.png");
+        vm.EditingPreset = vm.Presets.Single(preset => preset.Id == "creative");
+        await CaptureAsync(window, "preset-inactive.png");
+        vm.EditingPreset = vm.SelectedPreset;
+        vm.PageIndex = 0; vm.SelectedModel = vm.Models.First(model => model.Id.StartsWith("hy-mt2")); await UntilAsync(() => !vm.IsBusy);
+        vm.SelectedPreset = vm.Presets.Single(preset => preset.Id == "translation");
+        vm.SelectedModel = vm.Models[0]; await UntilAsync(() => !vm.IsBusy); vm.PageIndex = 2;
+        await CaptureAsync(window, "preset-shared.png");
+        window.Size = new System.Drawing.Size(760, 600); await CaptureAsync(window, "preset-shared-compact.png");
+        vm.PageIndex = 0; window.Size = new System.Drawing.Size(760, 600);
+        await CaptureAsync(window, "compact.png");
+        window.Size = new System.Drawing.Size(1040, 840); window.Scale(new System.Drawing.SizeF(1.5f, 1.5f));
+        WindowLayout.FitToWorkArea(window, new System.Drawing.Rectangle(0, 0, 1440, 1000));
+        await CaptureAsync(window, "scaled-layout.png");
+        window.Close();
+        await using var dialogs = new Fixture(); var editing = dialogs.ViewModel; await UntilAsync(() => !editing.IsBusy);
+        editing.ResolvePresetEdits = null; editing.ConfirmPresetDeletion = null;
+        using var editor = new MainWindow(editing); editor.Show(); editing.PageIndex = 2; await Task.Delay(50);
+        async Task CaptureModalAsync(Action open, string file)
+        {
+            var captured = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            using var timer = new System.Windows.Forms.Timer { Interval = 150 };
+            timer.Tick += async (_, _) =>
+            {
+                timer.Stop();
+                try
+                {
+                    var dialog = Application.OpenForms.OfType<LauncherDialog>().Single();
+                    await CaptureAsync(dialog, file); dialog.DialogResult = DialogResult.Cancel; dialog.Close(); captured.TrySetResult();
+                }
+                catch (Exception error) { captured.TrySetException(error); }
+            };
+            timer.Start(); open(); await captured.Task;
+        }
+        editing.PresetPrompt += "\nUnfinished draft";
+        await CaptureModalAsync(() => Controls(editor).OfType<Button>().Single(control => control.Name == "BackToLauncher").PerformClick(), "unsaved-dialog.png");
+        Assert(editing.PageIndex == 2 && editing.HasPresetChanges, "Keep editing must preserve both the screen and draft.");
+        await CaptureModalAsync(() => Controls(editor).OfType<Button>().Single(control => ReferenceEquals(control.Tag, editing.DeletePresetCommand)).PerformClick(), "delete-dialog.png");
+        editing.ResolvePresetEdits = () => PresetEditDecision.Discard;
+        editing.PageIndex = 1; await editing.ConnectModelFileAsync(Path.Combine(dialogs.Paths.Root, "invalid.json"));
+        await CaptureAsync(editor, "import-error.png");
+        editor.Close();
+    }
+    private static async Task TestDirectCatalogAsync()
+    {
+        await using var fresh = new Fixture(fresh: true);
+        Assert(fresh.ViewModel.PageIndex == 0, "First launch must show the model selection workspace directly.");
+        await using var migrated = new Fixture();
+        var vm = migrated.ViewModel;
+        await UntilAsync(() => !vm.IsBusy);
+        using var window = new MainWindow(vm); window.Show(); await Task.Delay(40);
+        var selector = Controls(window).Single(c => c.Name == "RunModelSelector");
+        var count = selector is ListBox list ? list.Items.Count : ((ComboBox)selector).Items.Count;
+        Assert(count == vm.Models.Count, "Every bundled model must remain discoverable even with only one previously registered model.");
+        window.Close();
+    }
+    private static async Task TestUnsavedPresetIsNotRegisteredAsync()
+    {
+        await using var fixture = new Fixture(); var vm = fixture.ViewModel;
+        await UntilAsync(() => !vm.IsBusy);
+        var count = vm.Presets.Count; var applied = vm.SelectedPreset;
+        vm.NewPresetCommand.Execute(null);
+        Assert(vm.Presets.Count == count && fixture.Settings.Presets.Count == count - 1 && vm.SelectedPreset == applied,
+            "A new preset must remain an editor draft until it is explicitly saved and applied.");
+    }
     private static void TestBundledResources()
     {
         Assert(!typeof(MainWindow).Assembly.GetReferencedAssemblies().Any(name => name.Name is "PresentationFramework" or "PresentationCore" or "WindowsBase"), "The launcher must not reference WPF assemblies.");
         var expected = CatalogLoader.Load(Path.Combine(Root, "src/GemmaLauncher.App/Assets/catalog.json"));
         var bundled = BundledResources.LoadCatalog();
-        Assert(bundled.Models.Length == 5, "A standalone launcher must contain Gemma and HY-MT2 presets.");
+        Assert(bundled.Models.Length == 6 && bundled.Models[^1].Engine == "anis", "A standalone launcher must contain all five models and ANIS last.");
         Assert(JsonSerializer.Serialize(expected, CatalogLoader.JsonOptions) == JsonSerializer.Serialize(bundled, CatalogLoader.JsonOptions),
             "Bundling must preserve every model/runtime URL, hash, profile and display field from the source catalog.");
         Assert(typeof(BundledResources).Assembly.GetManifestResourceNames().Contains("GemmaLauncher.Catalog.json"),
@@ -104,14 +226,24 @@ public static partial class Program
         await UntilAsync(() => vm.IsServerRunning && !vm.IsBusy);
         Assert(!vm.CanSelectModel && vm.CanChangeContext && vm.CanOpenWebUi, "Running state must lock model choice while allowing a pending context change.");
         var firstContext = fixture.Session.Starts.Single().Context;
+        vm.FlashAttention = "off";
+        Assert(vm.FlashAttention == "on" && vm.LoadOptionsFeedback.Length > 0, "An incompatible setting must preserve the valid value and explain the rejection in its dialog.");
         var nextContext = vm.ContextChoices.First(choice => choice.Value != firstContext);
         vm.SelectedContext = nextContext;
         Assert(vm.HasPendingContext && vm.RestartCommand.CanExecute(null), "Changed context must require restart.");
         Assert(fixture.Session.Starts.Count == 1 && fixture.Session.Starts[0].Context == firstContext, "Selecting context must not mutate the active server configuration.");
         Assert(fixture.Store.Load().Contexts[vm.SelectedModel!.Id] == nextContext.Value, "Context choice must be persisted.");
+        vm.GpuLayers = "0";
+        Assert(vm.LoadOptionsFeedback.Length == 0, "A valid change must clear the previous validation explanation.");
+        Assert(vm.GpuLayers == "0" && fixture.Session.Starts[0].LoadOptions?.GpuLayers != "0", "Running load options must queue without changing the active session.");
         vm.RestartCommand.Execute(null);
         await UntilAsync(() => fixture.Session.Starts.Count == 2 && vm.IsServerRunning && !vm.IsBusy);
         Assert(fixture.Session.Starts[1].Context == nextContext.Value && !vm.HasPendingContext, "Restart must apply the pending context exactly once.");
+        Assert(fixture.Session.Starts[1].LoadOptions?.GpuLayers == "0", "Restart must apply pending load options.");
+        vm.GpuLayers = "auto";
+        Assert(vm.HasPendingContext && vm.RestartCommand.CanExecute(null), "A load-option change alone must expose the restart action.");
+        vm.GpuLayers = "0";
+        Assert(!vm.HasPendingContext, "Restoring active options must clear the pending change.");
         Assert(fixture.Session.StopCalls >= 1, "Restart must first stop the owned session.");
         vm.PrimaryCommand.Execute(null);
         await UntilAsync(() => !vm.IsServerRunning && !vm.IsBusy);
@@ -343,7 +475,7 @@ public static partial class Program
         try
         {
             window.Show(); await Task.Delay(30);
-            var selector = Controls(window).OfType<ComboBox>().Single(combo => combo.Name == "RunModelSelector");
+            var selector = Controls(window).OfType<ListBox>().Single(combo => combo.Name == "RunModelSelector");
             selector.SelectedItem = vm.ModelCards.Single(card => card.Definition == previous);
             await Task.Delay(30); window.Show();
             Assert(vm.SelectedModel == candidate.Definition && ReferenceEquals(selector.SelectedItem, candidate),
@@ -357,22 +489,24 @@ public static partial class Program
     {
         await using var fixture = new Fixture(fresh: true);
         var vm = fixture.ViewModel;
-        Assert(vm.PageIndex == 1 && vm.SelectedModel is null && !vm.HasLibraryModels && !vm.PrimaryCommand.CanExecute(null) && fixture.Installer.FindCalls.Count == 0,
-            "First launch must begin with model browsing without a hidden default selection or file scan.");
+        await UntilAsync(() => !vm.IsBusy);
+        var initial = vm.SelectedModel;
+        Assert(vm.PageIndex == 0 && initial?.Id == vm.Models[0].Id && vm.PrimaryCommand.CanExecute(null) && fixture.Session.Starts.Count == 0,
+            "First launch must explain the default model without automatically downloading or starting it.");
         vm.PageIndex = 0;
         var window = new MainWindow(vm);
         try
         {
             window.Show(); await Task.Delay(30);
-            Assert(vm.ShowRunEmpty && !vm.ShowOperation && Controls(window).OfType<Label>().Any(text => text.Text == Localization.T("ui.library.emptyTitle")),
-                "Empty Run must explain how to choose a model.");
+            Assert(!vm.ShowRunEmpty && vm.ShowOperation && Controls(window).OfType<ModelChoiceList>().Single().Items.Count == vm.Models.Count,
+                "First launch must show every choice and the default model's preparation action.");
         }
         finally { window.Close(); }
         var path = Path.Combine(fixture.Paths.Root, "local-only.gguf");
         WriteLocalGguf(path);
         await vm.ConnectModelFileAsync(path);
         var card = vm.SelectedPresentation!;
-        Assert(vm.LibraryModels.Count == 1 && card.FileState == ModelFileState.Ready, "A local import must be registered, selected and verified together.");
+        Assert(vm.LibraryModels.Count == 2 && card.FileState == ModelFileState.Ready, "A local import must be registered, selected and verified together.");
         // Move only the fixture file; the launcher must request reconnection and retain its registration.
         File.Move(path, path + ".moved");
         fixture.Installer.MissingModels.Add(card.Definition.Id);
@@ -389,8 +523,9 @@ public static partial class Program
         }
         finally { Directory.Delete(fixture.Paths.SettingsFile + ".tmp"); }
         vm.RemoveLibraryModelCommand.Execute(card);
-        Assert(vm.SelectedModel is null && !vm.HasLibraryModels && !vm.PrimaryCommand.CanExecute(null) && fixture.Store.Load().SelectedModelId is null && File.Exists(path + ".moved"),
-            "Removing the last registered model must clear selection without choosing an unregistered catalog model or deleting the original file.");
+        await UntilAsync(() => !vm.IsBusy);
+        Assert(vm.SelectedModel == initial && vm.HasLibraryModels && vm.PrimaryCommand.CanExecute(null) && fixture.Store.Load().SelectedModelId == initial!.Id && File.Exists(path + ".moved"),
+            "Removing a user model must restore the remaining built-in selection and retain the original file.");
     }
 
 
@@ -399,7 +534,7 @@ public static partial class Program
         await using var fixture = new Fixture();
         var vm = fixture.ViewModel;
         await UntilAsync(() => !vm.IsBusy);
-        Assert(vm.Families.Count == 3, "The catalog must render model families, not one permanent view per model.");
+        Assert(vm.Families.Count == 4, "The catalog must retain Gemma, HY-MT2 and ANIS families without hiding their individual models.");
         var hy = vm.Families.Single(family => family.Name == "HY-MT2");
         Assert(hy.Variants.Count == 2, "HY-MT2 must offer only 1.8B and 7B.");
         var lightweightCopy = hy.Selected.Headline;
@@ -483,9 +618,12 @@ public static partial class Program
             var catalog = BundledResources.LoadCatalog();
             if (!fresh) Settings.SelectedModelId = catalog.Models[0].Id;
             Installer = new FakeInstaller(Paths.Root, Settings.ModelFiles);
+            if (fresh) foreach (var model in catalog.Models) Installer.MissingModels.Add(model.Id);
             if (!blockScan) Installer.Scan.TrySetResult();
             Store = new SettingsStore(Paths);
             ViewModel = new(catalog, Paths, Settings, Store, Installer, Session);
+            ViewModel.ResolvePresetEdits = () => PresetEditDecision.Save;
+            ViewModel.ConfirmPresetDeletion = _ => true;
         }
 
         public ValueTask DisposeAsync() => ViewModel.DisposeAsync();
@@ -510,6 +648,7 @@ public static partial class Program
             return _nextMatch = new(TaskCreationOptions.RunContinuationsAsynchronously);
         }
         public bool Disposed { get; private set; }
+        public Exception? NextRuntimeFailure { get; set; }
 
         public async Task<InstalledModel?> FindAsync(ModelDefinition model, CancellationToken cancellationToken = default)
         {
@@ -539,6 +678,7 @@ public static partial class Program
         public async Task<string> EnsureRuntimeAsync(RuntimePackage runtime, IProgress<InstallationProgress>? progress = null, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            if (NextRuntimeFailure is { } failure) { NextRuntimeFailure = null; throw failure; }
             progress?.Report(new("downloading", Localization.T("engine.install.downloading", "fixture-runtime.zip"), 37, 100));
             if (_runtimeDownload is not null) await _runtimeDownload.Task.WaitAsync(cancellationToken);
             await Task.Yield();

@@ -84,5 +84,13 @@
   "engine.library.localMissing": "接続したファイルが見つからないか変更されています: {0}。GGUFを接続し直してください。",
   "engine.library.mainFirst": "MTPを接続する前に本体モデルをインストールまたは接続してください。",
   "engine.library.presetRequest": "このプリセットにはテキストまたはユーザーメッセージが必要です。数値トークンのみのリクエストには適用できません。",
-  "engine.library.split": "分割GGUFの一部です。単一ファイルのGGUFモデルを選んでください。"
+  "engine.library.split": "分割GGUFの一部です。単一ファイルのGGUFモデルを選んでください。",
+  "engine.anis.accessRequired": "ANISモデルのダウンロード権限が必要です。承認済みアカウントの読み取りトークンを接続してください。",
+  "engine.anis.invalidFile": "ANISファイルの検証に失敗しました: {0}",
+  "engine.anis.invalidFolder": "必要なファイルがないか、対応するANISモデルフォルダーではありません。",
+  "engine.anis.invalidSource": "公式ANISプログラムのパッケージが不正です。",
+  "engine.anis.invalidRuntime": "ANIS実行環境の設定が不正です。",
+  "engine.anis.runtime": "ANIS専用の実行環境を準備しています。Pythonコマンドの入力は不要です。",
+  "engine.anis.runtimeFailed": "ANIS実行環境の準備に失敗しました（終了コード{0}）。anis-prepare.logを確認してください。",
+  "engine.session.memoryFailed": "モデルの読み込みに必要なメモリが不足しています。文脈の長さや実行デバイスを調整して再実行してください。"
 }

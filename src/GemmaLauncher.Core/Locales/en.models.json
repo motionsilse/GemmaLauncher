@@ -33,5 +33,13 @@
   "models.hy7.hardwareGuide": "Choose it when translation quality matters more than memory use.",
   "models.hy7.memoryGuide": "Actual RAM and VRAM usage is shown while running.",
   "models.hy7.benefit1": "A larger model for quality-focused translation",
-  "models.hy7.benefit2": "Use your own translation instructions and terminology"
+  "models.hy7.benefit2": "Use your own translation instructions and terminology",
+  "models.anis.name": "ANIS Trans (Japanese only)",
+  "models.anis.category": "Japanese ↔ Korean",
+  "models.anis.headline": "Translation for Japanese and Korean games",
+  "models.anis.description": "A specialized Japanese ↔ Korean translation model by ANIS. First download requires official access approval.",
+  "models.anis.hardwareGuide": "CPU supported; NVIDIA CUDA is optional with automatic CPU fallback.",
+  "models.anis.memoryGuide": "CPU memory about 1 GB (author estimate)",
+  "models.anis.benefit1": "Loads the model and exposes an OpenAI-compatible API",
+  "models.anis.benefit2": "Official upstream program; no separate translation GUI"
 }

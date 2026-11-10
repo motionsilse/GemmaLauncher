@@ -84,5 +84,13 @@
   "engine.library.localMissing": "連接的檔案遺失或已變更：{0}。請重新連接 GGUF。",
   "engine.library.mainFirst": "連接 MTP 前，請先安裝或連接主模型。",
   "engine.library.presetRequest": "此預設需要文字提示或使用者訊息。僅含數字權杖的請求無法使用文字預設。",
-  "engine.library.split": "這是分割 GGUF 的一部分。請選擇單一檔案的 GGUF 模型。"
+  "engine.library.split": "這是分割 GGUF 的一部分。請選擇單一檔案的 GGUF 模型。",
+  "engine.anis.accessRequired": "ANIS model access is required. Connect an approved Hugging Face read token.",
+  "engine.anis.invalidFile": "The ANIS file failed verification: {0}",
+  "engine.anis.invalidFolder": "This is not a complete, supported ANIS model folder.",
+  "engine.anis.invalidSource": "The official ANIS program package is invalid.",
+  "engine.anis.invalidRuntime": "ANIS runtime settings are invalid.",
+  "engine.anis.runtime": "Preparing the private ANIS execution environment. Python commands are not required.",
+  "engine.anis.runtimeFailed": "The ANIS runtime could not be prepared (exit {0}). See anis-prepare.log.",
+  "engine.session.memoryFailed": "There is not enough memory to load the model. Adjust the context length or execution device, then run again."
 }

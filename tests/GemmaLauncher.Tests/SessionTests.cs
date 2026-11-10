@@ -14,8 +14,12 @@ public static class SessionTests
     public static async Task<bool> TryRunChildAsync(string[] arguments)
     {
         var modelPath = Argument(arguments, "--model");
+        var anis = arguments.Any(argument => argument.Contains("run_module('anis_trans.server'", StringComparison.Ordinal));
+        if (anis && modelPath is not null) modelPath = Path.Combine(modelPath, "session-fixture-anis.json");
         if (modelPath is null || !Path.GetFileName(modelPath).StartsWith("session-fixture-", StringComparison.Ordinal)) return false;
         var mode = await File.ReadAllTextAsync(modelPath);
+        if (mode == "oom") { Console.Error.WriteLine("fixture: out of memory"); Environment.ExitCode = 37; return true; }
+        if (mode == "oom-vulkan") { Console.Error.WriteLine("vk::Device::allocateMemory: ErrorOutOfDeviceMemory"); Environment.ExitCode = 37; return true; }
         if (mode == "fail") { Environment.ExitCode = 37; return true; }
         if (mode == "slow") { await Task.Delay(TimeSpan.FromMinutes(1)); return true; }
         if (mode == "with-child")
@@ -29,7 +33,7 @@ public static class SessionTests
             await File.WriteAllTextAsync(modelPath + ".childpid", child.Id.ToString(CultureInfo.InvariantCulture));
         }
         var port = int.Parse(Argument(arguments, "--port")!, CultureInfo.InvariantCulture);
-        var alias = Argument(arguments, "--alias")!;
+        var alias = anis ? "anis-trans:auto" : Argument(arguments, "--alias")!;
         using var listener = new TcpListener(IPAddress.Loopback, port);
         listener.Start();
         if (mode == "verbose")
@@ -55,8 +59,16 @@ public static class SessionTests
             var body = first?.Contains("/v1/models", StringComparison.Ordinal) == true
                 ? JsonSerializer.Serialize(new { data = new[] { new { id = mode == "wrong-alias" ? "someone-else" : alias } } })
                 : "{\"status\":\"ok\"}";
+            var status = 200;
+            if (anis)
+            {
+                var path = Uri.UnescapeDataString(first?.Split(' ').ElementAtOrDefault(1) ?? "");
+                if (path == "/health") status = 404;
+                if (path == "/v1/models") body = "{\"data\":[{\"id\":\"anis-trans:latest\"}]}";
+                else if (path.StartsWith("/v1/models/", StringComparison.Ordinal)) body = JsonSerializer.Serialize(new { id = path["/v1/models/".Length..] });
+            }
             var payload = Encoding.UTF8.GetBytes(body);
-            await stream.WriteAsync(Encoding.ASCII.GetBytes($"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {payload.Length}\r\nConnection: close\r\n\r\n"));
+            await stream.WriteAsync(Encoding.ASCII.GetBytes($"HTTP/1.1 {status} OK\r\nContent-Type: application/json\r\nContent-Length: {payload.Length}\r\nConnection: close\r\n\r\n"));
             await stream.WriteAsync(payload);
         }
     }
@@ -68,6 +80,7 @@ public static class SessionTests
         try
         {
             var configuration = CreateConfiguration(directory, "ready");
+            await CheckAnisReadinessAsync(configuration, directory);
             CheckArguments(configuration);
             await CheckInvalidContextAsync(configuration);
             await CheckPortConflictAsync(configuration);
@@ -77,6 +90,8 @@ public static class SessionTests
             await CheckCancellationAsync(CreateConfiguration(directory, "slow"));
             await CheckStopDuringStartupAsync(CreateConfiguration(directory, "slow"));
             await CheckStartupFailureAsync(CreateConfiguration(directory, "fail"));
+            await CheckMemoryFailureAsync(CreateConfiguration(directory, "oom"));
+            await CheckMemoryFailureAsync(CreateConfiguration(directory, "oom-vulkan"));
             await CheckAliasMismatchAsync(CreateConfiguration(directory, "wrong-alias"));
             await CheckCrashAsync(CreateConfiguration(directory, "ready"));
             await CheckDisposeAsync(CreateConfiguration(directory, "ready"));
@@ -123,6 +138,25 @@ public static class SessionTests
             Assert(Argument(noMtp, "--spec-type") == "none" && Argument(noMtp, "--spec-draft-model") is null, "Additional non-MTP models must remain supported.");
         }
         finally { CultureInfo.CurrentCulture = previousCulture; }
+    }
+    private static async Task CheckAnisReadinessAsync(LaunchConfiguration original, string directory)
+    {
+        var modelRoot = Path.Combine(directory, "anis-model"); Directory.CreateDirectory(Path.Combine(modelRoot, "ct2"));
+        var main = Path.Combine(modelRoot, "ct2", "model.bin"); await File.WriteAllTextAsync(main, "fixture");
+        await File.WriteAllTextAsync(Path.Combine(modelRoot, "session-fixture-anis.json"), "anis-ready");
+        var source = Path.Combine(directory, "source", "anis_trans"); Directory.CreateDirectory(source); await File.WriteAllTextAsync(Path.Combine(source, "server.py"), "# fixture");
+        var model = original.Model.Definition with { Id = "anis-trans", Engine = "anis", ApiModelId = "anis-trans:auto", Profile = original.Model.Definition.Profile with { DefaultContext = 1024, ContextSizes = [1024], MtpDraftMax = 0 } };
+        var configuration = original with { Model = new(model, main, null), BackendSourceDirectory = Path.GetDirectoryName(source), Context = 1024, EnableGateway = true };
+        await using var session = new ServerSession(TimeSpan.FromSeconds(3));
+        await session.StartAsync(configuration);
+        Assert(session.Status.State == ServerState.Running, "ANIS must become ready without /health or the auto alias being advertised in /v1/models.");
+        await session.StopAsync();
+    }
+    private static async Task CheckMemoryFailureAsync(LaunchConfiguration configuration)
+    {
+        await using var session = new ServerSession(TimeSpan.FromSeconds(3));
+        try { await session.StartAsync(configuration); throw new Exception("A memory failure was not detected."); }
+        catch (InvalidOperationException ex) { Assert(ex.InnerException is ModelLoadMemoryException && session.Status.State == ServerState.Faulted, "An engine memory error must retain a typed cause for the recovery UI."); }
     }
 
     private static async Task CheckInvalidContextAsync(LaunchConfiguration configuration)

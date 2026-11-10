@@ -31,12 +31,23 @@ public sealed class ServerSession : IServerSession
 
     public SessionStatus Status { get { lock (_sync) return _status; } }
     public event EventHandler<SessionStatus>? StatusChanged;
-    public void UpdatePreset(TaskPreset preset) => Volatile.Read(ref _gateway)?.UpdatePreset(preset);
+    public void UpdatePreset(TaskPreset preset)
+    {
+        if (_requestedConfiguration?.Model.Definition.Engine != "anis") Volatile.Read(ref _gateway)?.UpdatePreset(preset);
+    }
 
     public static IReadOnlyList<string> BuildArguments(LaunchConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         var model = configuration.Model.Definition;
+        if (model.Engine == "anis")
+        {
+            if (configuration.Port is < 1 or > 65535 || configuration.AnisDevice is not ("auto" or "cpu" or "cuda") || string.IsNullOrWhiteSpace(configuration.BackendSourceDirectory))
+                throw new ArgumentException(Localization.T("engine.anis.invalidRuntime"));
+            var root = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetFullPath(configuration.Model.ModelPath)))!;
+            return new[] { "-I", "-X", "utf8", "-c", "import sys,runpy;sys.path.insert(0,sys.argv.pop(1));runpy.run_module('anis_trans.server',run_name='__main__')",
+                Path.GetFullPath(configuration.BackendSourceDirectory), "--host", "127.0.0.1", "--port", configuration.Port.ToString(CultureInfo.InvariantCulture), "--model", root, "--device", configuration.AnisDevice };
+        }
         var profile = model.Profile;
         var options = configuration.LoadOptions;
         options?.Validate();
@@ -108,6 +119,7 @@ public sealed class ServerSession : IServerSession
             SetStatus(new(ServerState.Starting, Localization.T("engine.session.preparing"), ModelId: configuration.Model.Definition.Id));
             RequireFile(configuration.RuntimeExecutable, Localization.T("engine.session.missingRuntime"));
             RequireFile(configuration.Model.ModelPath, Localization.T("engine.session.missingModel"));
+            if (configuration.Model.Definition.Engine == "anis") RequireFile(Path.Combine(configuration.BackendSourceDirectory!, "anis_trans", "server.py"), Localization.T("engine.anis.invalidRuntime"));
             if (configuration.Model.MtpPath is { } mtp && configuration.LoadOptions?.UseMtp != false) RequireFile(mtp, Localization.T("engine.session.missingMtp"));
             EnsurePortAvailable(configuration.Port);
             var requested = configuration;
@@ -118,7 +130,7 @@ public sealed class ServerSession : IServerSession
                 var backendPort = ((IPEndPoint)reservation.LocalEndpoint).Port;
                 reservation.Stop();
                 _gateway = new RequestGateway();
-                await _gateway.StartAsync(configuration.Port, backendPort, configuration.Preset ?? TaskPreset.Empty, startup.Token).ConfigureAwait(false);
+                await _gateway.StartAsync(configuration.Port, backendPort, configuration.Model.Definition.Engine == "anis" ? TaskPreset.Empty : configuration.Preset ?? TaskPreset.Empty, startup.Token).ConfigureAwait(false);
                 configuration = configuration with { Port = backendPort };
                 arguments = BuildArguments(configuration);
             }
@@ -174,6 +186,20 @@ public sealed class ServerSession : IServerSession
         catch (Exception exception) when (began)
         {
             await CleanupOwnedAsync().ConfigureAwait(false);
+            try
+            {
+                if (logPath is not null && File.Exists(logPath))
+                {
+                    await using var log = File.OpenRead(logPath);
+                    if (log.Length > 65536) log.Seek(-65536, SeekOrigin.End);
+                    using var reader = new StreamReader(log, Encoding.UTF8);
+                    var tail = await reader.ReadToEndAsync().ConfigureAwait(false);
+                    if (new[] { "out of memory", "cannot allocate memory", "ErrorOutOfDeviceMemory", "ErrorOutOfHostMemory", "CUDA_ERROR_OUT_OF_MEMORY" }
+                        .Any(message => tail.Contains(message, StringComparison.OrdinalIgnoreCase)))
+                        exception = new ModelLoadMemoryException(exception);
+                }
+            }
+            catch (Exception diagnosticFailure) when (diagnosticFailure is IOException or UnauthorizedAccessException) { /* Preserve the startup failure if its log cannot be read. */ }
             var message = logPath is null ? exception.Message : Localization.T("engine.session.failureLog", exception.Message, logPath);
             SetStatus(new(ServerState.Faulted, message));
             throw new InvalidOperationException(message, exception);
@@ -243,16 +269,20 @@ public sealed class ServerSession : IServerSession
                 {
                     try
                     {
-                        using var health = await client.GetAsync("health", timeout.Token).ConfigureAwait(false);
+                        using var health = await client.GetAsync(owned.Configuration.Model.Definition.Engine == "anis" ? "" : "health", timeout.Token).ConfigureAwait(false);
                         if (health.IsSuccessStatusCode)
                         {
-                            using var modelsResponse = await client.GetAsync("v1/models", timeout.Token).ConfigureAwait(false);
+                            var anis = owned.Configuration.Model.Definition.Engine == "anis";
+                            var expectedAlias = owned.Configuration.Model.Definition.ApiModelId;
+                            using var modelsResponse = await client.GetAsync(anis ? "v1/models/" + Uri.EscapeDataString(expectedAlias) : "v1/models", timeout.Token).ConfigureAwait(false);
                             if (modelsResponse.IsSuccessStatusCode)
                             {
                                 await using var body = await modelsResponse.Content.ReadAsStreamAsync(timeout.Token).ConfigureAwait(false);
                                 using var models = await JsonDocument.ParseAsync(body, cancellationToken: timeout.Token).ConfigureAwait(false);
-                                if (models.RootElement.TryGetProperty("data", out var data) && data.ValueKind == JsonValueKind.Array &&
-                                    data.EnumerateArray().Any(model => model.TryGetProperty("id", out var id) && id.GetString() == owned.Configuration.Model.Definition.ApiModelId) &&
+                                var hasAlias = anis ? models.RootElement.TryGetProperty("id", out var alias) && alias.GetString() == expectedAlias :
+                                    models.RootElement.TryGetProperty("data", out var data) && data.ValueKind == JsonValueKind.Array &&
+                                    data.EnumerateArray().Any(model => model.TryGetProperty("id", out var id) && id.GetString() == expectedAlias);
+                                if (hasAlias &&
                                     !owned.Process.HasExited && TcpProcessOwner.OwnsListener(owned.Configuration.Port, owned.Process.Id)) return;
                             }
                         }

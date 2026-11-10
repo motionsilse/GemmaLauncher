@@ -16,6 +16,10 @@ public sealed record LauncherSettings
     public Dictionary<string, ModelLoadOptions> LoadOptions { get; set; } = [];
     public List<ModelDefinition> UserModels { get; set; } = [];
     public Dictionary<string, ModelArtifact> MtpFiles { get; set; } = [];
+    public string? AnisModelFolder { get; set; }
+    public string AnisDirection { get; set; } = "auto";
+    public string AnisDevice { get; set; } = "auto";
+    public bool CloseToTray { get; set; } = true;
 }
 
 public sealed class SettingsStore(LauncherPaths paths)

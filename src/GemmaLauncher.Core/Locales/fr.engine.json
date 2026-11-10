@@ -84,5 +84,13 @@
   "engine.library.localMissing": "Le fichier associé est absent ou modifié : {0}. Associez de nouveau le GGUF.",
   "engine.library.mainFirst": "Installez ou associez le modèle principal avant son fichier MTP.",
   "engine.library.presetRequest": "Ce préréglage nécessite du texte ou un message utilisateur. Les requêtes contenant uniquement des tokens numériques ne sont pas compatibles.",
-  "engine.library.split": "Ce fichier est une partie d’un GGUF fractionné. Choisissez un modèle GGUF en un seul fichier."
+  "engine.library.split": "Ce fichier est une partie d’un GGUF fractionné. Choisissez un modèle GGUF en un seul fichier.",
+  "engine.anis.accessRequired": "ANIS model access is required. Connect an approved Hugging Face read token.",
+  "engine.anis.invalidFile": "The ANIS file failed verification: {0}",
+  "engine.anis.invalidFolder": "This is not a complete, supported ANIS model folder.",
+  "engine.anis.invalidSource": "The official ANIS program package is invalid.",
+  "engine.anis.invalidRuntime": "ANIS runtime settings are invalid.",
+  "engine.anis.runtime": "Preparing the private ANIS execution environment. Python commands are not required.",
+  "engine.anis.runtimeFailed": "The ANIS runtime could not be prepared (exit {0}). See anis-prepare.log.",
+  "engine.session.memoryFailed": "There is not enough memory to load the model. Adjust the context length or execution device, then run again."
 }

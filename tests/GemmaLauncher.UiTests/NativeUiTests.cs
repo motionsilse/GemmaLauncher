@@ -23,7 +23,7 @@ public static partial class Program
         }
         Assert(activations == 2, "Each activation message must be handled once.");
         Assert(window.CreatedPageCount == 1, "Only the selected page should be created at startup.");
-        var models = Controls(window).OfType<ComboBox>().Single(c => c.Name == "RunModelSelector");
+        var models = Controls(window).OfType<ListBox>().Single(c => c.Name == "RunModelSelector");
         Assert(!models.Enabled, "The real model selector must be disabled during scanning.");
         fixture.Installer.Scan.TrySetResult(); await UntilAsync(() => !vm.IsBusy); await Task.Delay(30);
         foreach (var model in vm.Models.Take(3)) { vm.UseLibraryModelCommand.Execute(model); await UntilAsync(() => !vm.IsBusy); }
@@ -48,16 +48,21 @@ public static partial class Program
         vm.PageIndex = 2; await Task.Delay(30);
         Assert(window.CreatedPageCount == 2, "Navigating to presets must create that page on demand.");
         vm.SelectedPreset = vm.Presets.Single(p => p.Id == "translation"); await Task.Delay(30);
+        Controls(window).OfType<TabControl>().Single(c => c.Name == "PresetEditorTabs").SelectedIndex = 1; await Task.Delay(30);
         var grid = Controls(window).OfType<DataGridView>().Single();
+        Assert(grid.Height * 96f / window.DeviceDpi >= 120, "The glossary must show editable rows rather than collapse to its column header.");
         vm.Glossary.Add(new() { Source = "moon", Target = "달" }); await Task.Delay(30);
         grid.CurrentCell = grid.Rows[0].Cells[1]; grid.BeginEdit(true);
         ((TextBox)grid.EditingControl!).Text = "달빛";
         Controls(window).OfType<Button>().Single(b => ReferenceEquals(b.Tag, vm.SavePresetCommand)).PerformClick();
         Assert(fixture.Store.Load().Presets.Single(p => p.Id == "translation").Glossary[0].Target == "달빛", "Save must commit the actively edited glossary cell.");
+        vm.PageIndex = 2; await Task.Delay(30);
         grid.Rows.RemoveAt(0);
         Controls(window).OfType<Button>().Single(b => ReferenceEquals(b.Tag, vm.SavePresetCommand)).PerformClick();
         Assert(fixture.Store.Load().Presets.Single(p => p.Id == "translation").Glossary.Length == 0, "Deleting a grid row must remove the saved glossary entry.");
         vm.PageIndex = 1; vm.ModelPageIndex = 2; await Task.Delay(30);
+        Assert(!Controls(window).OfType<Button>().Single(button => ReferenceEquals(button.Tag, vm.UseLibraryModelCommand)).Enabled,
+            "An empty custom-model list must not offer a selection action with no target.");
         var connect = Controls(window).OfType<Button>().Single(b => ReferenceEquals(b.Tag, vm.ConnectModelFileCommand));
         Assert(connect.Text == Localization.T("ui.files.connect") && connect.Enabled, "Add model must offer a localized GGUF connection action.");
         Assert(Controls(window).OfType<Button>().Any(b => ReferenceEquals(b.Tag, vm.ImportCatalogCommand)), "Catalog import must remain available.");
@@ -72,18 +77,16 @@ public static partial class Program
     {
         await using var fixture = new Fixture(); var vm = fixture.ViewModel;
         await UntilAsync(() => !vm.IsBusy);
-        var original = vm.SelectedModel; var family = vm.Families.Single(f => f.Name == "HY-MT2");
-        vm.PageIndex = 1;
+        var family = vm.Families.Single(f => f.Name == "HY-MT2");
         using var window = new MainWindow(vm); window.Show(); await Task.Delay(30);
-        var variant = Controls(window).OfType<ComboBox>().Single(c => c.Name == "VariantSelector" && c.Items.Contains(family.Variants.Last()));
-        variant.SelectedItem = family.Variants.Last(); await Task.Delay(30);
-        Assert(vm.SelectedModel == original && vm.LibraryModels.Count == 1 && !vm.ShowPrimaryAction, "Browsing variants must not change execution selection.");
-        fixture.Installer.MissingModels.Add(family.Selected.Definition.Id);
-        var select = Controls(variant.Parent!).OfType<Button>().Single(b => ReferenceEquals(b.Tag, vm.UseLibraryModelCommand)); select.PerformClick();
+        var selector = Controls(window).OfType<ListBox>().Single(c => c.Name == "RunModelSelector");
+        Assert(selector.Items.Count == vm.Models.Count, "All models must be visible before registration.");
+        var target = family.Variants.Last();
+        fixture.Installer.MissingModels.Add(target.Definition.Id);
+        selector.SelectedItem = target;
         await UntilAsync(() => !vm.IsBusy); await Task.Delay(30);
-        var selector = Controls(window).OfType<ComboBox>().Single(c => c.Name == "RunModelSelector");
-        Assert(vm.PageIndex == 0 && selector.Items.Count == 2 && selector.SelectedItem == family.Selected && vm.SelectedPresentation!.FileState == ModelFileState.DownloadNeeded,
-            "Explicit selection must register the undownloaded model and select it in Run.");
+        Assert(vm.PageIndex == 0 && selector.Items.Count == vm.Models.Count && selector.SelectedItem == target && vm.SelectedPresentation!.FileState == ModelFileState.DownloadNeeded,
+            "Selecting an undownloaded built-in model must lead directly to preparation on the same screen.");
         var download = fixture.Installer.BlockRuntimeDownload(); vm.PrimaryCommand.Execute(null); await UntilAsync(() => vm.IsBusy);
         vm.PageIndex = 2; await Task.Delay(30);
         var primary = Controls(window).OfType<Button>().Single(b => b.Name == "PrimaryAction");
@@ -100,7 +103,8 @@ public static partial class Program
     {
         await using var fixture = new Fixture(); var vm = fixture.ViewModel; await UntilAsync(() => !vm.IsBusy);
         using var window = new MainWindow(vm); window.Show(); await Task.Delay(30);
-        var picker = Controls(window).OfType<ComboBox>().Single(c => c.Name == "LanguageSelector");
+        using var settingsDialog = window.CreateSettingsDialog(); settingsDialog.Show(window); await Task.Delay(30);
+        var picker = Controls(settingsDialog).OfType<ComboBox>().Single(c => c.Name == "LanguageSelector");
         Assert(picker.Items.Count == 18, "Language picker must include automatic detection and all 17 languages.");
         var download = fixture.Installer.BlockRuntimeDownload(); vm.PrimaryCommand.Execute(null);
         await UntilAsync(() => vm.IsBusy && vm.ProgressPercent == 37);
@@ -153,7 +157,7 @@ public static partial class Program
         fixture.Session.ProcessId = Environment.ProcessId;
         using var window = new MainWindow(vm); window.Show(); vm.PrimaryCommand.Execute(null);
         await UntilAsync(() => vm.IsServerRunning && !vm.IsBusy); await UntilAsync(() => vm.MemoryUsage.Contains("RAM"));
-        Assert(Controls(window).OfType<Label>().Any(label => label.Text == vm.MemoryUsage), "The native memory label must display new telemetry samples.");
+        Assert(Controls(window).OfType<Label>().Any(label => label.Text.Contains(vm.MemoryUsage)), "The native memory label must display new telemetry samples.");
         ProcessMetrics? Reader() => (ProcessMetrics?)typeof(LauncherViewModel).GetField("_metrics", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!.GetValue(vm);
         var reader = Reader();
         await Task.Delay(2200);

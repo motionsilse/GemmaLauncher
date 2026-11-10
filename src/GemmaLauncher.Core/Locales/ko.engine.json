@@ -84,5 +84,13 @@
   "engine.library.localMissing": "연결한 파일이 없거나 변경되었습니다: {0}. GGUF를 다시 연결하세요.",
   "engine.library.mainFirst": "MTP 파일을 연결하기 전에 본체 모델을 설치하거나 연결하세요.",
   "engine.library.presetRequest": "이 작업 설정에는 텍스트 프롬프트나 사용자 메시지가 필요합니다. 토큰 배열만 보내는 요청에는 텍스트 설정을 적용할 수 없습니다.",
-  "engine.library.split": "분할된 GGUF의 일부입니다. 단일 파일로 된 GGUF 모델을 선택하세요."
+  "engine.library.split": "분할된 GGUF의 일부입니다. 단일 파일로 된 GGUF 모델을 선택하세요.",
+  "engine.anis.accessRequired": "ANIS 모델 다운로드 권한이 필요합니다. 승인된 Hugging Face 계정의 읽기 토큰을 연결하세요.",
+  "engine.anis.invalidFile": "ANIS 파일 검증에 실패했습니다: {0}",
+  "engine.anis.invalidFolder": "필수 파일이 없거나 지원하는 버전의 ANIS 모델 폴더가 아닙니다.",
+  "engine.anis.invalidSource": "공식 ANIS 프로그램 패키지가 올바르지 않습니다.",
+  "engine.anis.invalidRuntime": "ANIS 실행 환경 설정이 올바르지 않습니다.",
+  "engine.anis.runtime": "ANIS 전용 실행 환경을 준비하고 있습니다. Python 명령을 입력할 필요가 없습니다.",
+  "engine.anis.runtimeFailed": "ANIS 실행 환경 준비에 실패했습니다(종료 코드 {0}). anis-prepare.log를 확인하세요.",
+  "engine.session.memoryFailed": "모델을 불러올 메모리가 부족합니다. 문맥 길이나 실행 장치를 조정한 뒤 다시 실행하세요."
 }
