@@ -12,7 +12,10 @@ public sealed class RunOperationPanel : UserControl
         BackColor = Ui.Paper; Margin = Padding.Empty; _bindings = new(this, vm);
         var root = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 2, Padding = new Padding(14), BackColor = Ui.Paper };
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); root.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        var text = Ui.Label(); text.Margin = new Padding(0, 6, 16, 0); _bindings.Text(text, () => (vm.PageIndex != 0 && vm.ShowOperationModel ? vm.SelectedModel?.DisplayName + "\n" : "") + vm.StatusTitle + "\n" + vm.StatusDescription); root.Controls.Add(text, 0, 0);
+        var summary = Ui.Stack(); summary.Padding = Padding.Empty; summary.Margin = new Padding(0, 6, 16, 0); summary.BackColor = Ui.Paper;
+        var model = Ui.Label(); model.Name = "OperationModel"; Ui.SetFont(model, Ui.BodyFontSize, FontStyle.Bold);
+        _bindings.Text(model, () => vm.SelectedPresentation?.DisplayName ?? ""); _bindings.Visible(model, () => vm.ShowOperationModel); Ui.Add(summary, model);
+        var text = Ui.Label(); _bindings.Text(text, () => vm.StatusTitle + "\n" + vm.StatusDescription); Ui.Add(summary, text); root.Controls.Add(summary, 0, 0);
         var actions = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Top, FlowDirection = FlowDirection.TopDown, WrapContents = false };
         var prerequisite = Ui.Button(); _bindings.Localize(prerequisite, "ui.runtime.install"); _bindings.Command(prerequisite, vm.InstallPrerequisiteCommand); _bindings.Visible(prerequisite, () => vm.NeedsRuntimePrerequisite); actions.Controls.Add(prerequisite);
         var primary = Ui.Button(); Ui.Primary(primary); primary.Name = "PrimaryAction"; _bindings.Text(primary, () => vm.PrimaryLabel); _bindings.Command(primary, vm.PrimaryCommand, before: commit); _bindings.Visible(primary, () => vm.ShowPrimaryAction); actions.Controls.Add(primary);
