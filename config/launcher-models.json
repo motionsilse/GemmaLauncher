@@ -50,7 +50,13 @@
       "familyOrder": 0,
       "variant": "E2B",
       "localizationPrefix": "models.e2b",
-      "architecture": "gemma4"
+      "architecture": "gemma4",
+      "resources": {
+        "ramMinGb": 2.1,
+        "ramMaxGb": 2.1,
+        "vramMinGb": 1.9,
+        "vramMaxGb": 1.9
+      }
     },
     {
       "id": "translate-gemma4-sub-e4b-q4-k-xl",
@@ -94,7 +100,13 @@
       "familyOrder": 0,
       "variant": "E4B",
       "localizationPrefix": "models.e4b",
-      "architecture": "gemma4"
+      "architecture": "gemma4",
+      "resources": {
+        "ramMinGb": 3.7,
+        "ramMaxGb": 3.7,
+        "vramMinGb": 3.6,
+        "vramMaxGb": 3.6
+      }
     },
     {
       "id": "gemma4-12b-qat-heretic-styletune-q4-q8head",
@@ -139,7 +151,13 @@
       "familyOrder": 2,
       "variant": "12B",
       "localizationPrefix": "models.12b",
-      "architecture": "gemma4"
+      "architecture": "gemma4",
+      "resources": {
+        "ramMinGb": 8.1,
+        "ramMaxGb": 8.1,
+        "vramMinGb": 8.3,
+        "vramMaxGb": 8.3
+      }
     },
     {
       "id": "hy-mt2-1.8b-q4-k-m",
@@ -177,7 +195,13 @@
           "bytes": 1133081568,
           "sha256": "bbabf6dfe43b018525180f693400d3fa467a3d36fc35b08b9b33c8195435fe8d"
         }
-      ]
+      ],
+      "resources": {
+        "ramMinGb": 2,
+        "ramMaxGb": 4,
+        "vramMinGb": 2,
+        "vramMaxGb": 4
+      }
     },
     {
       "id": "hy-mt2-7b-q4-k-m",
@@ -215,7 +239,13 @@
           "bytes": 4624650016,
           "sha256": "bf746b9d01f39ca39e49bca03984f3f7c5d65f6d6ea954f4bc8e46dd2aac1fe5"
         }
-      ]
+      ],
+      "resources": {
+        "ramMinGb": 6,
+        "ramMaxGb": 9,
+        "vramMinGb": 6,
+        "vramMaxGb": 9
+      }
     },
     {
       "id": "anis-trans",
@@ -253,7 +283,13 @@
           "bytes": 300265575,
           "sha256": "07212fcad6655f632de0345713981d8e171d8891b71039289125d79c3ae8bcde"
         }
-      ]
+      ],
+      "resources": {
+        "ramMinGb": 1,
+        "ramMaxGb": 1,
+        "vramMinGb": 1,
+        "vramMaxGb": 2
+      }
     }
   ]
 }

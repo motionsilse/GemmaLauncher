@@ -23,6 +23,14 @@ public sealed record ModelProfile
     public double RepeatPenalty { get; init; } = 1;
 }
 
+public sealed record ModelResourceEstimate
+{
+    public double RamMinGb { get; init; }
+    public double RamMaxGb { get; init; }
+    public double VramMinGb { get; init; }
+    public double VramMaxGb { get; init; }
+}
+
 public sealed record ModelDefinition
 {
     public required string Id { get; init; }
@@ -43,6 +51,7 @@ public sealed record ModelDefinition
     public required string Description { get; init; }
     public required string HardwareGuide { get; init; }
     public required string MemoryGuide { get; init; }
+    public ModelResourceEstimate? Resources { get; init; }
     public string[] Benefits { get; init; } = [];
     public required string SourceUrl { get; init; }
     public required string LicenseUrl { get; init; }

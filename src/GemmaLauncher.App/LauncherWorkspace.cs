@@ -26,11 +26,13 @@ public sealed class LauncherWorkspace : LauncherPage
         Ui.Add(details, empty); Bindings.Visible(empty, () => vm.ShowRunEmpty);
         var selected = Ui.Stack(); selected.Padding = Padding.Empty; Ui.Add(details, selected);
         Bindings.Visible(selected, () => vm.HasSelectedModel);
-        var category = Value(selected, () => vm.SelectedPresentation?.Category ?? ""); category.ForeColor = Ui.Green; Ui.SetFont(category, 9, FontStyle.Bold);
+        var category = Value(selected, () => vm.SelectedPresentation?.Category ?? ""); category.ForeColor = Ui.Green; Ui.SetFont(category, Ui.SecondaryFontSize, FontStyle.Bold);
         var title = Value(selected, () => vm.SelectedPresentation?.DisplayName ?? ""); Ui.SetFont(title, 18, FontStyle.Bold);
         Value(selected, () => vm.SelectedPresentation?.Description ?? "");
-        var specs = Ui.Label(); Bindings.MemoryText(specs, () => Core.Localization.T("ui.model.download") + " · " + vm.DownloadLabel + "\n" + vm.MemoryUsage); Ui.Add(selected, specs); specs.ForeColor = Ui.Muted; specs.Margin = new Padding(0, 4, 0, 6);
-        var credit = Value(selected, () => vm.SelectedPresentation?.Credit ?? ""); credit.ForeColor = Ui.Muted; Ui.SetFont(credit, 9); Bindings.Visible(credit, () => !string.IsNullOrWhiteSpace(vm.SelectedPresentation?.Credit));
+        var resourceTitle = Heading(selected,"ui.resources.title"); Ui.SetFont(resourceTitle,12,FontStyle.Bold);
+        var resource = Value(selected,()=>vm.SelectedPresentation?.ResourceGuide ?? ""); resource.Name="RunResourceEstimate";
+        var specs = Ui.Label(); specs.Name="RunLiveMemory"; Bindings.MemoryText(specs, () => vm.MemoryUsageLabel + "\n" + vm.MemoryUsage); Bindings.Visible(specs,()=>vm.CanOpenWebUi); Ui.Add(selected, specs); specs.ForeColor = Ui.Muted; specs.Margin = new Padding(0, 4, 0, 6);
+        var credit = Value(selected, () => vm.SelectedPresentation?.Credit ?? ""); credit.ForeColor = Ui.Muted; Ui.SetFont(credit, Ui.SecondaryFontSize); Bindings.Visible(credit, () => !string.IsNullOrWhiteSpace(vm.SelectedPresentation?.Credit));
         var source = new LinkLabel { AutoSize = true, UseMnemonic = false, LinkColor = Ui.Green, ActiveLinkColor = Ui.Green, VisitedLinkColor = Ui.Green };
         Bindings.Localize(source, "ui.files.info"); source.LinkClicked += (_, _) => vm.OpenModelSourceCommand.Execute(null);
         var links = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, WrapContents = true }; links.Controls.Add(source);
@@ -113,7 +115,7 @@ public sealed class LauncherWorkspace : LauncherPage
     }
     private void CopyField(TableLayoutPanel stack, string key, Func<string> get, System.Windows.Input.ICommand? command)
     {
-        var label = Heading(stack, key); Ui.SetFont(label, 9); label.ForeColor = Ui.Muted; label.Margin = new Padding(0, 6, 0, 2);
+        var label = Heading(stack, key); Ui.SetFont(label, Ui.SecondaryFontSize); label.ForeColor = Ui.Muted; label.Margin = new Padding(0, 6, 0, 2);
         var row = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 2, Margin = Padding.Empty };
         row.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); row.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         var text = Ui.TextBox(); text.ReadOnly = true; text.BackColor = Ui.Paper; text.BorderStyle = BorderStyle.FixedSingle; text.Margin = new Padding(0, 7, 8, 0);

@@ -41,7 +41,26 @@ public static partial class AccountTests
             }
             await Task.CompletedTask;
             await NetworkAsync(root);
+            await HealthNotificationAsync(root);
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    }
+    private static async Task HealthNotificationAsync(string root)
+    {
+        await using var connection = new AccountConnection(Path.Combine(root,"health"));
+        using var notified = new ManualResetEventSlim();
+        connection.StatusChanged += (_,_) => notified.Set();
+        // Simulate the exact state seen by the health poll after the owned process
+        // disappears. No credentials, downloader or external service are needed.
+        typeof(AccountConnection).GetField("ready",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)!.SetValue(connection,true);
+        var monitor = (System.Threading.Timer)typeof(AccountConnection).GetField("monitor",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)!.GetValue(connection)!;
+        monitor.Change(0,Timeout.Infinite);
+        Assert(notified.Wait(TimeSpan.FromSeconds(3)),"Health poll must notify after unexpected exit");
+        string? Failure() => typeof(AccountConnection).GetProperty("FailureCode")?.GetValue(connection) as string;
+        Assert(!connection.IsReady && Failure()=="runtime_exited","Health poll must retain the unexpected exit cause");
+        await connection.StopAsync(default);
+        Assert(Failure() is null,"Explicit stop must acknowledge the exit cause");
+        notified.Reset(); monitor.Change(0,Timeout.Infinite);
+        Assert(!notified.Wait(TimeSpan.FromMilliseconds(100)),"A normal stopped state must not trigger an exit failure");
     }
 }

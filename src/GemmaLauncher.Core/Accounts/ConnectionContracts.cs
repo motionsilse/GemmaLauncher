@@ -18,9 +18,12 @@ public interface IAccountConnection : IAsyncDisposable
     string? LocalApiKey { get; }
     bool IsRunning { get; }
     bool IsReady { get; }
+    // The last asynchronous lifecycle failure; intentional stop/restart clears it.
+    string? FailureCode => null;
     event EventHandler? StatusChanged;
     AccountSummary ReadSavedAccount();
     Task ConnectAsync(IProgress<ConnectionProgress>? progress, CancellationToken ct);
+    // Saves authentication and closes its temporary helper; does not start the user API.
     Task LoginAsync(Action<Uri> openBrowser, string uiLanguage, IProgress<ConnectionProgress>? progress, CancellationToken ct);
     Task<IReadOnlyList<string>> ModelsAsync(CancellationToken ct);
     Task<AccountUsage> UsageAsync(CancellationToken ct);

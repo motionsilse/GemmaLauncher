@@ -121,6 +121,8 @@ Hugging Face 주소는 `resolve/main/` 대신 특정 커밋의 `resolve/<commit>
 
 기본 추천 목록은 `config/launcher-models.json`에서 관리합니다. `familyId`, `familyName`, `familyOrder`로 묶음을 정하고 `variant`로 E2B/E4B처럼 선택지를 표시합니다. `localizationPrefix`는 모델 번역 문구의 접두사이며, `order`는 목록의 순서입니다. 변경한 뒤 `python scripts/create-product-catalog.py`로 내장 카탈로그를 갱신합니다.
 
+선택 사항인 `resources`에는 GB 단위의 `ramMinGb`, `ramMaxGb`, `vramMinGb`, `vramMaxGb`를 넣습니다. 모두 유한한 양수여야 하며 최대값은 최소값 이상이어야 합니다. 기본 실행 설정의 참고 추정치로 표시되며 실제 측정이나 최소 시스템 사양을 뜻하지 않습니다. 생략하거나 값이 유효하지 않으면 추정 정보 없음으로 표시합니다. 저장공간은 별도 추정값을 입력하지 않고 `artifacts.bytes` 합계로 표시합니다. [기본 모델의 추정 근거](model-resource-estimates.md)도 참고하세요.
+
 로컬 GGUF·Hugging Face 가져오기는 이 JSON을 작성할 필요가 없습니다. 모델 등록, 고급 실행 설정과 재사용할 프롬프트·용어사전은 `settings.json`에 따로 저장합니다.
 
 ## 이미 받은 모델 사용

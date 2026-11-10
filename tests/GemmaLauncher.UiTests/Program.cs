@@ -27,6 +27,14 @@ public static partial class Program
             {
                 if (args.Contains("--check-dispatcher-failure")) throw new InvalidOperationException("Intentional dispatcher failure.");
                 TestBundledResources();
+                if (args.Contains("--resource-guide-tests")) { await TestResourceGuidesAsync(); return; }
+                if (args.Contains("--account-regression-tests")) { await TestAccountRegressionsAsync(); return; }
+                if (args.Contains("--render-account-regressions")) { await RenderAccountRegressionsAsync(); return; }
+                if (args.Contains("--typography-tests")) { await TestModelListFontScalingAsync(); return; }
+                if (args.Contains("--render-typography")) { await RenderTypographyAsync(); return; }
+                if (args.Contains("--account-review-tests")) { await TestAccountReviewAsync(); return; }
+                if (args.Contains("--render-account-review")) { await RenderAccountReviewAsync(); return; }
+                if (args.Contains("--account-journey-tests")) { await TestAccountJourneyAsync(); return; }
                 if (args.Contains("--loader-tests")) { await TestLoaderAsync(); return; }
                 if (args.Contains("--render-loader")) { await RenderLoaderAsync(); return; }
                 if (args.Contains("--account-first-use-smoke")) { await AccountFirstUseAsync(); return; }
@@ -38,6 +46,11 @@ public static partial class Program
                 if (args.Length == 2 && args[0] == "--graphics-probe") { await GraphicsProbeAsync(args[1]); return; }
                 if (args.Contains("--render")) { await RenderWorkspaceAsync(); return; }
                 await TestLoaderAsync();
+                await TestAccountJourneyAsync();
+                await TestModelListFontScalingAsync();
+                await TestAccountReviewAsync();
+                await TestAccountRegressionsAsync();
+                await TestResourceGuidesAsync();
                 Console.WriteLine("TestDirectCatalogAsync");
                 await TestDirectCatalogAsync();
                 Console.WriteLine("TestUnsavedPresetIsNotRegisteredAsync");

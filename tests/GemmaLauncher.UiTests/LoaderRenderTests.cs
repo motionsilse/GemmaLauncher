@@ -23,6 +23,9 @@ public static partial class Program
         window.Size = new(720,560); await Capture("account-small");
         window.Size = new(1040,840); await shell.SelectFeatureAsync(LoaderFeature.LocalModels,default); await Capture("local-with-account");
         await shell.SelectFeatureAsync(LoaderFeature.ChatGpt,default); window.Scale(new System.Drawing.SizeF(1.5f,1.5f)); await Capture("account-scaled");
+        Assert(InViewport(Controls(window).Single(c=>c.Name=="AccountPrimary")) && InViewport(Controls(window).Single(c=>c.Name=="AccountSignOut")), "Primary account actions must stay visible at 150% programmatic scale.");
+        window.Scale(new System.Drawing.SizeF(4f/3,4f/3)); await Capture("account-scaled-200");
+        Assert(InViewport(Controls(window).Single(c=>c.Name=="AccountPrimary")) && InViewport(Controls(window).Single(c=>c.Name=="AccountSignOut")), "Primary account actions must stay visible at 200% programmatic scale.");
         window.Close(); Console.WriteLine("Loader native screenshots captured (17 locales, ready, small, coexistence, manual scale).");
     }
     private static async Task AccountFirstUseAsync()
@@ -32,15 +35,24 @@ public static partial class Program
         var connection = new AccountConnection(root,port);
         await using var vm = new AccountConnectionViewModel(connection);
         await vm.ActivateAsync(default);
-        var reachedBrowser = false;
-        vm.OpenBrowser = _ => { reachedBrowser = true; vm.CancelPending(); };
+        var reachedBrowser = false; var publicPortStayedClosed = false; var helperNeverReady = false;
+        vm.OpenBrowser = _ => {
+            reachedBrowser = true;
+            using var probe = new System.Net.Sockets.TcpClient();
+            try { probe.Connect("127.0.0.1", port); }
+            catch (System.Net.Sockets.SocketException) { publicPortStayedClosed = true; }
+            helperNeverReady = !connection.IsReady;
+            vm.CancelPending();
+        };
         using var form = new Form { Size = new(1040,840) }; var view = new AccountConnectionView(vm); form.Controls.Add(view); form.Show();
-        var primary = Controls(form).OfType<Button>().Single(b => b.Name == "AccountPrimary");
+        var primary = Controls(form).OfType<Button>().Single(b => b.Name == "AccountLogin");
         primary.PerformClick();
         var timer = System.Diagnostics.Stopwatch.StartNew();
         while (vm.IsBusy && timer.Elapsed < TimeSpan.FromMinutes(3)) await Task.Delay(100);
         Assert(reachedBrowser, "Actual first-use button must prepare official engine and reach browser handoff");
+        Assert(publicPortStayedClosed && helperNeverReady, "Authentication must keep the public API closed and not ready.");
         Assert(!vm.IsRunning && !vm.IsConnected, "Cancelling browser handoff must stop owned proxy");
+        Assert(connection.FailureCode is null,"Cancelling authentication must not report an unexpected server exit");
         Assert(!File.Exists(Path.Combine(root,"config.yaml")), "No live config after cancellation");
         form.Close(); await vm.DisposeAsync();
         if (Directory.Exists(root)) Directory.Delete(root,true);

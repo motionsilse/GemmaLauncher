@@ -50,6 +50,12 @@
       "variant": "E2B",
       "localizationPrefix": "models.e2b",
       "architecture": "gemma4",
+      "resources": {
+        "ramMinGb": 2.1,
+        "ramMaxGb": 2.1,
+        "vramMinGb": 1.9,
+        "vramMaxGb": 1.9
+      },
       "category": "Lightweight translation",
       "headline": "Lightweight, fast translation",
       "description": "A lightweight translation model for game dialogue and subtitles. Natural translations that take the conversation and tone into account.",
@@ -102,6 +108,12 @@
       "variant": "E4B",
       "localizationPrefix": "models.e4b",
       "architecture": "gemma4",
+      "resources": {
+        "ramMinGb": 3.7,
+        "ramMaxGb": 3.7,
+        "vramMinGb": 3.6,
+        "vramMaxGb": 3.6
+      },
       "category": "Quality-focused translation",
       "headline": "Translation that captures the nuance",
       "description": "A dedicated translation model focused on conversation flow and subtle meaning. Choose it when translation quality comes first, from subtitles to longer dialogue.",
@@ -155,6 +167,12 @@
       "variant": "12B",
       "localizationPrefix": "models.12b",
       "architecture": "gemma4",
+      "resources": {
+        "ramMinGb": 8.1,
+        "ramMaxGb": 8.1,
+        "vramMinGb": 8.3,
+        "vramMaxGb": 8.3
+      },
       "category": "Translation · creative · multipurpose",
       "headline": "Expressive writing, personal conversations",
       "description": "From translation to writing, roleplay, and natural, humanlike conversations. A versatile creative model combining uncensored tuning with distinctive style tuning.",
@@ -201,6 +219,12 @@
           "sha256": "bbabf6dfe43b018525180f693400d3fa467a3d36fc35b08b9b33c8195435fe8d"
         }
       ],
+      "resources": {
+        "ramMinGb": 2,
+        "ramMaxGb": 4,
+        "vramMinGb": 2,
+        "vramMaxGb": 4
+      },
       "category": "Lightweight translation",
       "headline": "Lightweight, fast translation",
       "description": "A compact multilingual translation model for quick everyday translations with a lower memory footprint.",
@@ -247,6 +271,12 @@
           "sha256": "bf746b9d01f39ca39e49bca03984f3f7c5d65f6d6ea954f4bc8e46dd2aac1fe5"
         }
       ],
+      "resources": {
+        "ramMinGb": 6,
+        "ramMaxGb": 9,
+        "vramMinGb": 6,
+        "vramMaxGb": 9
+      },
       "category": "Quality-focused translation",
       "headline": "Translation with attention to context",
       "description": "A larger multilingual translation model for complex sentences and context, when accuracy and expression matter most.",
@@ -293,6 +323,12 @@
           "sha256": "07212fcad6655f632de0345713981d8e171d8891b71039289125d79c3ae8bcde"
         }
       ],
+      "resources": {
+        "ramMinGb": 1,
+        "ramMaxGb": 1,
+        "vramMinGb": 1,
+        "vramMaxGb": 2
+      },
       "category": "Japanese ↔ Korean",
       "headline": "Translation for Japanese and Korean games",
       "description": "A specialized Japanese ↔ Korean translation model by ANIS. First download requires official access approval.",

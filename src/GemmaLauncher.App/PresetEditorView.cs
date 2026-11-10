@@ -83,7 +83,7 @@ public sealed class PresetEditorView : LauncherPage
         NumberField(2, "PresetMaxTokens", "ui.library.maxTokens", () => vm.PresetMaxTokens, value => vm.PresetMaxTokens = value);
         Ui.Add(advanced, fields); Heading(advanced, "ui.library.clientWins");
         var footer = Ui.Stack(); footer.AutoSize = false; footer.Dock = DockStyle.Fill; footer.Padding = new Padding(20, 8, 20, 12); root.Controls.Add(footer, 0, 2);
-        var scope = Value(footer, () => vm.PresetScopeLabel); scope.ForeColor = Ui.Muted; Ui.SetFont(scope, 9);
+        var scope = Value(footer, () => vm.PresetScopeLabel); scope.ForeColor = Ui.Muted; Ui.SetFont(scope, Ui.SecondaryFontSize);
         var actions = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, WrapContents = true };
         var save = Ui.Button(); Ui.Primary(save); Bindings.Localize(save, "ui.preset.saveApply"); Bindings.Command(save, vm.SavePresetCommand, before: CommitEdits); actions.Controls.Add(save);
         var duplicate = Ui.Button(); Bindings.Localize(duplicate, "ui.preset.duplicate"); Bindings.Command(duplicate, vm.DuplicatePresetCommand, before: CommitEdits); Bindings.Visible(duplicate, () => vm.IsPresetShared); actions.Controls.Add(duplicate);

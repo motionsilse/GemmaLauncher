@@ -6,9 +6,9 @@ Local models use RAM/VRAM. ChatGPT needs internet access and shares the account'
 
 ## ChatGPT connection
 
-Open **ChatGPT connection** and choose **Sign in to ChatGPT**. If needed, Cat Loader downloads and verifies the official CLIProxyAPI v8.0.27 engine before opening sign-in in your browser. Complete sign-in yourself. For an existing saved account, choose **Start connection**.
+Open **ChatGPT connection** and choose **Sign in to ChatGPT**. If needed, Cat Loader downloads and verifies the official CLIProxyAPI v8.0.27 engine before opening sign-in in your browser. Complete sign-in yourself, then choose **Start server**. Login prepares the saved account; the separate server button opens the local API. **Stop server** keeps the login, while **Sign out** confirms and removes the saved login.
 
-Copy the API address (`http://127.0.0.1:8319/v1`), local API key and model (`gpt-6-luna`) into your app. **Check usage** queries account limits; **Test with a real request** sends one inference request and can count toward usage. A saved login and a running API are separate states. The default model is never silently replaced if unavailable.
+Copy the API address (`http://127.0.0.1:8319/v1`), local API key and model (`gpt-6-luna`) into your app. **Check usage** shows remaining quota for each period and its reset time. **Connection diagnostics → Test with a real request** sends one inference request and can count toward usage. A saved login and a running API are separate states. The default model is never silently replaced if unavailable.
 
 Closing the window follows the common tray setting for both services; **Full exit** stops both. Existing GemmaLauncher data and CatRoute account/key folders are preserved. Exit the old CatRoute app before connecting. See [upgrade details](docs/migrations/cat-loader-0.4.md) and [third-party sources](THIRD-PARTY-NOTICES.md).
 
@@ -38,7 +38,7 @@ All six built-in choices remain visible before downloading. The first launch sel
 
 E2B and E4B combine dialogue/subtitle tuning with SSD-backed memory optimization. The 12B model combines uncensored tuning for freer expression with StyleTune for a distinctive voice. These three Gemma configurations include their own MTP acceleration files. HY-MT2 uses its own translation settings and runs without MTP.
 
-Download size is separate from RAM and VRAM usage. GB means one billion bytes; Gemma totals include MTP files. The execution engine downloads separately. The launcher shows model memory guidance and measures the active server's RAM and VRAM. Larger models and longer contexts need more memory.
+Selecting a model shows its model storage, recommended free space for first installation, and approximate RAM/VRAM at default settings. GB means one billion bytes; Gemma totals include MTP files. The execution engine downloads separately. Installation space includes a 2 GB allowance for runtime, extraction and caches; connected local files are not copied. Memory references are estimates, not minimum PC specifications or measured guarantees. GPU offload, context, cache and CPU mode change memory use. Live server measurements remain separate. See [estimate basis](docs/model-resource-estimates.md).
 
 ## Extend your library
 
@@ -102,6 +102,12 @@ AI 모델의 설치부터 실행·관리까지, 클릭 한 번으로 시작하�
 
 Windows EXE 하나로 시작하고, 원하는 모델을 추가하고, 저장한 프롬프트와 용어사전을 연결 앱에서도 함께 사용하세요.
 
+## ChatGPT 연결
+
+**ChatGPT 연결 → ChatGPT 로그인**을 눌러 브라우저에서 인증한 다음 **서버 켜기**를 누르세요. 처음에는 공식 CLIProxyAPI 엔진을 내려받아 검증합니다. 로그인과 API 서버 실행은 별도 동작입니다. **서버 끄기**는 로그인을 유지하고, 계정 영역의 **로그아웃**은 확인 후 저장된 로그인을 지웁니다.
+
+실행 후 API 주소 `http://127.0.0.1:8319/v1`, 로컬 API 키와 모델 `gpt-6-luna`를 연결 앱에 복사하세요. **사용량 조회**는 기간별 남은 사용량과 초기화 시각을 보여줍니다. **연결 진단**에서 모델 확인과 실제 요청 테스트를 할 수 있으며 실제 요청은 계정 한도를 사용합니다. 인터넷과 본인 계정이 필요하며 로컬 모델 서버와 함께 실행할 수 있습니다. 창 닫기·트레이 설정은 두 기능에 공통으로 적용됩니다. [기존 데이터 유지와 업데이트](docs/migrations/cat-loader-0.4.md)도 참고하세요.
+
 ## 시작하기
 
 1. [최신 정식 릴리즈](https://github.com/motionsilse/GemmaLauncher/releases/latest)에서 Windows x64 EXE를 내려받습니다.
@@ -126,7 +132,7 @@ Windows EXE 하나로 시작하고, 원하는 모델을 추가하고, 저장한 
 
 E2B와 E4B에는 대사·자막 번역 튜닝과 SSD를 활용한 메모리 최적화를 적용했습니다. 12B에는 무검열 튜닝으로 자유로운 표현을, 스타일 튜닝으로 말투의 개성을 더했습니다. Gemma 세 구성에는 각각 맞는 MTP 가속용 파일이 포함됩니다. HY-MT2는 별도의 번역 설정을 사용하며 MTP 없이 실행합니다.
 
-다운로드 크기는 RAM·VRAM 사용량과 다릅니다. GB는 10억 바이트 기준이며 Gemma 용량에는 MTP도 포함됩니다. 실행 엔진은 별도로 준비합니다. 런처에서 모델별 메모리 안내와 실행 중인 서버의 실제 RAM·VRAM 사용량을 확인할 수 있습니다. 큰 모델과 긴 글 설정은 메모리를 더 사용합니다.
+모델을 선택하면 모델 저장공간, 첫 설치 권장 여유공간과 기본 설정의 RAM·VRAM 추정치를 보여줍니다. GB는 10억 바이트 기준이며 Gemma 용량에는 MTP도 포함됩니다. 설치 여유공간에는 실행환경·압축 해제·캐시용 2 GB를 더하며, 연결한 로컬 파일은 복사하지 않습니다. 메모리 수치는 최소 PC 사양이나 보장된 실측값이 아닙니다. GPU 할당·대화 길이·캐시·CPU 모드에 따라 달라지며 실행 중 실측값은 별도로 표시합니다. [추정 근거](docs/model-resource-estimates.md)를 참고하세요.
 
 ## 원하는 모델을 추가하세요
 

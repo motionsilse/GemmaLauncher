@@ -13,7 +13,7 @@ public sealed class LoaderWindow : Form
     private MainWindow? localWindow;
     private AccountConnectionView? accountView;
     private LoaderFeature? shownFeature;
-    private readonly Font ownedFont = new("Segoe UI", 10.5f);
+    private readonly Font ownedFont = new("Segoe UI", Ui.BodyFontSize);
     public event EventHandler? ActivationRequested;
     public event EventHandler? ExitRequested;
     public LoaderWindow(LoaderShellViewModel shell, uint activateMessage = 0, uint legacyActivateMessage = 0)
@@ -23,13 +23,24 @@ public sealed class LoaderWindow : Form
         AutoScaleMode = AutoScaleMode.Dpi; AutoScaleDimensions = new(96,96); Size = new(1040,840); MinimumSize = new(720,560); StartPosition = FormStartPosition.CenterScreen;
         Icon = Icon.ExtractAssociatedIcon(Environment.ProcessPath!);
         bindings = new(this,shell);
-        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, Padding = new(24,16,24,12) };
+        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4 };
         root.ColumnStyles.Add(new(SizeType.Percent,100)); root.RowStyles.Add(new(SizeType.AutoSize)); root.RowStyles.Add(new(SizeType.Percent,100)); root.RowStyles.Add(new(SizeType.AutoSize)); root.RowStyles.Add(new(SizeType.AutoSize));
-        var header = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, WrapContents = true };
-        var brand = Ui.Label("Cat Loader"); Ui.SetFont(brand,19,FontStyle.Bold); brand.Margin = new(0,2,20,8); header.Controls.Add(brand);
+        var headerRow = new TableLayoutPanel { Dock = DockStyle.Top, Height = 80, ColumnCount = 2, RowCount = 1, Padding = new(24,12,24,0), BackColor = Color.White };
+        headerRow.RowStyles.Add(new(SizeType.AutoSize));
+        headerRow.ColumnStyles.Add(new(SizeType.Percent,100)); headerRow.ColumnStyles.Add(new(SizeType.AutoSize));
+        var header = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, WrapContents = true };
+        var brand = Ui.Label("Cat Loader"); Ui.SetFont(brand,17,FontStyle.Bold); brand.Margin = new(0,8,20,8); header.Controls.Add(brand);
         Tab("ui.loader.local",LoaderFeature.LocalModels); Tab("ui.loader.chat",LoaderFeature.ChatGpt);
-        var settings = Ui.Button(); settings.Name = "LoaderSettings"; bindings.Localize(settings,"ui.settings.title"); settings.Click += (_,_) => { using var dialog = SettingsDialog(); dialog.ShowDialog(this); }; header.Controls.Add(settings);
-        root.Controls.Add(header,0,0); root.Controls.Add(workspace,0,1); root.Controls.Add(operationHost,0,2); root.Controls.Add(new BackgroundOperationsView(shell),0,3); Controls.Add(root);
+        var settings = Ui.Button(); settings.FlatAppearance.BorderSize = 0; settings.Name = "LoaderSettings"; bindings.Localize(settings,"ui.settings.title"); settings.Click += (_,_) => { using var dialog = SettingsDialog(); dialog.ShowDialog(this); }; headerRow.Controls.Add(header,0,0); headerRow.Controls.Add(settings,1,0);
+        root.Controls.Add(headerRow,0,0); root.Controls.Add(workspace,0,1); root.Controls.Add(operationHost,0,2); root.Controls.Add(new LoaderStatusBar(shell),0,3); Controls.Add(root);
+        // FlowLayout's unconstrained preferred width wraps every tab and inflates
+        // an AutoSize table row. Measure against its actual available width.
+        void FitHeader()
+        {
+            brand.Visible = headerRow.Width >= 850 * DeviceDpi / 96;
+            if (header.Width > 0) headerRow.Height = header.GetPreferredSize(new Size(header.Width, 0)).Height + headerRow.Padding.Vertical + header.Margin.Vertical;
+        }
+        header.SizeChanged += (_, _) => FitHeader(); bindings.Watch(FitHeader);
         bindings.Visible(operationHost, () => shell.SelectedFeature == LoaderFeature.LocalModels && shell.Local?.ShowOperation == true);
         bindings.Watch(ShowFeature); bindings.Start();
         _ = shell.SelectFeatureAsync(shell.SelectedFeature,default);
@@ -37,8 +48,8 @@ public sealed class LoaderWindow : Form
         Resize += (_,_) => UpdateMetrics();
         void Tab(string key,LoaderFeature feature)
         {
-            var button = Ui.Button(); button.Name = "Feature" + feature; button.AccessibleRole = AccessibleRole.PageTab;
-            bindings.Localize(button,key); bindings.Watch(() => { button.BackColor = shell.SelectedFeature == feature ? Ui.Tint : Color.White; button.FlatAppearance.BorderColor = shell.SelectedFeature == feature ? Ui.Green : Ui.Line; });
+            var button = new FeatureTab(); button.Name = "Feature" + feature; button.AccessibleRole = AccessibleRole.PageTab;
+            bindings.Localize(button,key); bindings.Watch(() => { button.Selected = shell.SelectedFeature == feature; });
             button.Click += async (_,_) => { ValidateChildren(); if (await shell.SelectFeatureAsync(feature,default)) workspace.SelectNextControl(null,true,true,true,false); };
             header.Controls.Add(button);
         }
@@ -62,7 +73,7 @@ public sealed class LoaderWindow : Form
         {
             if (accountView is null)
             {
-                account.ConfirmSignOut = () => { using var dialog = new LoaderDialog(shell,T("ui.account.signOut")); var label = Ui.Label(T("ui.account.signOutHint")); dialog.Body.Controls.Add(label); dialog.Accept(T("ui.account.signOut")); return dialog.ShowDialog(this) == DialogResult.OK; };
+                account.ConfirmSignOut = () => { using var dialog = new LoaderDialog(shell,T("ui.account.signOut")); var label = Ui.Label(account.AccountText + "\n\n" + T("ui.account.signOutHint")); label.MaximumSize = new(520,0); dialog.Body.Controls.Add(label); dialog.Accept(T("ui.account.signOut")); dialog.AcceptButton = dialog.CancelButton; return dialog.ShowDialog(this) == DialogResult.OK; };
                 accountView = new(account) { OpenStateFolder = () => { if (Directory.Exists(AccountStateDirectory)) System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(AccountStateDirectory) { UseShellExecute = true }); } };
                 workspace.Controls.Add(accountView);
             }
@@ -76,14 +87,18 @@ public sealed class LoaderWindow : Form
     private void UpdateMetrics() => shell.Local?.SetMetricsVisible(Visible && WindowState != FormWindowState.Minimized && shell.SelectedFeature == LoaderFeature.LocalModels && shell.Local.PageIndex == 0);
     private LoaderDialog SettingsDialog()
     {
-        var dialog = new LoaderDialog(shell,T("ui.settings.title"));
+        var dialog = new LoaderDialog(shell,T("ui.settings.title"), confirmation: false);
+        var settingsBindings = new UiBindings(dialog,shell);
+        dialog.Disposed += (_,_) => settingsBindings.Dispose();
+        settingsBindings.Localize(dialog,"ui.settings.title");
         var stack = Ui.Stack(); dialog.Body.Controls.Add(Ui.Scroll(stack));
-        var text = Ui.Label(T("ui.loader.closeHint")); Ui.Add(stack,text);
-        var close = new CheckBox { Text = T("ui.settings.closeToTray"), AutoSize = true, Checked = shell.CloseToTray }; close.CheckedChanged += (_,_) => shell.CloseToTray = close.Checked; Ui.Add(stack,close);
+        var text = Ui.Label(); settingsBindings.Localize(text,"ui.loader.closeHint"); Ui.Add(stack,text);
+        var close = new CheckBox { AutoSize = true }; settingsBindings.Localize(close,"ui.settings.closeToTray"); settingsBindings.Check(close,() => shell.CloseToTray,value => shell.CloseToTray = value); Ui.Add(stack,close);
         var language = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", ValueMember = "Code", Width = 240 };
-        language.Items.Add(new LanguageOption("auto",T("ui.language.auto"))); language.Items.AddRange(Localization.Current.Languages.ToArray()); language.SelectedItem = language.Items.Cast<LanguageOption>().FirstOrDefault(l => l.Code == shell.LanguageSelection);
-        language.SelectedIndexChanged += (_,_) => { if (language.SelectedItem is LanguageOption option) shell.LanguageSelection = option.Code; }; Ui.Add(stack,language);
-        dialog.Accept(T("ui.close")); return dialog;
+        IEnumerable<LanguageOption> Languages() => new[] { new LanguageOption("auto",T("ui.language.auto")) }.Concat(Localization.Current.Languages);
+        settingsBindings.Choice(language,Languages,() => Languages().FirstOrDefault(option => option.Code == shell.LanguageSelection),option => shell.LanguageSelection = option.Code,option => option.Name); Ui.Add(stack,language);
+        var saved = Ui.Label(); settingsBindings.Localize(saved,"ui.settings.autoSaved"); Ui.Add(stack,saved);
+        settingsBindings.Start(); return dialog;
     }
     protected override void OnShown(EventArgs e) { WindowLayout.FitToWorkArea(this,Screen.FromControl(this).WorkingArea); base.OnShown(e); }
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) { if (keyData == (Keys.Control | Keys.Q)) { ExitRequested?.Invoke(this,EventArgs.Empty); return true; } return base.ProcessCmdKey(ref msg,keyData); }
@@ -93,14 +108,19 @@ public sealed class LoaderWindow : Form
 
 internal sealed class LoaderDialog : Form
 {
+    private readonly UiBindings bindings;
     public Panel Body { get; } = new() { Dock = DockStyle.Fill, AutoScroll = true };
     private readonly FlowLayoutPanel actions = new() { Dock = DockStyle.Bottom, AutoSize = true, FlowDirection = FlowDirection.RightToLeft };
-    public LoaderDialog(LoaderShellViewModel shell,string title)
+    public LoaderDialog(LoaderShellViewModel shell,string title,bool confirmation = true)
     {
-        Text = title; Size = new(620,420); MinimumSize = new(400,300); StartPosition = FormStartPosition.CenterParent; AutoScaleMode = AutoScaleMode.Dpi; Padding = new(20);
+        bindings = new(this,shell);
+        Text = title; Size = new(620,420); MinimumSize = new(400,300); StartPosition = FormStartPosition.CenterParent; AutoScaleMode = AutoScaleMode.Dpi; AutoScaleDimensions = new(96,96); Ui.SetFont(this,Ui.BodyFontSize); Padding = new(20);
         ShowInTaskbar = false; MinimizeBox = false; MaximizeBox = false; BackColor = Ui.Paper;
         Controls.Add(Body); Controls.Add(actions); Controls.Add(new BackgroundOperationsView(shell,true));
-        var cancel = Ui.Button(); cancel.Text = T("ui.account.cancel"); cancel.DialogResult = DialogResult.Cancel; actions.Controls.Add(cancel); CancelButton = cancel;
+        var close = Ui.Button(); bindings.Localize(close,confirmation ? "ui.account.cancel" : "ui.close"); close.DialogResult = DialogResult.Cancel; actions.Controls.Add(close); CancelButton = close;
+        if (!confirmation) AcceptButton = close;
+        bindings.Start();
     }
-    public void Accept(string label) { var button = Ui.Button(); button.Text = label; button.DialogResult = DialogResult.OK; actions.Controls.Add(button); AcceptButton = button; }
+    public void Accept(string label) { var button = Ui.Button(); button.Text = label; button.ForeColor = Color.FromArgb(158,49,42); button.DialogResult = DialogResult.OK; actions.Controls.Add(button); AcceptButton = button; }
+    protected override void Dispose(bool disposing) { if (disposing) bindings.Dispose(); base.Dispose(disposing); }
 }

@@ -39,6 +39,12 @@ internal sealed class UiBindings(Control owner, INotifyPropertyChanged viewModel
     }
     public void Watch(Action update) => _updates.Add(update);
     public void Text(Control control, Func<string> value) => Watch(() => { var text = value(); if (control.Text != text) control.Text = text; });
+    public void ActionText(Button control, Func<string> value) => Watch(() =>
+    {
+        var text = value();
+        if (control.Text != text) control.Text = text;
+        if (control.AccessibleName != text) control.AccessibleName = text;
+    });
     public void MemoryText(Control control, Func<string> format)
     {
         _memoryUpdate += () => { var text = format(); if (control.Text != text) control.Text = text; };
@@ -121,6 +127,8 @@ internal sealed class UiBindings(Control owner, INotifyPropertyChanged viewModel
 
 internal static class Ui
 {
+    public const float BodyFontSize = 11.5f;
+    public const float SecondaryFontSize = 10.5f;
     public static readonly Color Paper = Color.FromArgb(244, 246, 243);
     public static readonly Color Ink = Color.FromArgb(32, 48, 39);
     public static readonly Color Muted = Color.FromArgb(100, 113, 105);
@@ -158,7 +166,7 @@ internal static class Ui
         }
         button.EnabledChanged += (_, _) => RefreshState(); RefreshState();
         button.FlatAppearance.BorderSize = 0; button.FlatAppearance.MouseOverBackColor = Color.FromArgb(28, 76, 51);
-        button.MinimumSize = new Size(160, 46); SetFont(button, 11, FontStyle.Bold);
+        button.MinimumSize = new Size(160, 46); SetFont(button, BodyFontSize, FontStyle.Bold);
     }
     public static void SetFont(Control control, float size, FontStyle style = FontStyle.Regular)
     {

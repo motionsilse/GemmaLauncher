@@ -13,7 +13,7 @@ public sealed class LauncherDialog : Form
     public LauncherDialog(LauncherViewModel vm, string title, Size size)
     {
         Text = title; Size = size; MinimumSize = new Size(360, 240); StartPosition = FormStartPosition.CenterParent;
-        AutoScaleMode = AutoScaleMode.Dpi; AutoScaleDimensions = new SizeF(96, 96); Ui.SetFont(this, 10.5f);
+        AutoScaleMode = AutoScaleMode.Dpi; AutoScaleDimensions = new SizeF(96, 96); Ui.SetFont(this, Ui.BodyFontSize);
         BackColor = Color.White; ForeColor = Ui.Ink; MinimizeBox = false; MaximizeBox = false; ShowInTaskbar = false;
         _bindings = new(this, vm);
         void WrapMessages()

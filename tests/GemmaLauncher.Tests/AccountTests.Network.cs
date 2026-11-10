@@ -25,9 +25,22 @@ public static partial class AccountTests
             client.DefaultRequestHeaders.Authorization = new("Bearer", host.LocalKey);
             using var management = await client.GetAsync($"http://127.0.0.1:{port}/v0/management/auth-files");
             Assert(management.StatusCode == HttpStatusCode.Unauthorized, "API key cannot access management");
+            // Attach the actual owned engine to the health monitor without an
+            // OAuth account. Only readiness is arranged; exit detection, process
+            // cleanup and notifications run through the production classes.
+            await using var connection = new AccountConnection(root,port);
+            var fields = System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
+            typeof(AccountConnection).GetField("host",fields)!.SetValue(connection,host);
+            typeof(AccountConnection).GetField("ready",fields)!.SetValue(connection,true);
+            ((System.Threading.Timer)typeof(AccountConnection).GetField("monitor",fields)!.GetValue(connection)!).Change(20,20);
             await host.StopAsync();
+            var deadline=DateTime.UtcNow.AddSeconds(3);
+            while(connection.FailureCode is null && DateTime.UtcNow<deadline) await Task.Delay(20);
+            Assert(connection.FailureCode=="runtime_exited" && !connection.IsReady,"Actual engine disappearance must retain an unexpected-exit reason");
+            await connection.StopAsync(default);
+            Assert(connection.FailureCode is null,"Explicit cleanup acknowledges actual engine exit");
             Assert(!host.IsRunning, "Owned engine stopped");
-            Console.WriteLine("Official engine download, reuse, API authentication, management isolation, stop: PASS (no account or inference)");
+            Console.WriteLine("Official engine download, reuse, API authentication, management isolation, unexpected-exit notification, stop: PASS (no account or inference)");
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     }

@@ -8,7 +8,7 @@ public sealed class MainWindow : Form
 {
     private readonly LauncherViewModel _viewModel;
     private readonly UiBindings _bindings;
-    private readonly Font _uiFont = new("Segoe UI", 10.5f);
+    private readonly Font _uiFont = new("Segoe UI", Ui.BodyFontSize);
     private readonly Panel _workspace = new() { Dock = DockStyle.Fill, Margin = new Padding(0, 14, 0, 12) };
     private readonly LauncherPage?[] _pages = new LauncherPage?[3];
     private int _shownPage = -1;
@@ -60,7 +60,7 @@ public sealed class MainWindow : Form
         _bindings.Watch(ShowPage); root.Controls.Add(_workspace, 0, 1);
         _bindings.Visible(_secondaryOperationHost, () => _externalOperationHost is null && (viewModel.PageIndex != 0 || UseCompactLayout) && viewModel.ShowOperation);
         root.Controls.Add(_secondaryOperationHost, 0, 2);
-        var footer = Ui.Label(); footer.ForeColor = Ui.Muted; Ui.SetFont(footer, 8.5f); footer.Margin = new Padding(0, 10, 0, 0);
+        var footer = Ui.Label(); footer.ForeColor = Ui.Muted; Ui.SetFont(footer, Ui.SecondaryFontSize); footer.Margin = new Padding(0, 10, 0, 0);
         _bindings.Text(footer, () => viewModel.StatusNote + (viewModel.StatusNote.Length > 0 ? "\n" : "") + "by Drugged Cat   ·   " + T(viewModel.IsServerRunning && viewModel.CloseToTray ? "ui.footer.background" : "ui.connection.localOnly"));
         root.Controls.Add(footer, 0, 3); Controls.Add(root);
         _bindings.Text(this, () => T("ui.app.title"));
