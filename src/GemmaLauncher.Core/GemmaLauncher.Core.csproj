@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><TargetFramework>net10.0-windows</TargetFramework></PropertyGroup>
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <EmbeddedResource Include="SupportedArchitectures.txt" LogicalName="GemmaLauncher.Architectures.txt" />
     <EmbeddedResource Include="Locales/*.json" WithCulture="false" LogicalName="GemmaLauncher.Core.Locales.%(Filename)%(Extension)" />

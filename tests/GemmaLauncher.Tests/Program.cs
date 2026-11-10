@@ -6,6 +6,8 @@ try
     if (args.Contains("--check-failure")) throw new InvalidOperationException("Deliberate test runner failure for exit-boundary verification.");
     if (await SessionTests.TryRunChildAsync(args)) return;
     Localization.Current.SetLanguage("ko");
+    if (args.Contains("--account-tests")) { await AccountTests.RunAsync(); Console.WriteLine("Account tests passed."); return; }
+    await AccountTests.RunAsync();
     if (args.Contains("--anis-tests")) { await AnisTests.RunAsync(); Console.WriteLine("ANIS tests passed."); return; }
     if (args.Contains("--anis-runtime-smoke")) { await AnisTests.RuntimeSmokeAsync(); return; }
     if (args.Contains("--catalog-tests")) { await CatalogTests.RunAsync(); Console.WriteLine("Catalog tests passed."); return; }
