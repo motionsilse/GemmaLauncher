@@ -370,7 +370,7 @@ public sealed class InstallationService : IInstallationService, IDisposable
     {
         var executable = ContainedPath(directory, executableRelativePath);
         var executableDirectory = Path.GetDirectoryName(executable)!;
-        var libraries = executableRelativePath == "uv.exe" ? Array.Empty<string>() : ["llama-server-impl.dll", "llama.dll", "llama-common.dll", "ggml.dll", "ggml-base.dll", "ggml-vulkan.dll"];
+        var libraries = executableRelativePath is "uv.exe" or "cli-proxy-api.exe" ? Array.Empty<string>() : ["llama-server-impl.dll", "llama.dll", "llama-common.dll", "ggml.dll", "ggml-base.dll", "ggml-vulkan.dll"];
         foreach (var path in new[] { executable }.Concat(libraries.Select(name => Path.Combine(executableDirectory, name))))
         {
             using var input = File.OpenRead(path);

@@ -1,0 +1,52 @@
+using GemmaLauncher.Core.Accounts;
+using System.Net;
+using System.Text;
+namespace GemmaLauncher.Tests;
+public static partial class AccountTests
+{
+    public static async Task RuntimeSmokeAsync()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "CatLoaderRuntime-" + Guid.NewGuid().ToString("N"));
+        using var store = new AccountStateStore(root);
+        try
+        {
+            using var lease = store.AcquireOwnership();
+            using var installer = new GemmaLauncher.Core.InstallationService(new(root), discoverExistingModels: false);
+            var runtime = new AccountRuntime(store, installer);
+            var exe = await runtime.EnsureAsync(null, default);
+            Assert(await runtime.EnsureAsync(null, default) == exe, "Reuse verified runtime");
+            using var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0); listener.Start();
+            var port = ((System.Net.IPEndPoint)listener.LocalEndpoint).Port; listener.Stop();
+            await using var host = new AccountHost(store, exe, port);
+            await host.StartAsync();
+            using var client = new HttpClient(new SocketsHttpHandler { UseProxy = false });
+            using var response = await client.GetAsync($"http://127.0.0.1:{port}/v1/models");
+            Assert(response.StatusCode == HttpStatusCode.Unauthorized, "API requires local key");
+            client.DefaultRequestHeaders.Authorization = new("Bearer", host.LocalKey);
+            using var management = await client.GetAsync($"http://127.0.0.1:{port}/v0/management/auth-files");
+            Assert(management.StatusCode == HttpStatusCode.Unauthorized, "API key cannot access management");
+            await host.StopAsync();
+            Assert(!host.IsRunning, "Owned engine stopped");
+            Console.WriteLine("Official engine download, reuse, API authentication, management isolation, stop: PASS (no account or inference)");
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    }
+    private sealed class Handler(Func<HttpRequestMessage, string> response) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(response(request), Encoding.UTF8, "application/json") });
+    }
+    private static async Task NetworkAsync(string root)
+    {
+        using var http = new HttpClient(new Handler(request => request.RequestUri!.AbsolutePath.EndsWith("models") ? "{\"data\":[{\"id\":\"gpt-6-luna\"},{\"id\":\"gpt-6-luna\"}]}" : "{\"model\":\"gpt-6-luna\",\"choices\":[{\"finish_reason\":\"stop\",\"message\":{\"content\":\"OK\"}}]}")) { BaseAddress = new("http://127.0.0.1/v1/") };
+        var api = new AccountApi(http);
+        Assert((await api.ModelsAsync(default)).Count == 1, "Distinct model ids");
+        Assert((await api.TestAsync("gpt-6-luna", "low", default)).TextMatched, "Explicit completion probe");
+        try { AccountAuthorization.Parse("https://evil.invalid/oauth/authorize", new string('a', 32)); throw new Exception("Unsafe authorization accepted"); }
+        catch (ConnectionFailure error) when (error.Code == "invalid_login_url") { }
+        using var large = new HttpClient(new Handler(_ => new string('x', 1_048_577))) { BaseAddress = http.BaseAddress };
+        try { await new AccountApi(large).ModelsAsync(default); throw new Exception("Oversized response accepted"); }
+        catch (ConnectionFailure error) when (error.Code == "proxy_response_too_large") { }
+        await using var untouched = new AccountConnection(Path.Combine(root, "unused"));
+        Assert(!untouched.IsReady && !untouched.IsRunning && !Directory.Exists(Path.Combine(root, "unused")), "Lazy connection must have no writes");
+    }
+}

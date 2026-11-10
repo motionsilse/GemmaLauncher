@@ -40,6 +40,7 @@ public static partial class AccountTests
                 Assert(File.ReadAllBytes(Path.Combine(root, "local-key.dpapi")).SequenceEqual(new byte[] {1,2,3}), "Corrupt key retained");
             }
             await Task.CompletedTask;
+            await NetworkAsync(root);
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     }
