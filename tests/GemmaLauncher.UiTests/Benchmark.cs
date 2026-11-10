@@ -7,6 +7,36 @@ using GemmaLauncher.App;
 namespace GemmaLauncher.UiTests;
 public static partial class Program
 {
+    private static async Task StartupChildAsync(string reportPath, long started)
+    {
+        await using var fixture = new Fixture();
+        using var window = new MainWindow(fixture.ViewModel);
+        var painted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        window.Paint += (_, _) => window.BeginInvoke(() => painted.TrySetResult());
+        window.Show();
+        await painted.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        File.WriteAllText(reportPath, Stopwatch.GetElapsedTime(started).TotalMilliseconds.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        window.Close();
+    }
+
+    private static async Task StartupBenchmarkAsync(string reportPath)
+    {
+        reportPath = Path.GetFullPath(reportPath); Directory.CreateDirectory(Path.GetDirectoryName(reportPath)!);
+        var samples = new List<double>();
+        for (var i = 0; i < 5; i++)
+        {
+            var sample = reportPath + "." + i;
+            var start = new ProcessStartInfo(Environment.ProcessPath!) { UseShellExecute = false, CreateNoWindow = true };
+            start.ArgumentList.Add("--startup-child"); start.ArgumentList.Add(sample); start.ArgumentList.Add(Stopwatch.GetTimestamp().ToString());
+            using var child = Process.Start(start)!;
+            await child.WaitForExitAsync();
+            if (child.ExitCode != 0) throw new InvalidOperationException("Startup child failed");
+            samples.Add(double.Parse(File.ReadAllText(sample), System.Globalization.CultureInfo.InvariantCulture));
+            File.Delete(sample);
+        }
+        File.WriteAllText(reportPath, JsonSerializer.Serialize(new { samplesMs = samples, medianMs = samples.Order().ElementAt(2), boundary = "Process launch through first native paint; existing OS caches retained" }, new JsonSerializerOptions { WriteIndented = true }));
+    }
+
     // Run separately so loading PDH for the observer cannot inflate the timed launcher samples.
     private static async Task GraphicsProbeAsync(string reportPath)
     {

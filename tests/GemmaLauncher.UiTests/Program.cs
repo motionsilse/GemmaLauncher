@@ -28,6 +28,8 @@ public static partial class Program
                 if (args.Contains("--check-dispatcher-failure")) throw new InvalidOperationException("Intentional dispatcher failure.");
                 TestBundledResources();
                 Localization.Current.SetLanguage("ko");
+                if (args.Length == 2 && args[0] == "--startup-benchmark") { await StartupBenchmarkAsync(args[1]); return; }
+                if (args.Length == 3 && args[0] == "--startup-child") { await StartupChildAsync(args[1], long.Parse(args[2])); return; }
                 if (args.Contains("--first-download-smoke")) { await FirstDownloadSmokeAsync(); return; }
                 if (args.Length == 2 && args[0] == "--benchmark") { await BenchmarkAsync(args[1]); return; }
                 if (args.Length == 2 && args[0] == "--graphics-probe") { await GraphicsProbeAsync(args[1]); return; }
