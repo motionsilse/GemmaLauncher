@@ -279,7 +279,7 @@
   "ui.account.failed": "Операция не выполнена. Проверьте сеть и сохранённый аккаунт, затем повторите попытку.",
   "ui.account.noAccount": "Войти в ChatGPT",
   "ui.account.loginNeeded": "Войти в ChatGPT",
-  "ui.account.appConnection": "Копировать все данные подключения",
+  "ui.account.appConnection": "Подключить приложение",
   "ui.account.usageHint": "Проверить использование",
   "ui.account.readyHint": "Готово к подключению приложений",
   "ui.account.cancelQuery": "Отменить задачу",
@@ -294,5 +294,8 @@
   "ui.account.stage.CheckingAccount": "Подготовка подключения",
   "ui.account.stage.ReadingModels": "Подготовка подключения",
   "ui.account.stage.Ready": "Готово к подключению приложений",
-  "ui.account.stage.Stopping": "Остановка…"
+  "ui.account.stage.Stopping": "Остановка…",
+  "ui.account.callbackHeading": "Вернитесь в Cat Loader",
+  "ui.account.callbackMessage": "Результат входа отправлен. Проверьте завершение входа в Cat Loader.",
+  "ui.account.callbackClose": "Эту вкладку можно закрыть."
 }

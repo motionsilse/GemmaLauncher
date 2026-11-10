@@ -62,5 +62,10 @@ public static partial class AccountTests
         await using var badHost = new AccountHost(store,brokenExe,43219);
         try { await badHost.StartAsync(); throw new Exception("Corrupt executable accepted"); }
         catch (ConnectionFailure failure) when (failure.Code == "runtime_checksum_mismatch") { }
+        using var usageClient = new HttpClient(new Handler(request => request.RequestUri!.AbsolutePath.EndsWith("auth-files")
+            ? "{\"files\":[{\"type\":\"codex\",\"auth_index\":\"fake-index\",\"id_token\":{\"chatgpt_account_id\":\"fake-workspace\"}}]}"
+            : System.Text.Json.JsonSerializer.Serialize(new { status_code = 200, body = "{\"rate_limit\":{\"primary_window\":{\"used_percent\":12}}}" }))) { BaseAddress = new("http://127.0.0.1/v0/management/") };
+        var usage = await new AccountUsageClient(usageClient).ReadAsync(default);
+        Assert(usage.Windows.Count == 1 && usage.Windows[0].UsedPercent == 12 && usage.Windows[0].ResetsAt is null && usage.Windows[0].DurationSeconds is null, "Preserve missing quota fields without estimates");
     }
 }

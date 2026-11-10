@@ -279,7 +279,7 @@
   "ui.account.failed": "操作失敗。請檢查網路和儲存的帳戶，然後重試該操作。",
   "ui.account.noAccount": "登入 ChatGPT",
   "ui.account.loginNeeded": "登入 ChatGPT",
-  "ui.account.appConnection": "複製所有連線資訊",
+  "ui.account.appConnection": "連接應用程式",
   "ui.account.usageHint": "查詢用量",
   "ui.account.readyHint": "可連接應用程式",
   "ui.account.cancelQuery": "取消工作",
@@ -294,5 +294,8 @@
   "ui.account.stage.CheckingAccount": "正在準備連線",
   "ui.account.stage.ReadingModels": "正在準備連線",
   "ui.account.stage.Ready": "可連接應用程式",
-  "ui.account.stage.Stopping": "正在停止…"
+  "ui.account.stage.Stopping": "正在停止…",
+  "ui.account.callbackHeading": "請返回 Cat Loader",
+  "ui.account.callbackMessage": "已傳送登入結果。請在 Cat Loader 中確認是否完成登入。",
+  "ui.account.callbackClose": "可以關閉此分頁。"
 }

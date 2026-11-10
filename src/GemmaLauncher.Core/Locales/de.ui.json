@@ -279,7 +279,7 @@
   "ui.account.failed": "Vorgang fehlgeschlagen. Prüfen Sie Verbindung und gespeichertes Konto und versuchen Sie es erneut.",
   "ui.account.noAccount": "Bei ChatGPT anmelden",
   "ui.account.loginNeeded": "Bei ChatGPT anmelden",
-  "ui.account.appConnection": "Alle Verbindungsdaten kopieren",
+  "ui.account.appConnection": "App verbinden",
   "ui.account.usageHint": "Nutzung abfragen",
   "ui.account.readyHint": "Bereit für App-Verbindungen",
   "ui.account.cancelQuery": "Vorgang abbrechen",
@@ -294,5 +294,8 @@
   "ui.account.stage.CheckingAccount": "Verbindung wird vorbereitet",
   "ui.account.stage.ReadingModels": "Verbindung wird vorbereitet",
   "ui.account.stage.Ready": "Bereit für App-Verbindungen",
-  "ui.account.stage.Stopping": "Wird gestoppt…"
+  "ui.account.stage.Stopping": "Wird gestoppt…",
+  "ui.account.callbackHeading": "Zurück zu Cat Loader",
+  "ui.account.callbackMessage": "Das Anmeldeergebnis wurde gesendet. Prüfen Sie den Abschluss in Cat Loader.",
+  "ui.account.callbackClose": "Sie können diesen Tab schließen."
 }

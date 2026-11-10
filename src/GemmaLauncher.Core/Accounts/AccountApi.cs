@@ -1,4 +1,4 @@
-// Adapted from motionsilse/CatRoute c5c74ad, product core (MIT).
+// Adapted from motionsilse/CatRoute c5c74ad, product core. See THIRD-PARTY-NOTICES.md.
 using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;

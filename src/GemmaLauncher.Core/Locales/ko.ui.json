@@ -279,7 +279,7 @@
   "ui.account.failed": "작업에 실패했습니다. 네트워크와 저장 계정을 확인한 후 해당 작업을 다시 시도하세요.",
   "ui.account.noAccount": "ChatGPT 로그인",
   "ui.account.loginNeeded": "ChatGPT 로그인",
-  "ui.account.appConnection": "연결 정보 모두 복사",
+  "ui.account.appConnection": "앱 연결",
   "ui.account.usageHint": "사용량 조회",
   "ui.account.readyHint": "앱 연결 가능",
   "ui.account.cancelQuery": "작업 취소",
@@ -294,5 +294,8 @@
   "ui.account.stage.CheckingAccount": "연결 준비 중",
   "ui.account.stage.ReadingModels": "연결 준비 중",
   "ui.account.stage.Ready": "앱 연결 가능",
-  "ui.account.stage.Stopping": "중지 중…"
+  "ui.account.stage.Stopping": "중지 중…",
+  "ui.account.callbackHeading": "Cat Loader로 돌아가 주세요",
+  "ui.account.callbackMessage": "인증 결과를 전달했습니다. Cat Loader에서 로그인 완료 여부를 확인하세요.",
+  "ui.account.callbackClose": "이 탭은 닫아도 됩니다."
 }

@@ -279,7 +279,7 @@
   "ui.account.failed": "操作失败。请检查网络和保存的账户，然后重试该操作。",
   "ui.account.noAccount": "登录 ChatGPT",
   "ui.account.loginNeeded": "登录 ChatGPT",
-  "ui.account.appConnection": "复制全部连接信息",
+  "ui.account.appConnection": "连接应用",
   "ui.account.usageHint": "查询用量",
   "ui.account.readyHint": "可连接应用",
   "ui.account.cancelQuery": "取消任务",
@@ -294,5 +294,8 @@
   "ui.account.stage.CheckingAccount": "正在准备连接",
   "ui.account.stage.ReadingModels": "正在准备连接",
   "ui.account.stage.Ready": "可连接应用",
-  "ui.account.stage.Stopping": "正在停止…"
+  "ui.account.stage.Stopping": "正在停止…",
+  "ui.account.callbackHeading": "请返回 Cat Loader",
+  "ui.account.callbackMessage": "已传送登录结果。请在 Cat Loader 中确认是否完成登录。",
+  "ui.account.callbackClose": "可以关闭此标签页。"
 }

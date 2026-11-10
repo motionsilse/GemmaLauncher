@@ -12,6 +12,7 @@ public sealed class LoaderWindow : Form
     private readonly uint activateMessage, legacyMessage;
     private MainWindow? localWindow;
     private AccountConnectionView? accountView;
+    private LoaderFeature? shownFeature;
     private readonly Font ownedFont = new("Segoe UI", 10.5f);
     public event EventHandler? ActivationRequested;
     public event EventHandler? ExitRequested;
@@ -44,6 +45,7 @@ public sealed class LoaderWindow : Form
     }
     private void ShowFeature()
     {
+        if (shownFeature == shell.SelectedFeature) { UpdateMetrics(); return; }
         if (shell.SelectedFeature == LoaderFeature.LocalModels && shell.Local is { } local)
         {
             if (localWindow is null)
@@ -54,6 +56,7 @@ public sealed class LoaderWindow : Form
                 localWindow.AttachOperationPanel(operationHost);
             }
             if (accountView is not null) accountView.Hide(); localWindow.Show(); localWindow.BringToFront();
+            shownFeature = LoaderFeature.LocalModels;
         }
         else if (shell.SelectedFeature == LoaderFeature.ChatGpt && shell.Account is { } account)
         {
@@ -64,6 +67,7 @@ public sealed class LoaderWindow : Form
                 workspace.Controls.Add(accountView);
             }
             localWindow?.Hide(); accountView.Show(); accountView.BringToFront();
+            shownFeature = LoaderFeature.ChatGpt;
         }
         UpdateMetrics();
     }

@@ -279,7 +279,7 @@
   "ui.account.failed": "İşlem başarısız. Ağı ve kayıtlı hesabı kontrol edip yeniden deneyin.",
   "ui.account.noAccount": "ChatGPT hesabına giriş yap",
   "ui.account.loginNeeded": "ChatGPT hesabına giriş yap",
-  "ui.account.appConnection": "Tüm bağlantı bilgilerini kopyala",
+  "ui.account.appConnection": "Uygulama bağlayın",
   "ui.account.usageHint": "Kullanımı sorgula",
   "ui.account.readyHint": "Uygulamaları bağlamaya hazır",
   "ui.account.cancelQuery": "Görevi iptal et",
@@ -294,5 +294,8 @@
   "ui.account.stage.CheckingAccount": "Bağlantı hazırlanıyor",
   "ui.account.stage.ReadingModels": "Bağlantı hazırlanıyor",
   "ui.account.stage.Ready": "Uygulamaları bağlamaya hazır",
-  "ui.account.stage.Stopping": "Durduruluyor…"
+  "ui.account.stage.Stopping": "Durduruluyor…",
+  "ui.account.callbackHeading": "Cat Loader uygulamasına dönün",
+  "ui.account.callbackMessage": "Giriş sonucu iletildi. Girişin tamamlanıp tamamlanmadığını Cat Loader içinde kontrol edin.",
+  "ui.account.callbackClose": "Bu sekmeyi kapatabilirsiniz."
 }

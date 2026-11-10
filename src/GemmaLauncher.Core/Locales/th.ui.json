@@ -279,7 +279,7 @@
   "ui.account.failed": "ทำงานไม่สำเร็จ โปรดตรวจสอบเครือข่ายและบัญชีที่บันทึกแล้วลองอีกครั้ง",
   "ui.account.noAccount": "เข้าสู่ระบบ ChatGPT",
   "ui.account.loginNeeded": "เข้าสู่ระบบ ChatGPT",
-  "ui.account.appConnection": "คัดลอกข้อมูลการเชื่อมต่อทั้งหมด",
+  "ui.account.appConnection": "เชื่อมต่อแอป",
   "ui.account.usageHint": "ตรวจสอบการใช้งาน",
   "ui.account.readyHint": "พร้อมเชื่อมต่อแอป",
   "ui.account.cancelQuery": "ยกเลิกงาน",
@@ -294,5 +294,8 @@
   "ui.account.stage.CheckingAccount": "กำลังเตรียมการเชื่อมต่อ",
   "ui.account.stage.ReadingModels": "กำลังเตรียมการเชื่อมต่อ",
   "ui.account.stage.Ready": "พร้อมเชื่อมต่อแอป",
-  "ui.account.stage.Stopping": "กำลังหยุด…"
+  "ui.account.stage.Stopping": "กำลังหยุด…",
+  "ui.account.callbackHeading": "กลับไปที่ Cat Loader",
+  "ui.account.callbackMessage": "ส่งผลการเข้าสู่ระบบแล้ว โปรดตรวจสอบใน Cat Loader ว่าเข้าสู่ระบบเสร็จหรือไม่",
+  "ui.account.callbackClose": "คุณปิดแท็บนี้ได้"
 }

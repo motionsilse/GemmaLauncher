@@ -279,7 +279,7 @@
   "ui.account.failed": "Operacja nie powiodła się. Sprawdź sieć i zapisane konto, a następnie spróbuj ponownie.",
   "ui.account.noAccount": "Zaloguj do ChatGPT",
   "ui.account.loginNeeded": "Zaloguj do ChatGPT",
-  "ui.account.appConnection": "Kopiuj wszystkie dane połączenia",
+  "ui.account.appConnection": "Połącz aplikację",
   "ui.account.usageHint": "Sprawdź użycie",
   "ui.account.readyHint": "Gotowe do połączenia aplikacji",
   "ui.account.cancelQuery": "Anuluj zadanie",
@@ -294,5 +294,8 @@
   "ui.account.stage.CheckingAccount": "Przygotowywanie połączenia",
   "ui.account.stage.ReadingModels": "Przygotowywanie połączenia",
   "ui.account.stage.Ready": "Gotowe do połączenia aplikacji",
-  "ui.account.stage.Stopping": "Zatrzymywanie…"
+  "ui.account.stage.Stopping": "Zatrzymywanie…",
+  "ui.account.callbackHeading": "Wróć do Cat Loader",
+  "ui.account.callbackMessage": "Wynik logowania został wysłany. Sprawdź w Cat Loader, czy logowanie zakończono.",
+  "ui.account.callbackClose": "Możesz zamknąć tę kartę."
 }

@@ -279,7 +279,7 @@
   "ui.account.failed": "Tác vụ thất bại. Kiểm tra mạng và tài khoản đã lưu rồi thử lại.",
   "ui.account.noAccount": "Đăng nhập ChatGPT",
   "ui.account.loginNeeded": "Đăng nhập ChatGPT",
-  "ui.account.appConnection": "Sao chép mọi thông tin kết nối",
+  "ui.account.appConnection": "Kết nối ứng dụng",
   "ui.account.usageHint": "Xem mức sử dụng",
   "ui.account.readyHint": "Sẵn sàng kết nối ứng dụng",
   "ui.account.cancelQuery": "Hủy tác vụ",
@@ -294,5 +294,8 @@
   "ui.account.stage.CheckingAccount": "Đang chuẩn bị kết nối",
   "ui.account.stage.ReadingModels": "Đang chuẩn bị kết nối",
   "ui.account.stage.Ready": "Sẵn sàng kết nối ứng dụng",
-  "ui.account.stage.Stopping": "Đang dừng…"
+  "ui.account.stage.Stopping": "Đang dừng…",
+  "ui.account.callbackHeading": "Quay lại Cat Loader",
+  "ui.account.callbackMessage": "Đã gửi kết quả đăng nhập. Kiểm tra trong Cat Loader xem đăng nhập đã hoàn tất chưa.",
+  "ui.account.callbackClose": "Bạn có thể đóng thẻ này."
 }

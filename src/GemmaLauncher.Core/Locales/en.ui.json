@@ -279,7 +279,7 @@
   "ui.account.failed": "The operation failed. Check your connection and saved account, then retry the same operation.",
   "ui.account.noAccount": "Sign in to ChatGPT",
   "ui.account.loginNeeded": "Sign in to ChatGPT",
-  "ui.account.appConnection": "Copy all connection details",
+  "ui.account.appConnection": "Connect an app",
   "ui.account.usageHint": "Check usage",
   "ui.account.readyHint": "Ready to connect apps",
   "ui.account.cancelQuery": "Cancel task",
@@ -294,5 +294,8 @@
   "ui.account.stage.CheckingAccount": "Preparing connection",
   "ui.account.stage.ReadingModels": "Preparing connection",
   "ui.account.stage.Ready": "Ready to connect apps",
-  "ui.account.stage.Stopping": "Stopping…"
+  "ui.account.stage.Stopping": "Stopping…",
+  "ui.account.callbackHeading": "Return to Cat Loader",
+  "ui.account.callbackMessage": "The sign-in result was sent. Check Cat Loader to see whether sign-in completed.",
+  "ui.account.callbackClose": "You can close this tab."
 }

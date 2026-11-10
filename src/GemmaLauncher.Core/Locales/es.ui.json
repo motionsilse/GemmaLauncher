@@ -279,7 +279,7 @@
   "ui.account.failed": "La operación falló. Revisa la conexión y la cuenta guardada e inténtalo de nuevo.",
   "ui.account.noAccount": "Iniciar sesión en ChatGPT",
   "ui.account.loginNeeded": "Iniciar sesión en ChatGPT",
-  "ui.account.appConnection": "Copiar todos los datos de conexión",
+  "ui.account.appConnection": "Conectar una aplicación",
   "ui.account.usageHint": "Consultar uso",
   "ui.account.readyHint": "Listo para conectar aplicaciones",
   "ui.account.cancelQuery": "Cancelar tarea",
@@ -294,5 +294,8 @@
   "ui.account.stage.CheckingAccount": "Preparando conexión",
   "ui.account.stage.ReadingModels": "Preparando conexión",
   "ui.account.stage.Ready": "Listo para conectar aplicaciones",
-  "ui.account.stage.Stopping": "Deteniendo…"
+  "ui.account.stage.Stopping": "Deteniendo…",
+  "ui.account.callbackHeading": "Vuelve a Cat Loader",
+  "ui.account.callbackMessage": "Se envió el resultado. Comprueba en Cat Loader si se completó el inicio de sesión.",
+  "ui.account.callbackClose": "Puedes cerrar esta pestaña."
 }

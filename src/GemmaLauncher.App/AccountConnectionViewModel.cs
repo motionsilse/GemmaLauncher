@@ -32,9 +32,10 @@ public sealed class AccountConnectionViewModel : ObservableObject, IAsyncDisposa
     public string AccountText => Account.State == SavedAccountState.Available ? string.Join(" · ", new[] { Account.Email, Account.Plan }.Where(s => !string.IsNullOrWhiteSpace(s))) : T("ui.account.noAccount");
     public string StatusTitle => T(IsBusy ? "ui.account.preparing" : IsConnected ? "ui.account.ready" : Account.State == SavedAccountState.Available ? "ui.account.saved" : Account.State == SavedAccountState.Missing ? "ui.account.loginNeeded" : "ui.account.attention");
     public string PrimaryLabel => T(IsStopping ? "ui.account.stopping" : IsBusy ? "ui.account.cancel" : IsConnected ? "ui.account.stop" : Account.State == SavedAccountState.Available ? "ui.account.start" : "ui.account.login");
-    public string StatusDescription => error is not null ? FailureText(error) : IsBusy ? T("ui.account.stage." + stage) + (total > 0 ? $"  {completed * 100d / total:0}%" : "") : IsConnected ? T("ui.account.readyHint") : Account.State is SavedAccountState.Unreadable or SavedAccountState.Multiple ? T("ui.account.recovery") : T("ui.account.firstUse");
-    public string UsageText => queryError is not null ? FailureText(queryError) : usage is null ? T("ui.account.usageHint") : string.Join("\n", usage.Windows.Select(w => $"{w.Bucket} · {(w.UsedPercent is double p ? p.ToString("0.#", CultureInfo.CurrentCulture) + "%" : "—")} · {(w.ResetsAt?.ToLocalTime().ToString("g") ?? "—")}"));
-    public bool CanStart => !disposed && !IsStopping && (IsBusy || IsConnected || Account.State is SavedAccountState.Missing or SavedAccountState.Available);
+    public string StatusDescription => error is not null ? FailureText(error) : IsBusy ? StageText() + (total > 0 ? $"  {completed * 100d / total:0}%" : "") : IsConnected ? T("ui.account.readyHint") : Account.State is SavedAccountState.Unreadable or SavedAccountState.Multiple ? T("ui.account.recovery") : T("ui.account.firstUse");
+    private string StageText() => stage switch { AccountPreparationStage.CheckingRuntime => T("engine.install.verifying", "CLIProxyAPI"), AccountPreparationStage.DownloadingRuntime => T("engine.install.downloading", "CLIProxyAPI"), AccountPreparationStage.ExtractingRuntime => T("engine.install.extracting"), _ => T("ui.account.stage." + stage) };
+    public string UsageText => queryError is not null ? FailureText(queryError) : usage is null ? T("ui.account.usageHint") : usage.CheckedAt.ToLocalTime().ToString("g") + "\n" + string.Join("\n", usage.Windows.Select(w => $"{w.Bucket} · {(w.UsedPercent is double p ? p.ToString("0.#", CultureInfo.CurrentCulture) + "%" : "—")} · {(w.ResetsAt?.ToLocalTime().ToString("g") ?? "—")}"));
+    public bool CanStart => !disposed && !IsStopping && error is not ("local_key_unreadable" or "stop_failed") && (IsBusy || IsConnected || Account.State is SavedAccountState.Missing or SavedAccountState.Available);
     public bool CanQuery => IsConnected && !IsBusy && !IsQueryBusy && !disposed;
     public bool CanReopen => IsBusy && loginUri is not null;
     public bool NeedsRecovery => error is not null || Account.State is SavedAccountState.Unreadable or SavedAccountState.Multiple;
@@ -56,7 +57,7 @@ public sealed class AccountConnectionViewModel : ObservableObject, IAsyncDisposa
         PrimaryCommand = Command(() => { if (IsBusy) CancelPending(); else if (IsConnected) _ = StopAsync(); else _ = StartAsync(); }, () => CanStart);
         UsageCommand = Command(() => _ = QueryUsageAsync(), () => CanQuery);
         RefreshCommand = Command(() => _ = QueryAsync(async ct => { var models = await connection.ModelsAsync(ct); if (!models.Contains(ApiModelId)) throw new ConnectionFailure("default_model_unavailable"); }), () => CanQuery);
-        TestCommand = Command(() => _ = QueryAsync(async ct => { var result = await connection.TestAsync(ApiModelId, ct); if (!result.TextMatched) throw new ConnectionFailure("invalid_completion"); queryError = "test_ok"; }), () => CanQuery);
+        TestCommand = Command(() => _ = QueryAsync(async ct => { var result = await connection.TestAsync(ApiModelId, ct); ct.ThrowIfCancellationRequested(); if (!result.TextMatched) throw new ConnectionFailure("invalid_completion"); queryError = "test_ok"; }), () => CanQuery);
         SignOutCommand = Command(() => { if (ConfirmSignOut()) _ = SignOutAsync(); }, () => !IsBusy && !IsQueryBusy && !disposed && Account.State == SavedAccountState.Available);
         CancelQueryCommand = Command(() => queryCancellation?.Cancel(), () => IsQueryBusy);
         CopyAllCommand = Command(() => Clipboard.SetText($"API: {ApiAddress}\nAPI key: {connection.LocalApiKey}\nModel: {ApiModelId}"), () => IsConnected);
@@ -69,11 +70,13 @@ public sealed class AccountConnectionViewModel : ObservableObject, IAsyncDisposa
     private void LanguageChanged(object? sender, EventArgs e) => Notify();
     private void Notify() { if (disposed) return; OnPropertyChanged(null); foreach (var cmd in commands) cmd.Refresh(); }
     public Task ActivateAsync(CancellationToken ct) { ct.ThrowIfCancellationRequested(); if (!IsBusy) Account = connection.ReadSavedAccount(); Notify(); return Task.CompletedTask; }
+    public void RecheckSavedState() { if (IsBusy) return; error = null; Account = connection.ReadSavedAccount(); Notify(); }
     public void MaskKey() { revealed = false; Notify(); }
     public void Copy(string value) { if (IsConnected) Clipboard.SetText(value); }
     public string? CopyableKey => IsConnected ? connection.LocalApiKey : null;
     public Task StartAsync() => RunLifecycleAsync(async ct =>
     {
+        revealed = false; usage = null; queryError = null;
         var current = generation;
         var progress = new Progress<ConnectionProgress>(p => { if (!disposed && current == generation && !ct.IsCancellationRequested) { stage = p.Stage; completed = p.CompletedBytes; total = p.TotalBytes; Notify(); } });
         if (Account.State == SavedAccountState.Missing) await connection.LoginAsync(uri => { loginUri = uri; Notify(); OpenBrowser(uri); }, Localization.Current.LanguageCode, progress, ct);
@@ -108,10 +111,11 @@ public sealed class AccountConnectionViewModel : ObservableObject, IAsyncDisposa
         }
     }
     public void CancelPending() { generation++; lifecycle?.Cancel(); queryCancellation?.Cancel(); }
-    private async Task SignOutAsync() { queryCancellation?.Cancel(); if (query is not null) await query; await RunLifecycleAsync(ct => connection.SignOutAsync(ct)); }
+    private async Task SignOutAsync() { queryCancellation?.Cancel(); if (query is not null) await query; revealed = false; usage = null; queryError = null; await RunLifecycleAsync(ct => connection.SignOutAsync(ct)); }
     public async Task StopAsync()
     {
         if (IsStopping) return;
+        revealed = false;
         IsStopping = true; Notify();
         try { CancelPending(); if (operation is not null) await operation; if (query is not null) await query; await RunLifecycleAsync(_ => connection.StopAsync(default)); }
         finally { IsStopping = false; Notify(); }

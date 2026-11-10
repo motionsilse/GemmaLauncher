@@ -51,3 +51,31 @@ ANIS Trans의 모델과 함께 배포되는 실행 프로그램은 ANIS의 저�
 - [PyYAML](https://pyyaml.org/) — [라이선스](https://github.com/yaml/pyyaml/blob/main/LICENSE)
 
 Gemma는 모델 이름을 식별하기 위해 사용합니다. 이 런처는 Google의 공식 제품이 아니며, 원본 모델·튜닝·실행 엔진의 제작자와 독립된 프로젝트입니다.
+
+## ChatGPT 연결의 출처
+
+계정 연결의 제품용 로그인·프록시 호스트·사용량·API 처리는 [motionsilse/CatRoute](https://github.com/motionsilse/CatRoute)의 `c5c74ad`에서 선별 이관했습니다. 연구 폴더·비공개 바이너리·압축 엔진 payload는 포함하지 않았습니다. 저장 경로와 API 키 형식을 보존하고 지연 실행·취소·다운로드 및 네이티브 화면을 통합했습니다.
+
+프록시는 [router-for-me/CLIProxyAPI v8.0.27](https://github.com/router-for-me/CLIProxyAPI/releases/tag/v8.0.27)의 수정하지 않은 공식 Windows amd64 프로그램입니다. 첫 연결 준비 때 다운로드하며 Cat Loader EXE에는 포함하지 않습니다. 원본 [MIT 라이선스](https://github.com/router-for-me/CLIProxyAPI/blob/v8.0.27/LICENSE)와 다운로드 ZIP의 고지를 보존합니다.
+
+```text
+MIT License
+
+Copyright (c) 2025-2005.9 Luis Pater
+Copyright (c) 2025.9-present Router-For.ME
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```

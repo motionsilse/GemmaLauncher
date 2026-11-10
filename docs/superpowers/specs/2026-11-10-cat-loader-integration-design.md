@@ -1,6 +1,6 @@
 # Cat Loader 통합 설계
 
-상태: 설계서 승인 · 2026-11-10 사용자 선택 1 · 최종 설계 리뷰 수정 반영
+상태: 설계서 승인 · 최종 설계 리뷰 수정 반영 · 2026-11-10 로컬 앱 적용·검증 완료
 
 기준: GemmaLauncher `da4cd94`, CatRoute `c5c74ad` · 2026-11-10
 
@@ -121,4 +121,4 @@ CatRoute `c5c74ad`의 제품용 `CliProxyHost`, `CodexLogin`, `ProxyApi`, `Usage
 2. 두 카테고리, 계정 화면, 공통 수명·알림·트레이와 UI 검사.
 3. Cat Loader 브랜딩·고지·문서·성능 측정·최종 패키지 검증.
 
-세부 작업은 `../plans/2026-11-10-cat-loader-integration.md`, 최종 리뷰 근거는 `../../reviews/2026-11-10-cat-loader-final-design-review.md`에 기록한다. 이 문서의 수정은 제품 구현 완료를 의미하지 않는다.
+세부 작업은 `../plans/2026-11-10-cat-loader-integration.md`, 설계 리뷰 근거는 `../../reviews/2026-11-10-cat-loader-final-design-review.md`, 실제 적용·검증 결과와 실계정 미검증 범위는 `../../work/2026-11-10-cat-loader-integration.md`에 기록한다.

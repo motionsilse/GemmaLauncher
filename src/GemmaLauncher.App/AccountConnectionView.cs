@@ -16,7 +16,8 @@ public sealed class AccountConnectionView : UserControl
         var account = Ui.Label(); bindings.Text(account, () => vm.AccountText); Ui.Add(stack,account);
         var hint = Ui.Label(); hint.ForeColor = Ui.Muted; bindings.Text(hint, () => vm.StatusDescription); Ui.Add(stack,hint);
         var reopen = Button(stack,"ui.account.reopen",vm.ReopenCommand); bindings.Visible(reopen, () => vm.CanReopen);
-        var retry = Ui.Button(); bindings.Localize(retry,"ui.account.recheck"); retry.Click += async (_,_) => await vm.ActivateAsync(default); bindings.Visible(retry, () => vm.NeedsRecovery); Ui.Add(stack,retry);
+        var retry = Ui.Button(); bindings.Localize(retry,"ui.account.recheck"); retry.Click += (_,_) => vm.RecheckSavedState(); bindings.Visible(retry, () => vm.NeedsRecovery); Ui.Add(stack,retry);
+        var recoveryFolder = Ui.Button(); bindings.Localize(recoveryFolder,"ui.account.openFolder"); recoveryFolder.Click += (_,_) => OpenStateFolder?.Invoke(); bindings.Visible(recoveryFolder, () => vm.NeedsRecovery); Ui.Add(stack,recoveryFolder);
         Label("ui.account.appConnection",true);
         Row("ui.account.address", () => vm.ApiAddress, () => vm.Copy(vm.ApiAddress));
         Row("ui.account.key", () => vm.ApiKeyText, () => vm.Copy(vm.CopyableKey ?? ""));

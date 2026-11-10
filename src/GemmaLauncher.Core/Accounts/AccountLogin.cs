@@ -1,4 +1,4 @@
-// Adapted from motionsilse/Cat Loader c5c74ad, product core (MIT).
+// Adapted from motionsilse/CatRoute c5c74ad, product core. See THIRD-PARTY-NOTICES.md.
 using System.Net;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
@@ -68,12 +68,10 @@ public sealed class AccountCallback : IAsyncDisposable
             if (!callback.received.TrySetResult(new AccountCallbackResult(code.ToString(), !string.IsNullOrWhiteSpace(error.ToString()))))
             { context.Response.StatusCode = 409; return; }
             context.Response.ContentType = "text/html; charset=utf-8";
-            var korean = (uiLanguage ?? System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName) == "ko";
-            var language = korean ? "ko" : "en";
-            var heading = korean ? "앱으로 돌아가 주세요" : "Return to Cat Loader";
-            var message = korean ? "인증 결과를 전달했습니다. Cat Loader 창에서 완료 여부를 확인해 주세요." :
-                "The sign-in result has been sent. Check the Cat Loader window to see whether sign-in completed.";
-            var close = korean ? "이 탭은 닫아도 됩니다." : "You can close this tab.";
+            var language = Localization.Current.LanguageCode;
+            var heading = WebUtility.HtmlEncode(Localization.T("ui.account.callbackHeading"));
+            var message = WebUtility.HtmlEncode(Localization.T("ui.account.callbackMessage"));
+            var close = WebUtility.HtmlEncode(Localization.T("ui.account.callbackClose"));
             await context.Response.WriteAsync($"<!doctype html><html lang=\"{language}\"><meta charset=\"utf-8\"><title>Cat Loader</title><body style=\"font:18px sans-serif;padding:48px\"><h1>{heading}</h1><p>{message}</p><p>{close}</p></body></html>");
         });
         try

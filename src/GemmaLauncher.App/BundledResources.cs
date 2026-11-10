@@ -100,9 +100,16 @@ public static partial class BundledResources
             try { gateway.StartAsync(0, 1, TaskPreset.Empty).GetAwaiter().GetResult(); }
             finally { gateway.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
 
+            var accountProbeDirectory = Path.Combine(Path.GetTempPath(), "CatLoaderPackage-" + Guid.NewGuid().ToString("N"));
+            var account = new Core.Accounts.AccountConnection(accountProbeDirectory);
+            if (account.IsRunning || account.IsReady || Directory.Exists(accountProbeDirectory)) throw new InvalidDataException("Account service must be inactive on creation.");
+            account.DisposeAsync().AsTask().GetAwaiter().GetResult();
+            if (Directory.Exists(accountProbeDirectory)) throw new InvalidDataException("Inactive account service created files.");
+
             WriteReport(reportPath, new
             {
                 success = true,
+                accountInactive = true,
                 version = AppAssembly.GetName().Version?.ToString(3),
                 modelCount = catalog.Models.Length,
                 modelIds = catalog.Models.Select(model => model.Id).ToArray(),

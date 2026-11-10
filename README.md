@@ -1,8 +1,16 @@
-# Gemma Model Launcher by Drugged Cat
+# Cat Loader by Drugged Cat
 
-Install, run and manage local AI with a single click. Choose a model for translation, writing or conversation; the launcher prepares the files and provides both a **browser chat UI and an OpenAI-compatible API** for apps such as CatBridge.
+Prepare an OpenAI-compatible API for other apps from one small Windows launcher. Choose **Local models** to run a model on your PC, or **ChatGPT connection** to connect a ChatGPT account through the optional proxy engine. Each has its own address, status and stop button.
 
-One Windows EXE, an extensible model library, and reusable prompts and glossaries across connected apps.
+Local models use RAM/VRAM. ChatGPT needs internet access and shares the account's usage limits. Opening the app or changing categories starts neither service. Both can run together.
+
+## ChatGPT connection
+
+Open **ChatGPT connection** and choose **Sign in to ChatGPT**. If needed, Cat Loader downloads and verifies the official CLIProxyAPI v8.0.27 engine before opening sign-in in your browser. Complete sign-in yourself. For an existing saved account, choose **Start connection**.
+
+Copy the API address (`http://127.0.0.1:8319/v1`), local API key and model (`gpt-6-luna`) into your app. **Check usage** queries account limits; **Test with a real request** sends one inference request and can count toward usage. A saved login and a running API are separate states. The default model is never silently replaced if unavailable.
+
+Closing the window follows the common tray setting for both services; **Full exit** stops both. Existing GemmaLauncher data and CatRoute account/key folders are preserved. Exit the old CatRoute app before connecting. See [upgrade details](docs/migrations/cat-loader-0.4.md) and [third-party sources](THIRD-PARTY-NOTICES.md).
 
 ## Getting started
 

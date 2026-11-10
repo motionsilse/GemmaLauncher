@@ -279,7 +279,7 @@
   "ui.account.failed": "Nabigo ang gawain. Suriin ang koneksyon at naka-save na account, saka subukang muli.",
   "ui.account.noAccount": "Mag-sign in sa ChatGPT",
   "ui.account.loginNeeded": "Mag-sign in sa ChatGPT",
-  "ui.account.appConnection": "Kopyahin lahat ng detalye ng koneksyon",
+  "ui.account.appConnection": "Ikonekta ang app",
   "ui.account.usageHint": "Tingnan ang paggamit",
   "ui.account.readyHint": "Handa nang ikonekta ang mga app",
   "ui.account.cancelQuery": "Kanselahin ang gawain",
@@ -294,5 +294,8 @@
   "ui.account.stage.CheckingAccount": "Inihahanda ang koneksyon",
   "ui.account.stage.ReadingModels": "Inihahanda ang koneksyon",
   "ui.account.stage.Ready": "Handa nang ikonekta ang mga app",
-  "ui.account.stage.Stopping": "Inihihinto…"
+  "ui.account.stage.Stopping": "Inihihinto…",
+  "ui.account.callbackHeading": "Bumalik sa Cat Loader",
+  "ui.account.callbackMessage": "Naipadala ang resulta. Tingnan sa Cat Loader kung nakumpleto ang pag-sign in.",
+  "ui.account.callbackClose": "Maaari mong isara ang tab na ito."
 }

@@ -279,7 +279,7 @@
   "ui.account.failed": "処理に失敗しました。接続と保存アカウントを確認して再試行してください。",
   "ui.account.noAccount": "ChatGPT にログイン",
   "ui.account.loginNeeded": "ChatGPT にログイン",
-  "ui.account.appConnection": "接続情報をすべてコピー",
+  "ui.account.appConnection": "アプリとの接続",
   "ui.account.usageHint": "使用量を確認",
   "ui.account.readyHint": "アプリに接続できます",
   "ui.account.cancelQuery": "処理をキャンセル",
@@ -294,5 +294,8 @@
   "ui.account.stage.CheckingAccount": "接続を準備中",
   "ui.account.stage.ReadingModels": "接続を準備中",
   "ui.account.stage.Ready": "アプリに接続できます",
-  "ui.account.stage.Stopping": "停止中…"
+  "ui.account.stage.Stopping": "停止中…",
+  "ui.account.callbackHeading": "Cat Loader に戻ってください",
+  "ui.account.callbackMessage": "認証結果を送信しました。Cat Loader でログイン完了を確認してください。",
+  "ui.account.callbackClose": "このタブは閉じても構いません。"
 }

@@ -81,6 +81,10 @@ public static partial class Program
             window.Show(); vm.PrimaryCommand.Execute(null); await UntilAsync(() => vm.IsServerRunning && !vm.IsBusy);
             await Sample("visible-simulated-server");
             window.Hide(); await Sample("hidden-simulated-server");
+            window.Show(); await shell.SelectFeatureAsync(LoaderFeature.ChatGpt, default); await Sample("account-visible-saved");
+            window.Hide(); await Sample("account-hidden-saved");
+            await shell.Account!.StartAsync(); window.Show(); await Sample("both-visible-running");
+            window.Hide(); await Sample("both-hidden-running");
             var path = Path.GetFullPath(reportPath); Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             File.WriteAllText(path, JsonSerializer.Serialize(new { runtime = Environment.Version.ToString(), window = "1080x860", sampleSeconds = 10, warmupSeconds = 5,
                 inference = "Separate idle child process, no model loaded. Launcher-only telemetry overhead; not real llama.cpp inference.", samples }, new JsonSerializerOptions { WriteIndented = true }));

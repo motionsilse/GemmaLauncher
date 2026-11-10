@@ -279,7 +279,7 @@
   "ui.account.failed": "Operasi gagal. Periksa jaringan dan akun tersimpan, lalu coba lagi.",
   "ui.account.noAccount": "Masuk ke ChatGPT",
   "ui.account.loginNeeded": "Masuk ke ChatGPT",
-  "ui.account.appConnection": "Salin semua detail koneksi",
+  "ui.account.appConnection": "Hubungkan aplikasi",
   "ui.account.usageHint": "Periksa penggunaan",
   "ui.account.readyHint": "Siap menghubungkan aplikasi",
   "ui.account.cancelQuery": "Batalkan tugas",
@@ -294,5 +294,8 @@
   "ui.account.stage.CheckingAccount": "Menyiapkan koneksi",
   "ui.account.stage.ReadingModels": "Menyiapkan koneksi",
   "ui.account.stage.Ready": "Siap menghubungkan aplikasi",
-  "ui.account.stage.Stopping": "Menghentikan…"
+  "ui.account.stage.Stopping": "Menghentikan…",
+  "ui.account.callbackHeading": "Kembali ke Cat Loader",
+  "ui.account.callbackMessage": "Hasil masuk telah dikirim. Periksa di Cat Loader apakah proses masuk selesai.",
+  "ui.account.callbackClose": "Anda dapat menutup tab ini."
 }

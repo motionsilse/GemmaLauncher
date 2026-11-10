@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [ValidatePattern('^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$')]
-    [string]$Version = '0.3.0',
+    [string]$Version = '0.4.0',
     [string]$DotnetPath = 'dotnet',
     [string]$PythonPath = 'python'
 )
@@ -30,7 +30,7 @@ function Get-WorkspacePath([string]$RelativePath) {
 }
 
 $projectPath = Get-WorkspacePath 'src/GemmaLauncher.App/GemmaLauncher.App.csproj'
-$executableName = "GemmaLauncher-$Version-win-x64.exe"
+$executableName = "CatLoader-$Version-win-x64.exe"
 $distributionPath = Get-WorkspacePath 'dist'
 $releasePath = Get-WorkspacePath "dist/$executableName"
 $checksumPath = Get-WorkspacePath "dist/$executableName.sha256"
@@ -79,8 +79,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed with exit code $LASTEXITCODE." }
 
     $publishedFiles = @(Get-ChildItem -LiteralPath $publishPath -File -Recurse)
-    if ($publishedFiles.Count -ne 1 -or $publishedFiles[0].Name -ne 'GemmaLauncher.exe') {
-        throw 'Single-file publish must produce only GemmaLauncher.exe.'
+    if ($publishedFiles.Count -ne 1 -or $publishedFiles[0].Name -ne 'CatLoader.exe') {
+        throw 'Single-file publish must produce only CatLoader.exe.'
     }
 
     # Exercise this exact EXE from its otherwise empty directory, without a UI or server.
@@ -101,7 +101,7 @@ try {
     }
 
     # Only the verified EXE is distributed. Prior releases and inspection files are preserved.
-    Move-Item -LiteralPath (Get-WorkspacePath "$stagingRelativePath/app/GemmaLauncher.exe") -Destination $releasePath
+    Move-Item -LiteralPath (Get-WorkspacePath "$stagingRelativePath/app/CatLoader.exe") -Destination $releasePath
     $hash = (Get-FileHash -LiteralPath $releasePath -Algorithm SHA256).Hash.ToLowerInvariant()
     [IO.File]::WriteAllText($checksumPath, "$hash  $executableName" + [Environment]::NewLine, [Text.UTF8Encoding]::new($false))
     Write-Output "Executable: $releasePath"

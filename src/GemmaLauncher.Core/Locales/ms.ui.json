@@ -279,7 +279,7 @@
   "ui.account.failed": "Operasi gagal. Semak rangkaian dan akaun tersimpan, kemudian cuba lagi.",
   "ui.account.noAccount": "Log masuk ke ChatGPT",
   "ui.account.loginNeeded": "Log masuk ke ChatGPT",
-  "ui.account.appConnection": "Salin semua butiran sambungan",
+  "ui.account.appConnection": "Sambungkan aplikasi",
   "ui.account.usageHint": "Semak penggunaan",
   "ui.account.readyHint": "Sedia menyambungkan aplikasi",
   "ui.account.cancelQuery": "Batalkan tugas",
@@ -294,5 +294,8 @@
   "ui.account.stage.CheckingAccount": "Menyediakan sambungan",
   "ui.account.stage.ReadingModels": "Menyediakan sambungan",
   "ui.account.stage.Ready": "Sedia menyambungkan aplikasi",
-  "ui.account.stage.Stopping": "Menghentikan…"
+  "ui.account.stage.Stopping": "Menghentikan…",
+  "ui.account.callbackHeading": "Kembali ke Cat Loader",
+  "ui.account.callbackMessage": "Keputusan log masuk telah dihantar. Semak dalam Cat Loader sama ada log masuk selesai.",
+  "ui.account.callbackClose": "Anda boleh menutup tab ini."
 }
