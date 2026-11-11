@@ -1,4 +1,6 @@
 {
+  "engine.install.connecting": "Kumokonekta para i-download ang {0}",
+  "engine.anis.downloadTimedOut": "Hindi na tumutugon ang download ng {0}. Subukan muli.",
   "engine.install.timedOut": "Lumampas sa takdang oras ang pag-download. Subukan ulit. Naka-save ang na-download nang data para maipagpatuloy ito.",
   "engine.session.stopped": "Naka-off ang AI server.",
   "engine.session.invalidContext": "Pumili ng haba ng konteksto na sinusuportahan ng modelong ito.",

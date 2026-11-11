@@ -32,6 +32,13 @@ internal sealed class WindowsJob : IDisposable
             throw new Win32Exception(Marshal.GetLastWin32Error(), Localization.T("engine.session.jobFailed"));
     }
 
+    public bool Contains(uint processId)
+    {
+        const uint queryLimitedInformation = 0x1000;
+        using var process = OpenProcess(queryLimitedInformation, false, processId);
+        return !process.IsInvalid && IsProcessInJob(process, _handle, out var member) && member;
+    }
+
     public void Dispose() => _handle.Dispose();
 
     [StructLayout(LayoutKind.Sequential)]
@@ -74,11 +81,18 @@ internal sealed class WindowsJob : IDisposable
     [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool AssignProcessToJobObject(SafeFileHandle job, SafeProcessHandle process);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern SafeProcessHandle OpenProcess(uint access, [MarshalAs(UnmanagedType.Bool)] bool inheritHandle, uint processId);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool IsProcessInJob(SafeProcessHandle process, SafeFileHandle job, [MarshalAs(UnmanagedType.Bool)] out bool result);
 }
 
 internal static class TcpProcessOwner
 {
-    public static bool OwnsListener(int port, int processId)
+    public static bool OwnsListener(int port, int processId, WindowsJob? job = null)
     {
         var length = 0;
         var result = GetExtendedTcpTable(IntPtr.Zero, ref length, false, 2, 3, 0);
@@ -96,7 +110,7 @@ internal static class TcpProcessOwner
             {
                 var row = Marshal.PtrToStructure<TcpRow>(IntPtr.Add(buffer, 4 + index * rowSize));
                 var localPort = (ushort)System.Net.IPAddress.NetworkToHostOrder(unchecked((short)row.LocalPort));
-                if (row.State == 2 && localPort == port && row.ProcessId == processId) return true;
+                if (row.State == 2 && localPort == port && (row.ProcessId == processId || job?.Contains(row.ProcessId) == true)) return true;
             }
             return false;
         }

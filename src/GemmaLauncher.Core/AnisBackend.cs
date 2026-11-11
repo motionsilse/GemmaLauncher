@@ -34,6 +34,8 @@ public sealed class AnisBackend : IDisposable
         new("tokenizer.model",275719,"32a11bc0c1c45a477d4a4cdbc0dbc04935063b849e25a7c5d94f1294a1e3a15c"),
         new("ct2/model.bin",300265575,"07212fcad6655f632de0345713981d8e171d8891b71039289125d79c3ae8bcde")
     ]);
+    public static IReadOnlyList<AnisArtifact> RuntimeModelFiles { get; } = Array.AsReadOnly(
+        ModelFiles.Where(file => file.Path.StartsWith("ct2/", StringComparison.Ordinal) || file.Path == "tokenizer.model").ToArray());
     private const string SourceHash = "ef664aa5d77ff53bb8c0d57c2d4188b474c86ace0f61a6c5d4ea88c1027b19f9";
     private const string PythonVersion = "3.12.12";
     private const string Requirements = "ctranslate2==4.8.5 --hash=sha256:16b1478f9dccd3c6eedb7a1b2e23cb2a41f03976266b71afa1bd9019df7c7014\nsentencepiece==0.2.3 --hash=sha256:972af959c63cde446210a8935524806820c253afa4b0a97d83c206b857085f44\nnumpy==2.4.3 --hash=sha256:65f3c2455188f09678355f5cae1f959a06b778bc66d535da07bf2ef20cd319d5\nPyYAML==6.0.3 --hash=sha256:5fcd34e47f6e0b794d17de1b4ff496c00986e1c83f7ab2fb8fcfe9616ff7477b\n";
@@ -43,13 +45,13 @@ public sealed class AnisBackend : IDisposable
     private readonly HttpClient client;
     private readonly bool ownsClient;
     private readonly SemaphoreSlim gate = new(1, 1);
-    private readonly Dictionary<string, (long Bytes, long WriteTicks)> verified = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, (long Bytes, long WriteTicks, bool Matches)> verified = new(StringComparer.OrdinalIgnoreCase);
     public string ManagedModelDirectory => Path.Combine(paths.Models, "anis-trans", ModelRevision);
 
     public AnisBackend(LauncherPaths paths, Func<string?>? externalFolder = null, HttpClient? client = null)
     {
         this.paths = paths; this.externalFolder = externalFolder ?? (() => null); ownsClient = client is null;
-        this.client = client ?? new HttpClient(new SocketsHttpHandler { ConnectTimeout = TimeSpan.FromSeconds(30), UseCookies = false }) { Timeout = Timeout.InfiniteTimeSpan };
+        this.client = client ?? new HttpClient(new SocketsHttpHandler { ConnectTimeout = TimeSpan.FromSeconds(30), UseCookies = false, AllowAutoRedirect = false }) { Timeout = Timeout.InfiniteTimeSpan };
     }
     public async Task<InstalledModel?> FindAsync(ModelDefinition model, CancellationToken token = default)
     {
@@ -68,7 +70,7 @@ public sealed class AnisBackend : IDisposable
     }
     private async Task<InstalledModel?> FindInFolderAsync(ModelDefinition model, string folder, CancellationToken token)
     {
-        foreach (var file in ModelFiles.Where(file => file.Path is "ct2/model.bin" or "ct2/config.json" or "ct2/shared_vocabulary.json" or "tokenizer.model"))
+        foreach (var file in RuntimeModelFiles)
             if (!await VerifyAsync(Path.Combine(folder, file.Path), file, token)) return null;
         return new(model, Path.Combine(folder, "ct2", "model.bin"), null);
     }
@@ -82,18 +84,80 @@ public sealed class AnisBackend : IDisposable
         }
         finally { gate.Release(); }
     }
+
+    public async Task<IReadOnlyList<AnisArtifact>> ImportBrowserDownloadsAsync(string directory, CancellationToken token = default)
+    {
+        directory = Path.GetFullPath(directory);
+        await gate.WaitAsync(token);
+        try
+        {
+            var missing = new List<AnisArtifact>();
+            foreach (var file in RuntimeModelFiles)
+            {
+                token.ThrowIfCancellationRequested();
+                var destination = ManagedPath(ManagedModelDirectory, file.Path);
+                if (await VerifyAsync(destination, file, token)) continue;
+
+                var name = Path.GetFileName(file.Path);
+                var copies = Directory.Exists(directory)
+                    ? Directory.EnumerateFiles(directory, Path.GetFileNameWithoutExtension(name) + " (*)" + Path.GetExtension(name))
+                    : [];
+                var candidates = new[] { Path.Combine(directory, name), Path.Combine(directory, file.Path), Path.Combine(directory, "model", file.Path) }
+                    .Concat(copies).Distinct(StringComparer.OrdinalIgnoreCase);
+                var imported = false;
+                foreach (var candidate in candidates)
+                {
+                    if (!await VerifyAsync(candidate, file, token)) continue;
+                    await CopyDownloadAsync(candidate, destination, file, token);
+                    imported = true;
+                    break;
+                }
+                if (!imported) missing.Add(file);
+            }
+            return missing;
+        }
+        finally { gate.Release(); }
+    }
+
+    private async Task CopyDownloadAsync(string source, string destination, AnisArtifact file, CancellationToken token)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+        var temporary = destination + "." + Guid.NewGuid().ToString("N") + ".partial";
+        try
+        {
+            await using (var input = new FileStream(source, FileMode.Open, FileAccess.Read, FileShare.Read, 131072, FileOptions.Asynchronous))
+            await using (var output = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None, 131072, FileOptions.Asynchronous))
+            {
+                if (input.Length != file.Bytes) throw new InvalidDataException(Localization.T("engine.anis.invalidFile", file.Path));
+                await input.CopyToAsync(output, token);
+            }
+            if (!await VerifyAsync(temporary, file, token)) throw new InvalidDataException(Localization.T("engine.anis.invalidFile", file.Path));
+            token.ThrowIfCancellationRequested();
+            File.Move(temporary, destination, true);
+        }
+        finally { if (File.Exists(temporary)) File.Delete(temporary); }
+    }
+
     public async Task<InstalledModel> EnsureModelAsync(ModelDefinition model, string? accessToken, IProgress<InstallationProgress>? progress, CancellationToken token = default)
     {
         await gate.WaitAsync(token);
         try
         {
             var existing = await FindModelAsync(model, token); if (existing is not null) return existing;
-            foreach (var file in ModelFiles)
+            var missing = new List<AnisArtifact>();
+            foreach (var file in RuntimeModelFiles)
             {
                 var destination = ManagedPath(ManagedModelDirectory, file.Path);
-                if (await VerifyAsync(destination, file, token)) continue;
+                if (!await VerifyAsync(destination, file, token)) missing.Add(file);
+            }
+            var total = missing.Sum(file => file.Bytes);
+            var completed = 0L;
+            foreach (var file in missing)
+            {
+                var destination = ManagedPath(ManagedModelDirectory, file.Path);
                 var url = ModelPage + "/resolve/" + ModelRevision + "/" + file.Path;
-                await DownloadAsync(url, destination, file, accessToken, progress, token);
+                await DownloadAsync(url, destination, file, accessToken, progress, token, completed, total);
+                completed += file.Bytes;
             }
             return new(model, Path.Combine(ManagedModelDirectory, "ct2", "model.bin"), null);
         }
@@ -103,7 +167,8 @@ public sealed class AnisBackend : IDisposable
     {
         var info = new FileInfo(file); if (!info.Exists || info.Length != expected.Bytes) return false;
         var key = file + "|" + expected.Hash;
-        if (verified.TryGetValue(key, out var cached) && cached == (info.Length, info.LastWriteTimeUtc.Ticks)) return true;
+        if (verified.TryGetValue(key, out var cached) && cached.Bytes == info.Length && cached.WriteTicks == info.LastWriteTimeUtc.Ticks)
+            return cached.Matches;
         await using var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, 131072, FileOptions.Asynchronous | FileOptions.SequentialScan);
         byte[] digest;
         if (expected.GitBlob)
@@ -115,42 +180,80 @@ public sealed class AnisBackend : IDisposable
             digest = hash.GetHashAndReset();
         }
         else digest = await SHA256.HashDataAsync(stream, token);
-        if (!Convert.ToHexString(digest).Equals(expected.Hash, StringComparison.OrdinalIgnoreCase)) return false;
-        verified[key] = (info.Length, info.LastWriteTimeUtc.Ticks); return true;
+        var matches = Convert.ToHexString(digest).Equals(expected.Hash, StringComparison.OrdinalIgnoreCase);
+        verified[key] = (info.Length, info.LastWriteTimeUtc.Ticks, matches);
+        return matches;
     }
-    private async Task DownloadAsync(string url, string destination, AnisArtifact expected, string? accessToken, IProgress<InstallationProgress>? progress, CancellationToken token)
+    private async Task DownloadAsync(string url, string destination, AnisArtifact expected, string? accessToken,
+        IProgress<InstallationProgress>? progress, CancellationToken token, long completedBeforeFile = 0, long? totalBytes = null)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
         var temporary = destination + "." + Guid.NewGuid().ToString("N") + ".partial";
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Get, url);
             if (!string.IsNullOrWhiteSpace(accessToken))
             {
                 accessToken = accessToken.Trim();
                 if (accessToken.Length > 4096 || accessToken.Any(c => !char.IsAsciiLetterOrDigit(c) && c is not ('_' or '-'))) throw new AnisAccessRequiredException();
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             }
-            using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
+            progress?.Report(new("connecting", Localization.T("engine.install.connecting", expected.Path)));
+            using var response = await OpenDownloadAsync(new Uri(url), accessToken, token);
             if (new Uri(url).Host == "huggingface.co" && response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden) throw new AnisAccessRequiredException();
             response.EnsureSuccessStatusCode();
             if (response.Content.Headers.ContentLength is long length && length != expected.Bytes) throw new InvalidDataException(Localization.T("engine.anis.invalidFile", expected.Path));
             await using (var input = await response.Content.ReadAsStreamAsync(token))
             await using (var output = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None, 131072, FileOptions.Asynchronous))
             {
-                var buffer = new byte[131072]; long completed = 0; int count;
-                while ((count = await input.ReadAsync(buffer, token)) > 0)
+                var buffer = new byte[131072];
+                long completed = 0;
+                long? lastProgress = null;
+                while (true)
                 {
+                    using var readTimeout = CancellationTokenSource.CreateLinkedTokenSource(token);
+                    readTimeout.CancelAfter(TimeSpan.FromSeconds(60));
+                    var count = await input.ReadAsync(buffer, readTimeout.Token);
+                    if (count == 0) break;
                     completed += count; if (completed > expected.Bytes) throw new InvalidDataException(Localization.T("engine.anis.invalidFile", expected.Path));
                     await output.WriteAsync(buffer.AsMemory(0, count), token);
-                    progress?.Report(new("downloading", Localization.T("engine.install.downloading", expected.Path), completed, expected.Bytes));
+                    var now = Stopwatch.GetTimestamp();
+                    if (lastProgress is not long previous || completed == expected.Bytes || Stopwatch.GetElapsedTime(previous, now) >= TimeSpan.FromMilliseconds(100))
+                    {
+                        progress?.Report(new("downloading", Localization.T("engine.install.downloading", expected.Path), completedBeforeFile + completed, totalBytes ?? expected.Bytes));
+                        lastProgress = now;
+                    }
                 }
                 await output.FlushAsync(token);
             }
+            progress?.Report(new("verifying", Localization.T("engine.install.verifying", expected.Path)));
             if (!await VerifyAsync(temporary, expected, token)) throw new InvalidDataException(Localization.T("engine.anis.invalidFile", expected.Path));
             token.ThrowIfCancellationRequested(); File.Move(temporary, destination, true);
         }
+        catch (OperationCanceledException error) when (!token.IsCancellationRequested)
+        {
+            throw new TimeoutException(Localization.T("engine.anis.downloadTimedOut", expected.Path), error);
+        }
         finally { if (File.Exists(temporary)) File.Delete(temporary); }
+    }
+
+    private async Task<HttpResponseMessage> OpenDownloadAsync(Uri address, string? accessToken, CancellationToken token)
+    {
+        for (var hop = 0; hop < 8; hop++)
+        {
+            if (address.Scheme != Uri.UriSchemeHttps || address.UserInfo.Length != 0)
+                throw new InvalidDataException(Localization.T("engine.install.insecureConnection"));
+            if (address.IdnHost != "huggingface.co" || address.Port != 443) accessToken = null;
+            using var request = new HttpRequestMessage(HttpMethod.Get, address);
+            if (!string.IsNullOrWhiteSpace(accessToken))
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            using var deadline = CancellationTokenSource.CreateLinkedTokenSource(token);
+            deadline.CancelAfter(TimeSpan.FromSeconds(60));
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, deadline.Token);
+            if ((int)response.StatusCode is not (301 or 302 or 303 or 307 or 308) || response.Headers.Location is not { } location)
+                return response;
+            response.Dispose();
+            address = new Uri(address, location);
+        }
+        throw new IOException(Localization.T("engine.anis.accessRequired"));
     }
     public async Task<AnisRuntimeInstallation> EnsureRuntimeAsync(IInstallationService installer, IProgress<InstallationProgress>? progress, CancellationToken token = default)
     {

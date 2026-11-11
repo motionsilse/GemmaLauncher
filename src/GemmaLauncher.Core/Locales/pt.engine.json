@@ -1,4 +1,6 @@
 {
+  "engine.install.connecting": "Conectando para baixar {0}",
+  "engine.anis.downloadTimedOut": "O download de {0} parou de responder. Tente novamente.",
   "engine.install.timedOut": "O tempo limite do download foi atingido. Tente novamente. Os dados já baixados foram mantidos para continuar de onde parou.",
   "engine.session.stopped": "O servidor de IA está desligado.",
   "engine.session.invalidContext": "Escolha um tamanho de contexto compatível com este modelo.",

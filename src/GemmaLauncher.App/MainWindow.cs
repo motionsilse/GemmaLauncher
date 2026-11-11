@@ -20,7 +20,7 @@ public sealed class MainWindow : Form
     private readonly Func<PresetEditDecision>? _previousPresetResolver;
     private readonly Func<string, bool>? _previousDeleteConfirmation;
     private readonly Action? _previousCommit;
-    private readonly Func<CancellationToken, Task<AnisAccessInput?>>? _previousAnisAccess;
+    private readonly Func<CancellationToken, Task<string?>>? _previousAnisAccess;
     public event EventHandler? ActivationRequested;
     public event EventHandler? ExitRequested;
     public int CreatedPageCount => _pages.Count(page => page is not null);
@@ -61,7 +61,8 @@ public sealed class MainWindow : Form
         _bindings.Visible(_secondaryOperationHost, () => _externalOperationHost is null && (viewModel.PageIndex != 0 || UseCompactLayout) && viewModel.ShowOperation);
         root.Controls.Add(_secondaryOperationHost, 0, 2);
         var footer = Ui.Label(); footer.ForeColor = Ui.Muted; Ui.SetFont(footer, Ui.SecondaryFontSize); footer.Margin = new Padding(0, 10, 0, 0);
-        _bindings.Text(footer, () => viewModel.StatusNote + (viewModel.StatusNote.Length > 0 ? "\n" : "") + "by Drugged Cat   ·   " + T(viewModel.IsServerRunning && viewModel.CloseToTray ? "ui.footer.background" : "ui.connection.localOnly"));
+        _bindings.Text(footer, () => viewModel.StatusNote);
+        _bindings.Visible(footer, () => viewModel.StatusNote.Length > 0);
         root.Controls.Add(footer, 0, 3); Controls.Add(root);
         _bindings.Text(this, () => T("ui.app.title"));
         VisibleChanged += (_, _) => UpdateTelemetry(); Resize += (_, _) => { PlaceOperationPanel(); _bindings.RequestRefresh(); UpdateTelemetry(); };

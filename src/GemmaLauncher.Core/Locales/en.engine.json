@@ -1,4 +1,6 @@
 {
+  "engine.install.connecting": "Connecting to download {0}",
+  "engine.anis.downloadTimedOut": "The download for {0} stopped responding. Retry the download.",
   "engine.install.timedOut": "The download timed out. Please try again. Downloaded data has been kept so you can resume.",
   "engine.session.stopped": "The AI server is off.",
   "engine.session.invalidContext": "Choose a context length supported by this model.",

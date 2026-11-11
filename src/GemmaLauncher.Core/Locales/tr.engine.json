@@ -1,4 +1,6 @@
 {
+  "engine.install.connecting": "{0} indirmesi için bağlanılıyor",
+  "engine.anis.downloadTimedOut": "{0} indirmesi yanıt vermiyor. Tekrar deneyin.",
   "engine.install.timedOut": "İndirme zaman aşımına uğradı. Tekrar deneyin. İndirilen veriler, indirmeye devam edebilmeniz için korundu.",
   "engine.session.stopped": "AI sunucusu kapalı.",
   "engine.session.invalidContext": "Bu modelin desteklediği bir bağlam uzunluğu seçin.",

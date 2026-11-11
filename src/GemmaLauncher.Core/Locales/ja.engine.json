@@ -1,4 +1,6 @@
 {
+  "engine.install.connecting": "{0} のダウンロードに接続中",
+  "engine.anis.downloadTimedOut": "{0} のダウンロードが応答しません。もう一度お試しください。",
   "engine.install.timedOut": "ダウンロードがタイムアウトしました。もう一度お試しください。再開できるよう、ダウンロード済みのデータは保存されています。",
   "engine.session.stopped": "AIサーバーは停止しています。",
   "engine.session.invalidContext": "このモデルが対応するコンテキスト長を選択してください。",

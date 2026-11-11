@@ -1,15 +1,9 @@
 using System.Windows.Forms;
+using System.Reflection;
 using GemmaLauncher.Core;
 using static GemmaLauncher.Core.Localization;
 
 namespace GemmaLauncher.App;
-
-public sealed class AnisAccessInput
-{
-    public string? Token { get; init; }
-    public string? ModelFolder { get; init; }
-    public override string ToString() => "ANIS access input";
-}
 
 public sealed partial class LauncherViewModel
 {
@@ -17,18 +11,28 @@ public sealed partial class LauncherViewModel
     public bool CloseToTray { get => _settings.CloseToTray; set { _settings.CloseToTray = value; SaveSettings(); OnPropertyChanged(); } }
     public void OpenModelLicense() { if (SelectedModel is not null) OpenLink(SelectedModel.LicenseUrl); }
     public void OpenAnisProgramSource() => OpenLink(AnisBackend.SourcePage);
-    public Func<CancellationToken, Task<AnisAccessInput?>>? RequestAnisAccess { get; set; }
-    public string[] AnisDirections { get; } = ["auto", "ja-ko", "ko-ja"];
-    public string[] AnisDevices { get; } = ["auto", "cpu", "cuda"];
-    public string AnisDirection
+    public Func<CancellationToken, Task<string?>>? RequestAnisAccess { get; set; }
+    public Action<Uri> OpenAnisDownload { get; set; } = uri =>
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
+    internal string AnisManagedFolder => _anis.ManagedModelDirectory;
+    internal Task<IReadOnlyList<AnisArtifact>> ImportAnisDownloadsAsync(string directory, CancellationToken token) =>
+        _anis.ImportBrowserDownloadsAsync(directory, token);
+    internal static string? HuggingFaceClientId { get; } = typeof(LauncherViewModel).Assembly
+        .GetCustomAttributes<AssemblyMetadataAttribute>()
+        .FirstOrDefault(attribute => attribute.Key == "HuggingFaceClientId")?.Value;
+    private HuggingFaceAuthorization? _anisAuthorization;
+    internal bool HasAnisAuthorization => _anisAuthorization?.IsAuthorized == true;
+    internal void ClearAnisAuthorization() => _anisAuthorization?.ClearAuthorization();
+
+    internal async Task DownloadAnisWithLoginAsync(string clientId, IProgress<InstallationProgress> progress, CancellationToken token)
     {
-        get => _settings.AnisDirection is "ja-ko" or "ko-ja" ? _settings.AnisDirection : "auto";
-        set
-        {
-            if (!CanSelectModel || !AnisDirections.Contains(value) || value == AnisDirection) return;
-            _settings.AnisDirection = value; SaveSettings(); OnPropertyChanged(); OnPropertyChanged(nameof(ApiModelId));
-        }
+        _anisAuthorization ??= new HuggingFaceAuthorization(clientId);
+        var credential = await _anisAuthorization.SignInAsync(OpenAnisDownload, token);
+        await _anis.EnsureModelAsync(SelectedModel!, credential, progress, token);
+        ClearAnisAuthorization();
     }
+
+    public string[] AnisDevices { get; } = ["auto", "cpu", "cuda"];
     public string AnisDevice
     {
         get => _settings.AnisDevice is "cpu" or "cuda" ? _settings.AnisDevice : "auto";
@@ -38,7 +42,6 @@ public sealed partial class LauncherViewModel
             _settings.AnisDevice = value; SaveSettings(); OnPropertyChanged();
         }
     }
-    public string AnisDirectionLabel(string direction) => T("ui.anis.direction." + direction);
     public string AnisDeviceLabel(string device) => device switch { "auto" => T("ui.option.auto"), "cpu" => "CPU", "cuda" => "NVIDIA GPU (CUDA)", _ => device };
     private void ChooseAnisFolder()
     {

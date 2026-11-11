@@ -45,6 +45,7 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
     private Uri? _prerequisiteDownload;
     private string _error = "";
     private string _progressMessage = "";
+    private InstallationProgress? _transferProgress;
     private string _statusNote = "";
     private double _progressPercent;
     private bool _indeterminate = true;
@@ -81,6 +82,7 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
     }
     public bool IsBusy => _busy || _scanning;
     public bool CanSelectModel => !_isDisposed && !_busy && !_scanning && _session.Status.State is ServerState.Stopped or ServerState.Faulted;
+    public bool CanChooseModel => CanSelectModel || !_isDisposed && !IsBusy && IsServerRunning;
     public bool CanChangeContext => !_busy && ContextChoices.Count > 1;
     public bool CanChangeLoadOptions => !IsAnis && !_isDisposed && !IsBusy && (CanSelectModel || CanOpenWebUi);
     public bool CanOpenWebUi => _session.Status.State == ServerState.Running;
@@ -90,6 +92,7 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
     public bool HasServerError => HasError && _operationUsesModel;
     public bool IsIndeterminate => _indeterminate;
     public double ProgressPercent => _progressPercent;
+    public string TransferProgressText => _busy ? Ui.TransferProgressText(_transferProgress) : "";
     public string ProgressMessage => _scanning && !_busy ? T("ui.status.scanning") : Core.Localization.Current.Retranslate(_progressMessage);
     public string StatusNote => Core.Localization.Current.Retranslate(_statusNote);
     public string MemoryUsageLabel => CanOpenWebUi ? T("ui.memory.current") : T("ui.memory.guide");
@@ -100,7 +103,7 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
     public bool NeedsRuntimePrerequisite => _prerequisiteDownload is not null;
     public string AccelerationLabel => Models.All(m => m.Profile.MtpDraftMax > 0) ? T("ui.acceleration.all") : T("ui.acceleration.mixed");
     public string ApiAddress => $"http://127.0.0.1:{_serverPort}/v1";
-    public string ApiModelId => IsAnis ? "anis-trans:" + AnisDirection : SelectedModel?.ApiModelId ?? "";
+    public string ApiModelId => IsAnis ? "anis-trans:auto" : SelectedModel?.ApiModelId ?? "";
     public string ConnectionLabel => CanOpenWebUi ? T("ui.connection.ready") : T("ui.connection.waiting");
     public string ContextHint => HasPendingContext ? T("ui.context.running", _activeContext / 1024 ?? 0)
         : T("ui.context.hint");
@@ -154,7 +157,12 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
         CopyApiCommand = Command(_ => { try { System.Windows.Forms.Clipboard.SetText(ApiAddress); Note(T("ui.note.copied")); } catch (Exception ex) { Note(T("ui.note.copyFailed", ex.Message)); } });
         OpenWebUiCommand = Command(_ => OpenLink($"http://127.0.0.1:{_serverPort}/"), _ => CanOpenWebUi && !IsAnis);
         ManageModelsCommand = Command(_ => { PageIndex = 1; ModelPageIndex = 0; });
-        SelectModelCommand = Command(value => { if (value is ModelDefinition model) SelectedModel = model; }, _ => CanSelectModel);
+        SelectModelCommand = Command(value =>
+        {
+            if (value is not ModelDefinition model || model == SelectedModel || !Models.Contains(model)) return;
+            if (!IsServerRunning) { SelectedModel = model; return; }
+            if (SavePendingPreset()) _ = StopAndSelectModelAsync(model);
+        }, _ => CanChooseModel);
         OpenFolderCommand = Command(_ => OpenDirectory(_installed is null ? _paths.Models : Path.GetDirectoryName(_installed.ModelPath)!));
         OpenLogsCommand = Command(_ => OpenDirectory(_paths.Logs));
         ConnectModelFileCommand = Command(_ => ChooseModelFile(), _ => CanSelectModel);
@@ -211,6 +219,8 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
     private void Refresh()
     {
         OnPropertyChanged(nameof(HasServerError));
+        OnPropertyChanged(nameof(CanChooseModel));
+        OnPropertyChanged(nameof(TransferProgressText));
         foreach (var property in new[] { nameof(SelectedPresentation), nameof(IsBusy), nameof(CanSelectModel), nameof(CanChangeContext), nameof(CanOpenWebUi), nameof(HasPendingContext), nameof(IsProgressVisible), nameof(HasError), nameof(IsIndeterminate), nameof(ProgressPercent), nameof(ProgressMessage), nameof(StatusNote), nameof(MemoryUsage), nameof(MemoryUsageLabel), nameof(DownloadLabel), nameof(ApiModelId), nameof(ConnectionLabel), nameof(ContextHint), nameof(StatusLabel), nameof(StatusTitle), nameof(StatusDescription), nameof(PrimaryLabel), nameof(IsServerRunning) }) OnPropertyChanged(property);
         foreach (var command in _commands) command.Refresh();
         OnPropertyChanged(nameof(NeedsRuntimePrerequisite));
@@ -252,7 +262,7 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
 
     private void Primary()
     {
-        if (_busy) { _operationCancellation?.Cancel(); _progressMessage = T("ui.status.cancelling"); Refresh(); return; }
+        if (_busy) { _operationCancellation?.Cancel(); _progressMessage = T("ui.status.cancelling"); _transferProgress = null; Refresh(); return; }
         if (!CanOpenWebUi && RecoverBeforeStart()) return;
         if (!CanOpenWebUi && SelectedPresentation?.FileState == ModelFileState.ReconnectRequired)
         {
@@ -266,6 +276,7 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
     {
         if (_busy || _isDisposed) return;
         _busy = true; _error = ""; _statusNote = ""; _indeterminate = true; _prerequisiteDownload = null;
+        _transferProgress = null;
         _operationUsesModel = stopOnFailure;
         _failureRecovery = FailureRecovery.Retry;
         _operationCancellation = new();
@@ -290,6 +301,8 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
         var context = SelectedContext?.Value ?? model.Profile.DefaultContext;
         var progress = new Progress<InstallationProgress>(value =>
         {
+            if (cancellationToken.IsCancellationRequested) return;
+            _transferProgress = value;
             _progressMessage = value.Message; _progressPercent = value.Percent ?? 0; _indeterminate = value.Percent is null; Refresh();
         });
         string runtime; string? sourceDirectory = null;
@@ -300,20 +313,10 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
             catch (AnisAccessRequiredException)
             {
                 if (RequestAnisAccess is null) throw;
-                var access = await RequestAnisAccess(cancellationToken);
-                if (access?.ModelFolder is { } folder)
-                {
-                    _installed = await _anis.InspectFolderAsync(model, folder, cancellationToken) ?? throw new InvalidDataException(T("engine.anis.invalidFolder"));
-                    var previousFolder = _settings.AnisModelFolder;
-                    _settings.AnisModelFolder = Path.GetDirectoryName(Path.GetDirectoryName(_installed.ModelPath));
-                    try { _store.Save(_settings); } catch { _settings.AnisModelFolder = previousFolder; throw; }
-                }
-                else
-                {
-                    if (string.IsNullOrWhiteSpace(access?.Token)) throw new OperationCanceledException(cancellationToken);
-                    _installed = await _anis.EnsureModelAsync(model, access.Token, progress, cancellationToken);
-                }
+                var folder = await RequestAnisAccess(cancellationToken) ?? throw new OperationCanceledException(cancellationToken);
+                _installed = await _anis.InspectFolderAsync(model, folder, cancellationToken) ?? throw new InvalidDataException(T("engine.anis.invalidFolder"));
             }
+            if (SelectedPresentation is { } anisCard) anisCard.FileState = ModelFileState.Ready;
             var prepared = await _anis.EnsureRuntimeAsync(_installer, progress, cancellationToken);
             runtime = prepared.PythonExecutable; sourceDirectory = prepared.SourceDirectory;
         }
@@ -324,7 +327,7 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
         }
         if (SelectedPresentation is { } card) card.FileState = ModelFileState.Ready;
         cancellationToken.ThrowIfCancellationRequested();
-        _progressMessage = T("ui.status.loading"); _indeterminate = true; Refresh();
+        _progressMessage = T("ui.status.loading"); _transferProgress = null; _indeterminate = true; Refresh();
         if (model.Engine == "llama" && model.Origin != "catalog") await Task.Run(() => GgufMetadata.Read(_installed.ModelPath, cancellationToken).RequireLoadable(), cancellationToken);
         var launchOptions = model.Engine == "anis" ? null : LoadOptions;
         await _session.StartAsync(new(_installed, runtime, context, _paths.Logs, _serverPort)
@@ -344,6 +347,17 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
         await _session.StopAsync(cancellationToken); _activeContext = null; _activeLoadOptions = null;
     }
     private async Task RestartAsync(CancellationToken cancellationToken) { await StopAsync(cancellationToken); cancellationToken.ThrowIfCancellationRequested(); await StartAsync(cancellationToken); }
+    private async Task StopAndSelectModelAsync(ModelDefinition model)
+    {
+        var stopped = false;
+        BeginOperation(async token =>
+        {
+            await StopAsync(token);
+            stopped = !token.IsCancellationRequested;
+        }, stopOnFailure: false);
+        if (_operation is { } operation) await operation;
+        if (stopped && CanSelectModel) SelectedModel = model;
+    }
     private async Task StopAfterFailureAsync() { try { await _session.StopAsync(); } catch (Exception ex) { SaveError(ex); } }
 
     private void OnSessionStatus(object? sender, SessionStatus status)
@@ -591,6 +605,7 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
         await _session.DisposeAsync();
         (_installer as IDisposable)?.Dispose();
         _huggingFace.Dispose();
+        _anisAuthorization?.Dispose();
         _anis.Dispose();
     }
 }

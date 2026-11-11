@@ -13,13 +13,17 @@ public sealed class LauncherWorkspace : LauncherPage
         var columns = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty };
         columns.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 32)); columns.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 68));
         columns.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); Controls.Add(columns);
-        var catalog = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, BackColor = Color.White, Margin = new Padding(0, 0, 16, 0), Padding = new Padding(8) };
+        var catalog = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, BackColor = Color.White, Margin = new Padding(0, 0, 16, 0), Padding = new Padding(8) };
         catalog.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        catalog.RowStyles.Add(new RowStyle(SizeType.AutoSize)); catalog.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); catalog.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        catalog.RowStyles.Add(new RowStyle(SizeType.AutoSize)); catalog.RowStyles.Add(new RowStyle(SizeType.AutoSize)); catalog.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); catalog.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         var label = Ui.Label(); Bindings.Localize(label, "ui.model.choose"); Ui.SetFont(label, 12, FontStyle.Bold); label.Margin = new Padding(16, 12, 8, 16); catalog.Controls.Add(label, 0, 0);
-        var models = new ModelChoiceList(); Bindings.Models(models, vm); Bindings.Enabled(models, () => vm.CanSelectModel);
-        catalog.Controls.Add(models, 0, 1); columns.Controls.Add(catalog, 0, 0);
-        var add = Ui.Button(); Bindings.Localize(add, "ui.files.add"); Bindings.Command(add, vm.AddModelCommand); add.Margin = new Padding(12, 10, 12, 6); add.Anchor = AnchorStyles.Left; catalog.Controls.Add(add, 0, 2);
+        var switchHint = Ui.Label(); switchHint.Margin = new Padding(16, 0, 8, 8); switchHint.ForeColor = Ui.Muted;
+        catalog.SizeChanged += (_, _) => switchHint.MaximumSize = new Size(Math.Max(1, catalog.ClientSize.Width - catalog.Padding.Horizontal - switchHint.Margin.Horizontal), 0);
+        Bindings.Localize(switchHint, "ui.model.switchStopsServer"); Bindings.Visible(switchHint, () => vm.IsServerRunning);
+        catalog.Controls.Add(switchHint, 0, 1);
+        var models = new ModelChoiceList(); Bindings.Models(models, vm); Bindings.Enabled(models, () => vm.CanChooseModel);
+        catalog.Controls.Add(models, 0, 2); columns.Controls.Add(catalog, 0, 0);
+        var add = Ui.Button(); Bindings.Localize(add, "ui.files.add"); Bindings.Command(add, vm.AddModelCommand); add.Margin = new Padding(12, 10, 12, 6); add.Anchor = AnchorStyles.Left; catalog.Controls.Add(add, 0, 3);
         var details = Ui.Stack(); columns.Controls.Add(Ui.Scroll(details), 1, 0);
         var empty = Ui.Stack(); empty.Padding = Padding.Empty;
         Heading(empty, "ui.model.choose"); Heading(empty, "ui.library.emptyHint");
@@ -47,13 +51,66 @@ public sealed class LauncherWorkspace : LauncherPage
         var editPreset = Ui.Button(); Bindings.Localize(editPreset, "ui.preset.edit"); editPreset.Click += (_, _) => vm.PageIndex = 2; presetRow.Controls.Add(editPreset, 1, 0);
         Heading(settingsRow, "ui.library.taskPreset"); Ui.Add(settingsRow, presetRow); Ui.Add(selected, settingsRow);
         Bindings.Visible(settingsRow, () => !vm.IsAnis);
-        var direction = Ui.Stack(); direction.Padding = Padding.Empty;
-        var directions = Choice(direction, "AnisDirection", "ui.anis.direction", () => vm.AnisDirections, () => vm.AnisDirection, value => vm.AnisDirection = value, vm.AnisDirectionLabel);
-        Bindings.Enabled(directions, () => vm.CanSelectModel); Bindings.Visible(direction, () => vm.IsAnis); Ui.Add(selected, direction);
         Ui.Add(selected, OperationHost);
-        var connection = Value(selected, () => Core.Localization.T("ui.connection.title") + " · " + vm.ConnectionLabel); Ui.SetFont(connection, 12, FontStyle.Bold);
-        CopyField(selected, "ui.connection.api", () => vm.ApiAddress, vm.CopyApiCommand);
-        CopyField(selected, "ui.connection.apiModel", () => vm.ApiModelId, null);
+        var connection = Ui.Stack();
+        connection.Name = "LocalConnection";
+        connection.Dock = DockStyle.Bottom;
+        connection.Padding = new Padding(16, 6, 16, 6);
+        var connectionTitle = Value(connection, () => Core.Localization.T("ui.connection.title") + " · " + vm.ConnectionLabel);
+        Ui.SetFont(connectionTitle, Ui.BodyFontSize, FontStyle.Bold);
+        bool Compact() => ClientSize.Height * 96f / DeviceDpi < 340;
+        Bindings.Visible(label, () => !Compact());
+        Bindings.Visible(connectionTitle, () => !Compact());
+        Bindings.Watch(() =>
+        {
+            connection.Padding = Compact() ? new Padding(16, 0, 16, 0) : new Padding(16, 6, 16, 6);
+            add.Margin = Compact() ? new Padding(12, 3, 12, 3) : new Padding(12, 10, 12, 6);
+        });
+        var fields = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 2, RowCount = 1 };
+        fields.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+        fields.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+        var address = Ui.Stack();
+        address.Padding = Padding.Empty;
+        address.Margin = new Padding(0, 0, 12, 0);
+        CopyField(address, "ui.connection.api", () => vm.ApiAddress, vm.CopyApiCommand);
+        fields.Controls.Add(address, 0, 0);
+        var modelId = Ui.Stack();
+        modelId.Padding = Padding.Empty;
+        modelId.Margin = Padding.Empty;
+        CopyField(modelId, "ui.connection.apiModel", () => vm.ApiModelId, null);
+        fields.Controls.Add(modelId, 1, 0);
+        Ui.Add(connection, fields);
+        Bindings.Visible(fields, () => !Compact());
+        var compactConnection = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 2 };
+        compactConnection.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        compactConnection.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        var compactStatus = Ui.Label();
+        compactStatus.Dock = DockStyle.None;
+        compactStatus.Anchor = AnchorStyles.Left;
+        Bindings.Text(compactStatus, () => vm.ConnectionLabel);
+        compactConnection.Controls.Add(compactStatus, 0, 0);
+        var openConnection = Ui.Button();
+        openConnection.Padding = new Padding(10, 0, 10, 0);
+        Bindings.Localize(openConnection, "ui.connection.title");
+        compactConnection.Controls.Add(openConnection, 1, 0);
+        Ui.Add(connection, compactConnection);
+        compactConnection.Margin = Padding.Empty;
+        Bindings.Visible(compactConnection, Compact);
+        openConnection.Click += (_, _) =>
+        {
+            using var dialog = new LauncherDialog(vm, Core.Localization.T("ui.connection.title"), new Size(590, 340));
+            var content = Ui.Stack();
+            using var dialogBindings = new UiBindings(dialog, vm);
+            CopyField(content, "ui.connection.api", () => vm.ApiAddress, vm.CopyApiCommand, dialogBindings);
+            CopyField(content, "ui.connection.apiModel", () => vm.ApiModelId, null, dialogBindings);
+            dialog.Content.Controls.Add(Ui.Scroll(content));
+            dialog.AddAction(Core.Localization.T("ui.close"), DialogResult.Cancel, true);
+            dialogBindings.Start();
+            dialog.ShowDialog(this);
+        };
+        Bindings.Visible(connection, () => vm.HasSelectedModel);
+        Controls.Add(connection);
+        ClientSizeChanged += (_, _) => Bindings.RequestRefresh();
         var options = Ui.Stack(); options.Padding = Padding.Empty; Ui.Add(selected, options);
         var advancedToggle = Ui.Button(); advancedToggle.Name = "AdvancedToggle"; advancedToggle.Anchor = AnchorStyles.Left;
         Bindings.Localize(advancedToggle, "ui.library.advanced"); Ui.Add(options, advancedToggle);
@@ -113,15 +170,19 @@ public sealed class LauncherWorkspace : LauncherPage
         Action(advanced, "ui.files.logs", vm.OpenLogsCommand); Action(advanced, "ui.files.folder", vm.OpenFolderCommand);
         StartBindings();
     }
-    private void CopyField(TableLayoutPanel stack, string key, Func<string> get, System.Windows.Input.ICommand? command)
+    private void CopyField(TableLayoutPanel stack, string key, Func<string> get, System.Windows.Input.ICommand? command, UiBindings? bindings = null)
     {
-        var label = Heading(stack, key); Ui.SetFont(label, Ui.SecondaryFontSize); label.ForeColor = Ui.Muted; label.Margin = new Padding(0, 6, 0, 2);
+        bindings ??= Bindings;
+        var label = Ui.Label();
+        bindings.Localize(label, key);
+        Ui.Add(stack, label);
+        Ui.SetFont(label, Ui.SecondaryFontSize); label.ForeColor = Ui.Muted; label.Margin = new Padding(0, 2, 0, 2);
         var row = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 2, Margin = Padding.Empty };
         row.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); row.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         var text = Ui.TextBox(); text.ReadOnly = true; text.BackColor = Ui.Paper; text.BorderStyle = BorderStyle.FixedSingle; text.Margin = new Padding(0, 7, 8, 0);
-        Bindings.Text(text, get); Bindings.Watch(() => text.AccessibleName = Core.Localization.T(key)); row.Controls.Add(text, 0, 0);
-        var copy = Ui.Button(); Bindings.Localize(copy, "ui.connection.copyValue");
-        if (command is not null) Bindings.Command(copy, command);
+        bindings.Text(text, get); bindings.Watch(() => text.AccessibleName = Core.Localization.T(key)); row.Controls.Add(text, 0, 0);
+        var copy = Ui.Button(); bindings.Localize(copy, "ui.connection.copyValue");
+        if (command is not null) bindings.Command(copy, command);
         else copy.Click += (_, _) => { try { Clipboard.SetText(get()); } catch (System.Runtime.InteropServices.ExternalException) { System.Media.SystemSounds.Exclamation.Play(); } };
         row.Controls.Add(copy, 1, 0); Ui.Add(stack, row);
     }

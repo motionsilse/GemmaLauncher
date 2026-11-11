@@ -12,6 +12,7 @@ public sealed class LoaderShellViewModel : ObservableObject, IAsyncDisposable
     public LauncherViewModel? Local { get; private set; }
     public AccountConnectionViewModel? Account { get; private set; }
     public LoaderFeature SelectedFeature { get; private set; }
+    public string SettingsSaveError { get; private set; } = "";
     public bool CloseToTray { get => settings.CloseToTray; set { settings.CloseToTray = value; if (Local is not null) Local.CloseToTray = value; Save(); } }
     public string LanguageSelection { get => Localization.Current.Selection; set => Localization.Current.SetLanguage(value); }
     public LoaderShellViewModel(LauncherSettings settings, SettingsStore store, Func<LauncherViewModel> localFactory, Func<AccountConnectionViewModel> accountFactory, TimeSpan? cleanupTimeout = null)
@@ -22,7 +23,15 @@ public sealed class LoaderShellViewModel : ObservableObject, IAsyncDisposable
         Localization.Current.LanguageChanged += LanguageChanged;
     }
     private void LanguageChanged(object? s, EventArgs e) { settings.LanguagePreference = Localization.Current.Selection; Save(); }
-    private void Save() { store.Save(settings); OnPropertyChanged(null); }
+    private void Save()
+    {
+        try { store.Save(settings); SettingsSaveError = ""; }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+        {
+            SettingsSaveError = Localization.T("ui.note.saveFailed", error.Message);
+        }
+        OnPropertyChanged(null);
+    }
     private void Changed(object? s, System.ComponentModel.PropertyChangedEventArgs e) { if (!disposed) OnPropertyChanged(null); }
     public bool ResolvePendingEdits() => Local?.ResolvePendingPreset() ?? true;
     public async Task<bool> SelectFeatureAsync(LoaderFeature feature, CancellationToken ct)

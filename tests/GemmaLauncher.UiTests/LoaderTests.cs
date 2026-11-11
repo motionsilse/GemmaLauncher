@@ -6,13 +6,25 @@ public static partial class Program
 {
     private static async Task TestLoaderAsync()
     {
+        await TestLoaderSettingsSaveFailureAsync();
         await using var fixture = new Fixture();
         var account = new FakeAccount();
         var paths = new GemmaLauncher.Core.LauncherPaths(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")));
         var settings = new GemmaLauncher.Core.LauncherSettings { ActiveFeature = "chatgpt" };
         var localCalls = 0;
         await using var shell = new LoaderShellViewModel(settings, new(paths), () => { localCalls++; return fixture.ViewModel; }, () => new(account));
-        using var window = new LoaderWindow(shell); window.Show(); await Task.Delay(50);
+        var available = new TaskCompletionSource<ReleaseUpdate?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new ReleaseUpdate(new Version(0, 10, 0), new Uri("https://github.com/motionsilse/GemmaLauncher/releases/tag/v0.10.0"));
+        Uri? openedRelease = null;
+        using var window = new LoaderWindow(shell, checkUpdate: token => available.Task.WaitAsync(token), openRelease: uri => openedRelease = uri);
+        window.Show(); await Task.Delay(50);
+        var update = Controls(window).OfType<Button>().Single(button => button.Name == "UpdateNotice");
+        Assert(!update.Visible, "The update notice must stay hidden until a new release is found.");
+        available.SetResult(release);
+        await UntilAsync(() => update.Visible);
+        Assert(update.Text == Localization.T("ui.update.available", "0.10.0"), "The notice must show the new version.");
+        update.PerformClick();
+        Assert(openedRelease == release.DownloadPage, "The notice must open that version's download page.");
         Assert(localCalls == 0 && account.Starts == 0, "Restoring ChatGPT must not create local VM or connect");
         var vm = shell.Account!;
         await vm.StartAsync();
@@ -24,6 +36,7 @@ public static partial class Program
         await vm.StartAsync();
         await shell.SelectFeatureAsync(LoaderFeature.LocalModels, default);
         Assert(localCalls == 1, "Create local only on selection");
+        Assert(update.Visible, "The notice must be visible from either app feature.");
         await Task.Delay(100);
         var localAction = Controls(window).OfType<Button>().Single(b => b.Name == "PrimaryAction");
         Assert(localAction.Visible && window.ClientRectangle.Contains(window.RectangleToClient(localAction.RectangleToScreen(localAction.ClientRectangle))), "Local primary must stay visible in unified shell");
@@ -45,6 +58,33 @@ public static partial class Program
         window.Close();
         if (Directory.Exists(paths.Root)) Directory.Delete(paths.Root, true);
         await TestLoaderCleanupAsync();
+    }
+    private static async Task TestLoaderSettingsSaveFailureAsync()
+    {
+        await using var fixture = new Fixture();
+        fixture.Settings.ActiveFeature = "chatgpt";
+        await using var shell = new LoaderShellViewModel(fixture.Settings, fixture.Store, () => fixture.ViewModel, () => new(new FakeAccount()));
+        using var window = new LoaderWindow(shell);
+        window.Show();
+        await UntilAsync(() => shell.Account is not null && File.Exists(fixture.Paths.SettingsFile));
+        var originalAttributes = File.GetAttributes(fixture.Paths.SettingsFile);
+        try
+        {
+            File.SetAttributes(fixture.Paths.SettingsFile, originalAttributes | FileAttributes.ReadOnly);
+            shell.CloseToTray = false;
+            shell.LanguageSelection = "en";
+            Assert(await shell.SelectFeatureAsync(LoaderFeature.LocalModels, default), "A settings write failure must not block navigation.");
+            var warning = Controls(window).OfType<Label>().Single(label => label.Name == "SettingsSaveError");
+            await UntilAsync(() => warning.Visible);
+            Assert(warning.Text.StartsWith("Could not save settings.") && InViewport(warning), "An unwritable settings file must show a visible save failure instead of crashing.");
+            Assert(fixture.Store.Load().CloseToTray, "A failed save must leave the previous settings file intact.");
+        }
+        finally { File.SetAttributes(fixture.Paths.SettingsFile, originalAttributes); }
+        shell.CloseToTray = false;
+        await UntilAsync(() => !Controls(window).OfType<Label>().Single(label => label.Name == "SettingsSaveError").Visible);
+        Assert(!fixture.Store.Load().CloseToTray, "The next successful save must persist the settings and clear the warning.");
+        shell.LanguageSelection = "ko";
+        window.Close();
     }
     private static async Task TestLoaderCleanupAsync()
     {

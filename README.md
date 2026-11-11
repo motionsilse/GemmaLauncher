@@ -1,5 +1,7 @@
 # Cat Loader by Drugged Cat
 
+**Cat Loader 0.1.0** starts a new release series, replacing the earlier Gemma Launcher and Cat Loader 0.4.x releases. Existing model files, settings and account data stay in their current locations. Download this release manually when moving from 0.4.x, because its version number is lower. Future releases appear in an in-app download notice.
+
 Prepare an OpenAI-compatible API for other apps from one small Windows launcher. Choose **Local models** to run a model on your PC, or **ChatGPT connection** to connect a ChatGPT account through the optional proxy engine. Each has its own address, status and stop button.
 
 Local models use RAM/VRAM. ChatGPT needs internet access and shares the account's usage limits. Opening the app or changing categories starts neither service. Both can run together.
@@ -66,13 +68,17 @@ The service is available on this PC only. Streaming and cancellation are support
 
 ## ANIS Trans
 
-[ANIS · jintigers](https://huggingface.co/jintigers/anis-trans) provides the sixth model and its [official API program](https://github.com/jintigers/anis-trans). Select it and choose **Download and start**. If access is required, the launcher opens a first-use dialog with the official model/terms link and a masked download-token field. Obtain approval with your own Hugging Face account and supply a read token from that account. The token is used for this download only and is never saved. Connecting an existing official model folder is also supported.
+[ANIS · jintigers](https://huggingface.co/jintigers/anis-trans) provides the sixth model and its [official API program](https://github.com/jintigers/anis-trans). Select it and choose **Download and start**. When Hugging Face requires access, sign in and authorize Cat Loader in the browser. Cat Loader then downloads and verifies the files and starts ANIS. Complete any access request on the official model page. You can also select a folder containing files you already downloaded.
 
-The launcher verifies downloads and prepares a private Python/CTranslate2 environment automatically. Global Python settings are unchanged. It runs the upstream API without a separate translation GUI, using the same local API address. Select automatic direction, Japanese → Korean, or Korean → Japanese; the displayed model ID changes accordingly. ANIS does not use LLM prompt presets or the GGUF Web UI. Its [separate license](https://github.com/jintigers/anis-trans/blob/1165f0cda25a9afdd0c8e0491038e949d9446e6e/LICENSE-ko.md) applies to the model and official program; commercial use requires a separate agreement with ANIS. Their files are downloaded from official channels, not bundled in this EXE.
+The launcher prepares a private Python/CTranslate2 environment and runs the upstream API on the shared local model address. Use `anis-trans:auto` for automatic Japanese ↔ Korean direction. ANIS uses its own translation engine and its [separate license](https://github.com/jintigers/anis-trans/blob/1165f0cda25a9afdd0c8e0491038e949d9446e6e/LICENSE-ko.md) applies to the model and official program. Commercial use requires a separate agreement with ANIS.
+
+Cat Loader uses a public Hugging Face OAuth client with the loopback redirect `http://127.0.0.1/auth/callback` and the `gated-repos` scope. Its public ID is built in. To use your own registered public client in a custom build, pass `./scripts/publish-launcher.ps1 -HuggingFaceClientId <client-id>`. The temporary authorization stays in memory during the download. [Hugging Face OAuth setup](https://huggingface.co/docs/hub/oauth)
 
 ## Window and language
 
-**X hides the window in the tray by default.** Change this in **Settings** to exit instead. The tray can restore the launcher or stop/quit its server. Opening the EXE again restores the existing window. One model runs at a time; stop it before switching models. GGUF context and load-option changes take effect with **Apply and restart**.
+**X hides the window in the tray by default.** Change this in **Settings** to exit instead. The tray can restore the launcher or stop/quit its server. Opening the EXE again restores the existing window. One local model runs at a time. Selecting a different model stops the running local server, then selects your choice; choose **Start server** to run it. The ChatGPT connection stays independent. GGUF context and load-option changes take effect with **Apply and restart**.
+
+The launcher checks for a new stable version at startup and hourly. When available, the notice opens the official release page. Downloads show their current step and, when file sizes are known, a percentage and transferred bytes.
 
 Windows display language is selected automatically, with English fallback. The language selector in **Settings** overrides it and remembers your choice. All 17 CatBridge languages are included: English, Korean, Japanese, simplified/traditional Chinese, Spanish, Portuguese, French, German, Filipino, Vietnamese, Russian, Polish, Indonesian, Malay, Turkish and Thai.
 
@@ -96,7 +102,9 @@ Use `--data-dir "D:\GemmaLauncherData" --model-folder "D:\Models"` for custom da
 
 ---
 
-# Gemma 모델 런처 by Drugged Cat
+# Cat Loader by Drugged Cat
+
+**Cat Loader 0.1.0**부터 릴리즈 번호를 새로 시작합니다. 기존 Gemma Launcher와 Cat Loader 0.4.x 릴리즈를 대체하며 모델 파일·설정·계정 데이터의 저장 위치는 유지합니다. 0.4.x에서 넘어올 때는 번호가 낮아졌으므로 이번 EXE를 직접 받아 실행하세요. 이후 새 버전은 앱 안의 다운로드 알림으로 안내합니다.
 
 AI 모델의 설치부터 실행·관리까지, 클릭 한 번으로 시작하세요. 번역·글쓰기·대화에 맞는 모델을 고르면 필요한 파일을 준비하고 서버를 켭니다. **브라우저 대화 화면과 OpenAI 호환 API**를 함께 제공하므로 CatBridge 같은 앱에도 바로 연결할 수 있습니다.
 
@@ -160,13 +168,15 @@ E2B와 E4B에는 대사·자막 번역 튜닝과 SSD를 활용한 메모리 최�
 
 ## ANIS Trans
 
-여섯 번째 모델은 [ANIS · jintigers](https://huggingface.co/jintigers/anis-trans)의 일본어 ↔ 한국어 전용 모델입니다. 선택 후 **다운로드하고 시작**을 누르면 접근 승인이 필요한 경우 공식 모델·이용 조건 링크와 다운로드 토큰 입력 창을 보여줍니다. 본인 Hugging Face 계정으로 접근 승인을 받고 해당 계정의 읽기 토큰을 입력하세요. 토큰은 이번 다운로드에만 쓰며 저장하지 않습니다. 이미 받은 공식 모델 폴더도 연결할 수 있습니다.
+여섯 번째 모델은 [ANIS · jintigers](https://huggingface.co/jintigers/anis-trans)의 일본어 ↔ 한국어 전용 모델입니다. **다운로드하고 시작**을 누르세요. Hugging Face가 접근을 확인해야 하면 브라우저에서 로그인하고 Cat Loader의 다운로드 권한을 승인하세요. 앱이 필요한 파일을 내려받아 검증하고 실행합니다. 모델 접근 확인이 필요하면 공식 모델 페이지에서 진행하세요. 이미 받은 파일도 다운로드 폴더를 선택해 사용할 수 있습니다.
 
-파일 검증과 전용 Python/CTranslate2 실행 환경 준비는 런처가 처리합니다. 시스템 Python 설정을 바꾸지 않으며 별도 번역 GUI 없이 [공식 API 프로그램](https://github.com/jintigers/anis-trans)을 실행합니다. API 주소는 다른 모델과 같고 자동 방향·일본어 → 한국어·한국어 → 일본어에 따라 모델 ID가 바뀝니다. ANIS에는 LLM 프롬프트 프리셋과 GGUF Web UI를 적용하지 않습니다. 모델과 공식 프로그램에는 [별도 라이선스](https://github.com/jintigers/anis-trans/blob/1165f0cda25a9afdd0c8e0491038e949d9446e6e/LICENSE-ko.md)가 적용되며 영리 이용은 ANIS와 별도 계약이 필요합니다. 해당 파일은 공식 경로에서 내려받으며 EXE에 포함하지 않습니다.
+전용 Python/CTranslate2 실행 환경을 준비해 [공식 API 프로그램](https://github.com/jintigers/anis-trans)을 실행합니다. 공용 로컬 API 주소에 `anis-trans:auto`를 입력하면 입력 문장에 따라 번역 방향을 고릅니다. 모델과 공식 프로그램에는 [별도 라이선스](https://github.com/jintigers/anis-trans/blob/1165f0cda25a9afdd0c8e0491038e949d9446e6e/LICENSE-ko.md)가 적용되며 영리 이용은 ANIS와 별도 계약이 필요합니다.
 
 ## 창과 표시 언어
 
-기본 동작은 **X를 누르면 트레이로 숨기기**입니다. **설정**에서 창을 닫을 때 완전 종료하도록 바꿀 수 있습니다. 트레이에서 런처 복원과 서버 종료를 할 수 있고, EXE를 다시 실행하면 기존 창이 열립니다. 모델은 한 번에 하나만 실행하며 다른 모델로 바꾸려면 먼저 서버를 끄세요. GGUF의 글 길이와 고급 실행 설정은 **적용하고 재시작**으로 반영합니다.
+기본 동작은 **X를 누르면 트레이로 숨기기**입니다. **설정**에서 창을 닫을 때 완전 종료하도록 바꿀 수 있습니다. 트레이에서 런처 복원과 서버 종료를 할 수 있고, EXE를 다시 실행하면 기존 창이 열립니다. 로컬 모델은 한 번에 하나만 실행합니다. 다른 모델을 고르면 실행 중인 로컬 서버를 끈 뒤 선택을 바꾸며, **서버 켜기**를 눌러 새 모델을 실행합니다. ChatGPT 연결은 별도로 유지됩니다. GGUF의 글 길이와 고급 실행 설정은 **적용하고 재시작**으로 반영합니다.
+
+앱을 시작할 때와 이후 매시간 새 정식 버전을 확인합니다. 새 버전 알림을 누르면 공식 다운로드 페이지가 열립니다. 다운로드 중에는 현재 단계와, 파일 크기를 알 수 있는 경우 진행률·받은 용량을 표시합니다.
 
 Windows 표시 언어를 자동으로 사용하고 지원하지 않는 언어는 영어로 표시합니다. **설정**에서 직접 고른 언어도 기억합니다. CatBridge와 같은 17개 언어를 지원합니다: 영어, 한국어, 일본어, 중국어 간체·번체, 스페인어, 포르투갈어, 프랑스어, 독일어, 필리핀어, 베트남어, 러시아어, 폴란드어, 인도네시아어, 말레이어, 튀르키예어, 태국어.
 

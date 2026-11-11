@@ -14,17 +14,20 @@ public sealed class LoaderWindow : Form
     private AccountConnectionView? accountView;
     private LoaderFeature? shownFeature;
     private readonly Font ownedFont = new("Segoe UI", Ui.BodyFontSize);
+    private readonly System.Windows.Forms.Timer? updateTimer;
+    private readonly CancellationTokenSource updateLifetime = new();
     public event EventHandler? ActivationRequested;
     public event EventHandler? ExitRequested;
-    public LoaderWindow(LoaderShellViewModel shell, uint activateMessage = 0, uint legacyActivateMessage = 0)
+    public LoaderWindow(LoaderShellViewModel shell, uint activateMessage = 0, uint legacyActivateMessage = 0,
+        Func<CancellationToken, Task<ReleaseUpdate?>>? checkUpdate = null, Action<Uri>? openRelease = null)
     {
         this.shell = shell; this.activateMessage = activateMessage; legacyMessage = legacyActivateMessage;
         Text = "Cat Loader"; Font = ownedFont; BackColor = Ui.Paper; ForeColor = Ui.Ink;
         AutoScaleMode = AutoScaleMode.Dpi; AutoScaleDimensions = new(96,96); Size = new(1040,840); MinimumSize = new(720,560); StartPosition = FormStartPosition.CenterScreen;
         Icon = Icon.ExtractAssociatedIcon(Environment.ProcessPath!);
         bindings = new(this,shell);
-        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4 };
-        root.ColumnStyles.Add(new(SizeType.Percent,100)); root.RowStyles.Add(new(SizeType.AutoSize)); root.RowStyles.Add(new(SizeType.Percent,100)); root.RowStyles.Add(new(SizeType.AutoSize)); root.RowStyles.Add(new(SizeType.AutoSize));
+        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 6 };
+        root.ColumnStyles.Add(new(SizeType.Percent,100)); root.RowStyles.Add(new(SizeType.AutoSize)); root.RowStyles.Add(new(SizeType.AutoSize)); root.RowStyles.Add(new(SizeType.AutoSize)); root.RowStyles.Add(new(SizeType.Percent,100)); root.RowStyles.Add(new(SizeType.AutoSize)); root.RowStyles.Add(new(SizeType.AutoSize));
         var headerRow = new TableLayoutPanel { Dock = DockStyle.Top, Height = 80, ColumnCount = 2, RowCount = 1, Padding = new(24,12,24,0), BackColor = Color.White };
         headerRow.RowStyles.Add(new(SizeType.AutoSize));
         headerRow.ColumnStyles.Add(new(SizeType.Percent,100)); headerRow.ColumnStyles.Add(new(SizeType.AutoSize));
@@ -32,7 +35,55 @@ public sealed class LoaderWindow : Form
         var brand = Ui.Label("Cat Loader"); Ui.SetFont(brand,17,FontStyle.Bold); brand.Margin = new(0,8,20,8); header.Controls.Add(brand);
         Tab("ui.loader.local",LoaderFeature.LocalModels); Tab("ui.loader.chat",LoaderFeature.ChatGpt);
         var settings = Ui.Button(); settings.FlatAppearance.BorderSize = 0; settings.Name = "LoaderSettings"; bindings.Localize(settings,"ui.settings.title"); settings.Click += (_,_) => { using var dialog = SettingsDialog(); dialog.ShowDialog(this); }; headerRow.Controls.Add(header,0,0); headerRow.Controls.Add(settings,1,0);
-        root.Controls.Add(headerRow,0,0); root.Controls.Add(workspace,0,1); root.Controls.Add(operationHost,0,2); root.Controls.Add(new LoaderStatusBar(shell),0,3); Controls.Add(root);
+        root.Controls.Add(headerRow,0,0); root.Controls.Add(workspace,0,3); root.Controls.Add(operationHost,0,4); root.Controls.Add(new LoaderStatusBar(shell),0,5); Controls.Add(root);
+        var saveError = Ui.Label();
+        saveError.Name = "SettingsSaveError";
+        saveError.ForeColor = Color.Firebrick;
+        saveError.Margin = new(24, 6, 24, 6);
+        bindings.Text(saveError, () => shell.SettingsSaveError);
+        bindings.Visible(saveError, () => shell.SettingsSaveError.Length > 0);
+        root.SizeChanged += (_, _) => saveError.MaximumSize = new(Math.Max(1, root.ClientSize.Width - saveError.Margin.Horizontal), 0);
+        root.Controls.Add(saveError, 0, 2);
+        if (checkUpdate is not null)
+        {
+            var update = Ui.Button();
+            update.Name = "UpdateNotice";
+            update.Visible = false;
+            update.Anchor = AnchorStyles.Left;
+            update.Margin = new Padding(24, 6, 24, 0);
+            update.BackColor = Ui.Tint;
+            root.Controls.Add(update, 0, 1);
+            ReleaseUpdate? available = null;
+            var checking = false;
+            bindings.Text(update, () => available is null ? "" : T("ui.update.available", available.Version.ToString(3)));
+            bindings.Visible(update, () => available is not null);
+            update.Click += (_, _) =>
+            {
+                if (available is null) return;
+                try
+                {
+                    if (openRelease is not null) openRelease(available.DownloadPage);
+                    else System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(available.DownloadPage.AbsoluteUri) { UseShellExecute = true });
+                }
+                catch (System.ComponentModel.Win32Exception ex) { MessageBox.Show(this, T("ui.note.browserFailed", ex.Message), Text); }
+            };
+            updateTimer = new() { Interval = (int)TimeSpan.FromHours(1).TotalMilliseconds };
+            Shown += async (_, _) => { updateTimer.Start(); await RefreshUpdateAsync(); };
+            updateTimer.Tick += async (_, _) => await RefreshUpdateAsync();
+
+            async Task RefreshUpdateAsync()
+            {
+                if (checking) return;
+                checking = true;
+                try
+                {
+                    available = await checkUpdate(updateLifetime.Token);
+                    if (!updateLifetime.IsCancellationRequested) bindings.RequestRefresh();
+                }
+                catch (Exception error) when (error is HttpRequestException or IOException or OperationCanceledException or System.Text.Json.JsonException) { }
+                finally { checking = false; }
+            }
+        }
         // FlowLayout's unconstrained preferred width wraps every tab and inflates
         // an AutoSize table row. Measure against its actual available width.
         void FitHeader()
@@ -97,13 +148,28 @@ public sealed class LoaderWindow : Form
         var language = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", ValueMember = "Code", Width = 240 };
         IEnumerable<LanguageOption> Languages() => new[] { new LanguageOption("auto",T("ui.language.auto")) }.Concat(Localization.Current.Languages);
         settingsBindings.Choice(language,Languages,() => Languages().FirstOrDefault(option => option.Code == shell.LanguageSelection),option => shell.LanguageSelection = option.Code,option => option.Name); Ui.Add(stack,language);
-        var saved = Ui.Label(); settingsBindings.Localize(saved,"ui.settings.autoSaved"); Ui.Add(stack,saved);
+        var saved = Ui.Label(); settingsBindings.Text(saved, () => shell.SettingsSaveError.Length > 0 ? shell.SettingsSaveError : T("ui.settings.autoSaved")); Ui.Add(stack,saved);
         settingsBindings.Start(); return dialog;
     }
     protected override void OnShown(EventArgs e) { WindowLayout.FitToWorkArea(this,Screen.FromControl(this).WorkingArea); base.OnShown(e); }
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) { if (keyData == (Keys.Control | Keys.Q)) { ExitRequested?.Invoke(this,EventArgs.Empty); return true; } return base.ProcessCmdKey(ref msg,keyData); }
     protected override void WndProc(ref Message m) { if (m.Msg != 0 && ((uint)m.Msg == activateMessage || (uint)m.Msg == legacyMessage)) { ActivationRequested?.Invoke(this,EventArgs.Empty); return; } base.WndProc(ref m); }
-    protected override void Dispose(bool disposing) { if (disposing) { bindings.Dispose(); shell.Account?.MaskKey(); if (shell.Local is not null) shell.Local.BackgroundOperationsFactory = null; Icon?.Dispose(); } base.Dispose(disposing); if (disposing) ownedFont.Dispose(); }
+    protected override void Dispose(bool disposing)
+    {
+        var releaseResources = disposing && !IsDisposed;
+        if (releaseResources)
+        {
+            updateTimer?.Dispose();
+            updateLifetime.Cancel();
+            updateLifetime.Dispose();
+            bindings.Dispose();
+            shell.Account?.MaskKey();
+            if (shell.Local is not null) shell.Local.BackgroundOperationsFactory = null;
+            Icon?.Dispose();
+        }
+        base.Dispose(disposing);
+        if (releaseResources) ownedFont.Dispose();
+    }
 }
 
 internal sealed class LoaderDialog : Form

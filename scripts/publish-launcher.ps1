@@ -1,9 +1,10 @@
 [CmdletBinding()]
 param(
     [ValidatePattern('^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$')]
-    [string]$Version = '0.4.6',
+    [string]$Version = '0.1.0',
     [string]$DotnetPath = 'dotnet',
-    [string]$PythonPath = 'python'
+    [string]$PythonPath = 'python',
+    [string]$HuggingFaceClientId = $env:CAT_LOADER_HF_CLIENT_ID
 )
 
 Set-StrictMode -Version Latest
@@ -75,6 +76,9 @@ try {
         '-p:DebugType=None', '-p:DebugSymbols=false',
         "-p:LauncherNoticesFile=$noticesPath", "-p:Version=$Version"
     )
+    if (-not [string]::IsNullOrWhiteSpace($HuggingFaceClientId)) {
+        $publishArguments += "-p:HuggingFaceClientId=$HuggingFaceClientId"
+    }
     & $DotnetPath @publishArguments
     if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed with exit code $LASTEXITCODE." }
 
@@ -93,6 +97,9 @@ try {
         throw 'Single-file verification failed.'
     }
     $report = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
+    if ($report.version -ne $Version.Split('-')[0]) {
+        throw "The packaged application version does not match the release version: $($report.version) != $Version."
+    }
     $expectedCatalog = Get-Content -LiteralPath (Get-WorkspacePath 'src/GemmaLauncher.App/Assets/catalog.json') -Raw | ConvertFrom-Json
     $expectedIds = @($expectedCatalog.models.id | Sort-Object)
     if ($report.success -ne $true -or $report.modelCount -ne $expectedIds.Count -or $report.languageCount -ne 17 -or

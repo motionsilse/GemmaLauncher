@@ -42,6 +42,8 @@ public static partial class Program
                 if (args.Length == 2 && args[0] == "--startup-benchmark") { await StartupBenchmarkAsync(args[1]); return; }
                 if (args.Length == 3 && args[0] == "--startup-child") { await StartupChildAsync(args[1], long.Parse(args[2])); return; }
                 if (args.Contains("--first-download-smoke")) { await FirstDownloadSmokeAsync(); return; }
+                if (args.Contains("--anis-first-use-smoke")) { await AnisFirstUseSmokeAsync(); return; }
+                if (args.Length == 3 && args[0] == "--anis-installed-smoke") { await AnisInstalledSmokeAsync(args[1], args[2]); return; }
                 if (args.Length == 2 && args[0] == "--benchmark") { await BenchmarkAsync(args[1]); return; }
                 if (args.Length == 2 && args[0] == "--graphics-probe") { await GraphicsProbeAsync(args[1]); return; }
                 if (args.Contains("--render")) { await RenderWorkspaceAsync(); return; }
@@ -243,7 +245,7 @@ public static partial class Program
         await UntilAsync(() => !vm.IsBusy);
         vm.PrimaryCommand.Execute(null);
         await UntilAsync(() => vm.IsServerRunning && !vm.IsBusy);
-        Assert(!vm.CanSelectModel && vm.CanChangeContext && vm.CanOpenWebUi, "Running state must lock model choice while allowing a pending context change.");
+        Assert(vm.CanChooseModel && vm.CanChangeContext && vm.CanOpenWebUi, "Running state must allow a model switch and a pending context change.");
         var firstContext = fixture.Session.Starts.Single().Context;
         vm.FlashAttention = "off";
         Assert(vm.FlashAttention == "on" && vm.LoadOptionsFeedback.Length > 0, "An incompatible setting must preserve the valid value and explain the rejection in its dialog.");
@@ -264,13 +266,23 @@ public static partial class Program
         vm.GpuLayers = "0";
         Assert(!vm.HasPendingContext, "Restoring active options must clear the pending change.");
         Assert(fixture.Session.StopCalls >= 1, "Restart must first stop the owned session.");
-        vm.PrimaryCommand.Execute(null);
-        await UntilAsync(() => !vm.IsServerRunning && !vm.IsBusy);
+        using var window = new MainWindow(vm); window.Show();
+        await UntilAsync(() => Controls(window).OfType<ModelChoiceList>().Single().Enabled);
+        var list = Controls(window).OfType<ModelChoiceList>().Single();
+        Assert(Controls(window).OfType<Label>().Any(label => label.Visible && label.Text == Localization.T("ui.model.switchStopsServer")),
+            "The running model list must explain that a switch stops the current server.");
+        var stopCalls = fixture.Session.StopCalls;
+        var stopped = fixture.Session.BlockNextStop();
+        list.SelectedItem = vm.ModelCards[1];
+        await UntilAsync(() => vm.IsBusy);
+        Assert(vm.SelectedModel == vm.Models[0], "The active selection must remain until its server stops.");
+        stopped.TrySetResult();
+        await UntilAsync(() => !vm.IsServerRunning && !vm.IsBusy && vm.SelectedModel == vm.Models[1]);
+        Assert(fixture.Session.StopCalls == stopCalls + 1 && fixture.Session.Starts.Count == 2, "Choosing a new model must stop once and wait for the user to start the new server.");
         Assert(vm.CanSelectModel && !vm.CanOpenWebUi && !vm.HasPendingContext, "Stopped state must restore selection and disable stale connection actions.");
-        vm.SelectedModel = vm.Models[1];
-        await UntilAsync(() => !vm.IsBusy);
         Assert(vm.ApiModelId == vm.Models[1].ApiModelId, "Selecting a new stopped model must update the connection model id.");
         Assert(fixture.Store.Load().SelectedModelId == vm.Models[1].Id, "Selected model must be persisted.");
+        window.Close();
     }
 
 
@@ -279,8 +291,13 @@ public static partial class Program
         await using var fixture = new Fixture();
         var vm = fixture.ViewModel;
         await UntilAsync(() => !vm.IsBusy);
+        using var window = new MainWindow(vm); window.Show();
+        var download = fixture.Installer.BlockRuntimeDownload();
         fixture.Session.BlockNextStart();
         vm.PrimaryCommand.Execute(null);
+        var transfer = Controls(window).OfType<Label>().Single(label => label.Name == "DownloadProgressText");
+        await UntilAsync(() => transfer.Visible && transfer.Text.Contains("37.0%", StringComparison.Ordinal));
+        download.TrySetResult();
         await UntilAsync(() => fixture.Session.Status.State == ServerState.Starting);
         Assert(vm.PrimaryLabel == "준비 취소", "A starting server must expose cancellation.");
         vm.PrimaryCommand.Execute(null);
@@ -292,6 +309,7 @@ public static partial class Program
         Assert(fixture.Session.Starts.Count == 2, "Cancellation must allow a subsequent start.");
         await vm.DisposeAsync();
         Assert(fixture.Session.Disposed && fixture.Session.Status.State == ServerState.Stopped, "Disposing a running controller must dispose and stop its owned session.");
+        window.Close();
     }
 
 

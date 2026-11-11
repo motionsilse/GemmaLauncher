@@ -1,4 +1,6 @@
 {
+  "engine.install.connecting": "正在连接以下载 {0}",
+  "engine.anis.downloadTimedOut": "下载 {0} 时连接无响应，请重试。",
   "engine.install.timedOut": "下载超时。请重试。已下载的数据已保留，可以继续下载。",
   "engine.session.stopped": "AI服务器已关闭。",
   "engine.session.invalidContext": "请选择此模型支持的上下文长度。",

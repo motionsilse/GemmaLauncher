@@ -16,6 +16,8 @@ public sealed class RunOperationPanel : UserControl
         var model = Ui.Label(); model.Name = "OperationModel"; Ui.SetFont(model, Ui.BodyFontSize, FontStyle.Bold);
         _bindings.Text(model, () => vm.SelectedPresentation?.DisplayName ?? ""); _bindings.Visible(model, () => vm.ShowOperationModel); Ui.Add(summary, model);
         var text = Ui.Label(); _bindings.Text(text, () => vm.StatusTitle + "\n" + vm.StatusDescription); Ui.Add(summary, text); root.Controls.Add(summary, 0, 0);
+        var transfer = Ui.Label(); transfer.Name = "DownloadProgressText";
+        _bindings.Text(transfer, () => vm.TransferProgressText); _bindings.Visible(transfer, () => vm.TransferProgressText.Length > 0); Ui.Add(summary, transfer);
         var actions = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Top, FlowDirection = FlowDirection.TopDown, WrapContents = false };
         var prerequisite = Ui.Button(); _bindings.Localize(prerequisite, "ui.runtime.install"); _bindings.Command(prerequisite, vm.InstallPrerequisiteCommand); _bindings.Visible(prerequisite, () => vm.NeedsRuntimePrerequisite); actions.Controls.Add(prerequisite);
         var primary = Ui.Button(); Ui.Primary(primary); primary.Name = "PrimaryAction"; _bindings.Text(primary, () => vm.PrimaryLabel); _bindings.Command(primary, vm.PrimaryCommand, before: commit); _bindings.Visible(primary, () => vm.ShowPrimaryAction); actions.Controls.Add(primary);

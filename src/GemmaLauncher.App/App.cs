@@ -63,7 +63,8 @@ public sealed class App : ApplicationContext
                 if (args[i] == "--model-folder" && Directory.Exists(args[i + 1]) && !settings.ModelFolders.Contains(args[i + 1], StringComparer.OrdinalIgnoreCase))
                     settings.ModelFolders.Add(Path.GetFullPath(args[i + 1]));
             _viewModel = new(settings, store, () => new(BundledResources.LoadCatalog(), paths, settings, store), () => new(new Core.Accounts.AccountConnection(accountDirectory)));
-            _window = new LoaderWindow(_viewModel, activateMessage, legacyActivateMessage) { AccountStateDirectory = accountDirectory };
+            _window = new LoaderWindow(_viewModel, activateMessage, legacyActivateMessage,
+                token => ReleaseUpdates.CheckAsync(typeof(App).Assembly.GetName().Version!, token)) { AccountStateDirectory = accountDirectory };
             MainForm = _window;
             _window.ActivationRequested += (_, _) => ShowWindow();
             _window.ExitRequested += async (_, _) => await ExitAsync();

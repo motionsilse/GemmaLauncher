@@ -1,4 +1,6 @@
 {
+  "engine.install.connecting": "Menghubungkan untuk mengunduh {0}",
+  "engine.anis.downloadTimedOut": "Unduhan {0} berhenti merespons. Coba unduh lagi.",
   "engine.install.timedOut": "Waktu tunggu unduhan habis. Coba lagi. Data yang sudah diunduh tetap disimpan agar unduhan dapat dilanjutkan.",
   "engine.session.stopped": "Server AI sedang mati.",
   "engine.session.invalidContext": "Pilih panjang konteks yang didukung model ini.",

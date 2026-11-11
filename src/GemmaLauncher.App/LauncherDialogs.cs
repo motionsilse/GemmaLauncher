@@ -1,5 +1,7 @@
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using GemmaLauncher.Core;
 using static GemmaLauncher.Core.Localization;
 
 namespace GemmaLauncher.App;
@@ -10,7 +12,7 @@ public sealed class LauncherDialog : Form
     private readonly UiBindings _bindings;
     public Panel Content { get; } = new() { Dock = DockStyle.Fill, AutoScroll = true };
     public FlowLayoutPanel Actions { get; } = new() { Dock = DockStyle.Top, AutoSize = true, FlowDirection = FlowDirection.RightToLeft, WrapContents = true, Padding = new Padding(0, 8, 0, 0) };
-    public LauncherDialog(LauncherViewModel vm, string title, Size size)
+    public LauncherDialog(LauncherViewModel vm, string title, Size size, bool showSessionControls = true)
     {
         Text = title; Size = size; MinimumSize = new Size(360, 240); StartPosition = FormStartPosition.CenterParent;
         AutoScaleMode = AutoScaleMode.Dpi; AutoScaleDimensions = new SizeF(96, 96); Ui.SetFont(this, Ui.BodyFontSize);
@@ -28,9 +30,9 @@ public sealed class LauncherDialog : Form
         running.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); running.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         var status = Ui.Label(); _bindings.Text(status, () => vm.SelectedModel?.DisplayName + "\n" + vm.StatusLabel); running.Controls.Add(status, 0, 0);
         var stop = Ui.Button(); stop.Name = "DialogSessionAction"; _bindings.Text(stop, () => vm.PrimaryLabel); _bindings.Command(stop, vm.PrimaryCommand); running.Controls.Add(stop, 1, 0);
-        _bindings.Visible(running, () => vm.IsBusy || vm.IsServerRunning);
+        _bindings.Visible(running, () => showSessionControls && (vm.IsBusy || vm.IsServerRunning));
         root.Controls.Add(running, 0, 0); root.Controls.Add(Content, 0, 1); root.Controls.Add(Actions, 0, 2); Controls.Add(root); _bindings.Start();
-        if (vm.BackgroundOperationsFactory is not null) { running.Visible = false; root.Controls.Remove(running); Disposed += (_, _) => running.Dispose(); root.Controls.Add(vm.BackgroundOperationsFactory(), 0, 0); }
+        if (showSessionControls && vm.BackgroundOperationsFactory is not null) { running.Visible = false; root.Controls.Remove(running); Disposed += (_, _) => running.Dispose(); root.Controls.Add(vm.BackgroundOperationsFactory(), 0, 0); }
     }
     public Button AddAction(string text, DialogResult result, bool primary = false)
     {
@@ -45,37 +47,52 @@ public sealed class LauncherDialog : Form
 
 internal static class LauncherDialogs
 {
-    public static Task<AnisAccessInput?> AnisAccess(LauncherViewModel vm, IWin32Window owner, CancellationToken token)
+    public static async Task<string?> AnisAccess(LauncherViewModel vm, IWin32Window owner, CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
-        using var dialog = new LauncherDialog(vm, T("ui.anis.firstUse"), new Size(640, 480));
-        var stack = Ui.Stack(); stack.Padding = Padding.Empty; dialog.Content.Controls.Add(Ui.Scroll(stack));
-        Ui.Add(stack, Ui.Label(T("ui.anis.accessHint")));
+        var clientId = LauncherViewModel.HuggingFaceClientId;
+        using var dialog = new LauncherDialog(vm, T("ui.anis.firstUse"), new Size(620, 360), showSessionControls: false);
+        using var lifetime = CancellationTokenSource.CreateLinkedTokenSource(token);
+        var stack = Ui.Stack();
+        stack.Padding = Padding.Empty;
+        dialog.Content.Controls.Add(Ui.Scroll(stack));
+        var status = Ui.Label(T("engine.install.verifying", "ANIS"));
+        status.Name = "AnisDownloadStatus";
+        Ui.SetFont(status, Ui.BodyFontSize, FontStyle.Bold);
+        Ui.Add(stack, status);
+        var transfer = Ui.Label(); transfer.Name = "AnisDownloadProgressText";
+        Ui.Add(stack, transfer);
+        var bar = new ProgressBar { Name = "AnisDownloadProgress", Height = 10, AccessibleName = T("ui.progress.name") };
+        Ui.Add(stack, bar);
         var source = new LinkLabel { AutoSize = true, Text = T("ui.anis.officialAccess"), LinkColor = Ui.Green };
-        source.LinkClicked += (_, _) => System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Core.AnisBackend.ModelPage) { UseShellExecute = true }); Ui.Add(stack, source);
-        Ui.Add(stack, Ui.Label(T("ui.anis.token")));
-        var credential = Ui.TextBox(); credential.Name = "AnisDownloadToken"; credential.UseSystemPasswordChar = true; credential.MaxLength = 4096; credential.AccessibleName = T("ui.anis.token"); Ui.Add(stack, credential);
-        Ui.Add(stack, Ui.Label(T("ui.anis.tokenHint")));
-        var validation = Ui.Label(T("engine.anis.accessRequired")); validation.ForeColor = Color.Maroon; validation.Visible = false; Ui.Add(stack, validation);
-        AnisAccessInput? access = null;
-        var local = Ui.Button(); local.Text = T("ui.anis.connectFolder"); local.Anchor = AnchorStyles.Left;
-        local.Click += (_, _) =>
+        source.LinkClicked += (_, _) => Open(new Uri(AnisBackend.ModelPage));
+        Ui.Add(stack, source);
+        var folder = DownloadsFolder();
+        var choose = Ui.Button();
+        choose.Text = T("ui.anis.downloadFolder");
+        Ui.Add(stack, choose);
+        choose.Anchor = AnchorStyles.Left;
+        var retry = dialog.AddAction(T("ui.anis.login"), DialogResult.None, true);
+        retry.Name = "AnisDownloadRetry";
+        var reconnect = new LinkLabel { AutoSize = true, Text = T("ui.anis.login"), LinkColor = Ui.Green };
+        Ui.Add(stack, reconnect);
+        Task? monitor = null;
+        choose.Click += (_, _) =>
         {
-            using var picker = new FolderBrowserDialog { Description = T("ui.anis.connectFolder") };
+            using var picker = new FolderBrowserDialog { Description = choose.Text, SelectedPath = folder };
             if (picker.ShowDialog(dialog) != DialogResult.OK) return;
-            access = new() { ModelFolder = picker.SelectedPath }; dialog.DialogResult = DialogResult.Retry;
+            folder = picker.SelectedPath;
+            Prepare(signIn: false);
         };
-        Ui.Add(stack, local);
-        dialog.AddAction(T("ui.anis.download"), DialogResult.OK, true);
-        dialog.AddAction(T("ui.preset.cancel"), DialogResult.Cancel);
-        dialog.FormClosing += (_, e) =>
+        retry.Click += (_, _) => Prepare(signIn: true);
+        reconnect.LinkClicked += (_, _) =>
         {
-            if (dialog.DialogResult != DialogResult.OK) return;
-            var value = credential.Text.Trim();
-            if (value.Length == 0 || value.Any(c => !char.IsAsciiLetterOrDigit(c) && c is not ('_' or '-')))
-            { e.Cancel = true; validation.Visible = true; credential.Focus(); return; }
-            access = new() { Token = value };
+            if (monitor is { IsCompleted: false }) return;
+            vm.ClearAnisAuthorization();
+            Prepare(signIn: true);
         };
+        dialog.AddAction(T("ui.preset.cancel"), DialogResult.Cancel);
+        dialog.Shown += (_, _) => Prepare(signIn: true);
         _ = dialog.Handle;
         using var cancellation = token.Register(() =>
         {
@@ -83,9 +100,93 @@ internal static class LauncherDialogs
             catch (InvalidOperationException) when (dialog.IsDisposed || !dialog.IsHandleCreated) { }
         });
         var result = dialog.ShowDialog(owner);
-        credential.Clear(); token.ThrowIfCancellationRequested();
-        return Task.FromResult(result is DialogResult.OK or DialogResult.Retry ? access : null);
+        lifetime.Cancel();
+        if (monitor is not null) await monitor;
+        token.ThrowIfCancellationRequested();
+        return result == DialogResult.OK ? vm.AnisManagedFolder : null;
+
+        void Prepare(bool signIn)
+        {
+            if (monitor is { IsCompleted: false }) return;
+            monitor = PrepareAsync(signIn);
+        }
+
+        async Task PrepareAsync(bool signIn)
+        {
+            retry.Enabled = choose.Enabled = false;
+            reconnect.Visible = source.Visible = false;
+            transfer.Visible = bar.Visible = false;
+            var accessDenied = false;
+            var reportProgress = true;
+            try
+            {
+                status.Text = T("engine.install.verifying", "ANIS");
+                var missing = await vm.ImportAnisDownloadsAsync(folder, lifetime.Token);
+                if (missing.Count == 0)
+                {
+                    vm.ClearAnisAuthorization();
+                    dialog.DialogResult = DialogResult.OK;
+                    return;
+                }
+                var total = AnisBackend.RuntimeModelFiles.Count;
+                status.Text = T("ui.anis.downloadProgress", total - missing.Count, total);
+                if (!signIn) return;
+                if (string.IsNullOrWhiteSpace(clientId))
+                {
+                    status.Text = T("ui.anis.loginFailed");
+                    return;
+                }
+
+                status.Text = vm.HasAnisAuthorization ? T("engine.install.connecting", "Hugging Face") : T("ui.anis.awaitingApproval");
+                var progress = new Progress<InstallationProgress>(p =>
+                {
+                    if (!reportProgress || lifetime.IsCancellationRequested) return;
+                    status.Text = p.Message;
+                    transfer.Text = Ui.TransferProgressText(p);
+                    transfer.Visible = bar.Visible = transfer.Text.Length > 0;
+                    bar.Value = (int)(p.Percent ?? 0);
+                });
+                await vm.DownloadAnisWithLoginAsync(clientId, progress, lifetime.Token);
+                dialog.DialogResult = DialogResult.OK;
+            }
+            catch (OperationCanceledException) when (lifetime.IsCancellationRequested) { }
+            catch (Exception error) when (error is IOException or InvalidDataException or TimeoutException or UnauthorizedAccessException or HttpRequestException or System.ComponentModel.Win32Exception)
+            {
+                accessDenied = error is AnisAccessRequiredException;
+                status.Text = accessDenied ? T("ui.anis.oauthAccessDenied") : error.Message;
+            }
+            finally
+            {
+                reportProgress = false;
+                transfer.Visible = bar.Visible = false;
+                source.Visible = accessDenied;
+                reconnect.Visible = accessDenied && vm.HasAnisAuthorization;
+                retry.Text = T(vm.HasAnisAuthorization ? "ui.anis.retryDownload" : "ui.anis.login");
+                retry.Enabled = choose.Enabled = true;
+            }
+        }
+
+        void Open(Uri url)
+        {
+            try { vm.OpenAnisDownload(url); }
+            catch (System.ComponentModel.Win32Exception ex) { status.Text = T("ui.note.browserFailed", ex.Message); }
+        }
     }
+
+    private static string DownloadsFolder()
+    {
+        var downloads = new Guid("374DE290-123F-4565-9164-39C4925E467B");
+        var result = SHGetKnownFolderPath(in downloads, 0, IntPtr.Zero, out var path);
+        try
+        {
+            if (result == 0 && Marshal.PtrToStringUni(path) is { Length: > 0 } folder) return folder;
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+        }
+        finally { Marshal.FreeCoTaskMem(path); }
+    }
+
+    [DllImport("shell32.dll")]
+    private static extern int SHGetKnownFolderPath(in Guid folder, uint flags, IntPtr token, out IntPtr path);
     public static PresetEditDecision ResolvePreset(LauncherViewModel vm, IWin32Window owner)
     {
         using var dialog = new LauncherDialog(vm, T("ui.preset.changesTitle"), new Size(580, 320));

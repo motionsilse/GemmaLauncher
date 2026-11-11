@@ -118,7 +118,7 @@ internal sealed class UiBindings(Control owner, INotifyPropertyChanged viewModel
         {
             if (!_refreshing && list.SelectedItem is ModelPresentation card)
             {
-                viewModel.SelectedModel = card.Definition;
+                if (viewModel.SelectModelCommand.CanExecute(card.Definition)) viewModel.SelectModelCommand.Execute(card.Definition);
                 RequestRefresh();
             }
         };
@@ -127,6 +127,13 @@ internal sealed class UiBindings(Control owner, INotifyPropertyChanged viewModel
 
 internal static class Ui
 {
+    public static string TransferProgressText(GemmaLauncher.Core.InstallationProgress? progress)
+    {
+        if (progress is not { Stage: "downloading", TotalBytes: long total, Percent: double percent }) return "";
+        var (unit, divisor) = total < 1_000_000 ? ("KB", 1_000d) : total < 1_000_000_000 ? ("MB", 1_000_000d) : ("GB", 1_000_000_000d);
+        var culture = System.Globalization.CultureInfo.GetCultureInfo(GemmaLauncher.Core.Localization.Current.LanguageCode);
+        return string.Format(culture, "{0:0.0}%  ·  {1:0.00} / {2:0.00} {3}", Math.Floor(percent * 10) / 10, progress.CompletedBytes / divisor, total / divisor, unit);
+    }
     public const float BodyFontSize = 11.5f;
     public const float SecondaryFontSize = 10.5f;
     public static readonly Color Paper = Color.FromArgb(244, 246, 243);

@@ -1,4 +1,6 @@
 {
+  "engine.install.connecting": "Verbindung zum Download von {0} wird hergestellt",
+  "engine.anis.downloadTimedOut": "Der Download von {0} antwortet nicht mehr. Versuche den Download erneut.",
   "engine.install.timedOut": "Beim Download wurde das Zeitlimit überschritten. Versuchen Sie es erneut. Bereits heruntergeladene Daten bleiben zum Fortsetzen erhalten.",
   "engine.session.stopped": "Der KI-Server ist ausgeschaltet.",
   "engine.session.invalidContext": "Wählen Sie eine Kontextlänge, die dieses Modell unterstützt.",

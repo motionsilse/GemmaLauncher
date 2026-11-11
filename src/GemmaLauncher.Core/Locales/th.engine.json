@@ -1,4 +1,6 @@
 {
+  "engine.install.connecting": "กำลังเชื่อมต่อเพื่อดาวน์โหลด {0}",
+  "engine.anis.downloadTimedOut": "การดาวน์โหลด {0} ไม่ตอบสนอง โปรดลองอีกครั้ง",
   "engine.install.timedOut": "การดาวน์โหลดหมดเวลารอ โปรดลองอีกครั้ง ข้อมูลที่ดาวน์โหลดแล้วจะถูกเก็บไว้เพื่อให้ดาวน์โหลดต่อได้",
   "engine.session.stopped": "เซิร์ฟเวอร์ AI ปิดอยู่",
   "engine.session.invalidContext": "เลือกความยาวบริบทที่โมเดลนี้รองรับ",

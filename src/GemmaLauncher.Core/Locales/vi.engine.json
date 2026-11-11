@@ -1,4 +1,6 @@
 {
+  "engine.install.connecting": "Đang kết nối để tải {0}",
+  "engine.anis.downloadTimedOut": "Quá trình tải {0} đã ngừng phản hồi. Hãy thử lại.",
   "engine.install.timedOut": "Quá thời gian chờ tải xuống. Vui lòng thử lại. Dữ liệu đã tải được giữ lại để có thể tiếp tục.",
   "engine.session.stopped": "Máy chủ AI đang tắt.",
   "engine.session.invalidContext": "Hãy chọn độ dài ngữ cảnh mà mô hình này hỗ trợ.",

@@ -1,4 +1,6 @@
 {
+  "engine.install.connecting": "Conectando para descargar {0}",
+  "engine.anis.downloadTimedOut": "La descarga de {0} dejó de responder. Vuelve a intentarlo.",
   "engine.install.timedOut": "Se agotó el tiempo de espera de la descarga. Inténtalo de nuevo. Los datos descargados se han conservado para poder continuar.",
   "engine.session.stopped": "El servidor de IA está apagado.",
   "engine.session.invalidContext": "Elige una longitud de contexto compatible con este modelo.",

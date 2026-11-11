@@ -1,4 +1,6 @@
 {
+  "engine.install.connecting": "Łączenie w celu pobrania {0}",
+  "engine.anis.downloadTimedOut": "Pobieranie {0} przestało odpowiadać. Spróbuj ponownie.",
   "engine.install.timedOut": "Przekroczono limit czasu pobierania. Spróbuj ponownie. Pobrane dane zostały zachowane, aby można było wznowić pobieranie.",
   "engine.session.stopped": "Serwer AI jest wyłączony.",
   "engine.session.invalidContext": "Wybierz długość kontekstu obsługiwaną przez ten model.",

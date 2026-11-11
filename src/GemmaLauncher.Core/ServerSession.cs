@@ -254,6 +254,9 @@ public sealed class ServerSession : IServerSession
 
     private async Task WaitUntilReadyAsync(RunningProcess owned, CancellationToken cancellationToken)
     {
+        var anis = owned.Configuration.Model.Definition.Engine == "anis";
+        // The Windows Python venv launcher starts the interpreter as a child in the same job.
+        bool OwnsBackendListener() => TcpProcessOwner.OwnsListener(owned.Configuration.Port, owned.Process.Id, anis ? owned.Job : null);
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeout.CancelAfter(_startupTimeout);
         using var client = new HttpClient(new HttpClientHandler { UseProxy = false, AllowAutoRedirect = false })
@@ -265,16 +268,17 @@ public sealed class ServerSession : IServerSession
                 timeout.Token.ThrowIfCancellationRequested();
                 if (owned.Process.HasExited)
                     throw new IOException(Localization.T("engine.session.earlyExit", owned.Process.ExitCode));
-                if (TcpProcessOwner.OwnsListener(owned.Configuration.Port, owned.Process.Id))
+                if (OwnsBackendListener())
                 {
                     try
                     {
-                        using var health = await client.GetAsync(owned.Configuration.Model.Definition.Engine == "anis" ? "" : "health", timeout.Token).ConfigureAwait(false);
+                        using var health = await client.GetAsync(anis ? "" : "health", timeout.Token).ConfigureAwait(false);
                         if (health.IsSuccessStatusCode)
                         {
-                            var anis = owned.Configuration.Model.Definition.Engine == "anis";
                             var expectedAlias = owned.Configuration.Model.Definition.ApiModelId;
-                            using var modelsResponse = await client.GetAsync(anis ? "v1/models/" + Uri.EscapeDataString(expectedAlias) : "v1/models", timeout.Token).ConfigureAwait(false);
+                            // Upstream ANIS reads the raw path, and ':' is valid inside a URI path segment.
+                            var modelPath = anis ? "v1/models/" + Uri.EscapeDataString(expectedAlias).Replace("%3A", ":", StringComparison.Ordinal) : "v1/models";
+                            using var modelsResponse = await client.GetAsync(modelPath, timeout.Token).ConfigureAwait(false);
                             if (modelsResponse.IsSuccessStatusCode)
                             {
                                 await using var body = await modelsResponse.Content.ReadAsStreamAsync(timeout.Token).ConfigureAwait(false);
@@ -283,7 +287,7 @@ public sealed class ServerSession : IServerSession
                                     models.RootElement.TryGetProperty("data", out var data) && data.ValueKind == JsonValueKind.Array &&
                                     data.EnumerateArray().Any(model => model.TryGetProperty("id", out var id) && id.GetString() == expectedAlias);
                                 if (hasAlias &&
-                                    !owned.Process.HasExited && TcpProcessOwner.OwnsListener(owned.Configuration.Port, owned.Process.Id)) return;
+                                    !owned.Process.HasExited && OwnsBackendListener()) return;
                             }
                         }
                     }

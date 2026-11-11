@@ -19,6 +19,8 @@ try
     if (args.Contains("--localization-tests")) { await LocalizationTests.RunAsync(); Console.WriteLine("Localization tests passed."); return; }
     if (args.Contains("--real-model-smoke")) { await RealModelSmoke.RunAsync(); return; }
     if (args.Contains("--session-tests")) { await SessionTests.RunAsync(); Console.WriteLine("Session tests passed."); return; }
+    await ReleaseUpdateTests.RunAsync();
+    Console.WriteLine("Release update tests passed.");
     if (args.Contains("--library-tests")) { await LibraryTests.RunAsync(); Console.WriteLine("Library tests passed."); return; }
     if (args.Contains("--gateway-tests")) { await GatewayTests.RunAsync(); Console.WriteLine("Gateway tests passed."); return; }
     await GatewayTests.RunAsync();

@@ -1,5 +1,9 @@
 using System.Net;
+using System.Net.Http.Json;
+using System.Security.Cryptography;
+using System.Text;
 using GemmaLauncher.Core;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace GemmaLauncher.Tests;
 
@@ -27,6 +31,15 @@ public static class AnisTests
         Assert(requests.Count == 2 && requests[0].Token is null && requests[1].Token == "fixture-secret", "A first download must support anonymous access followed by an explicit temporary credential.");
         Assert(requests.All(r => r.Uri.Host == "huggingface.co" && !r.Uri.Query.Contains("fixture-secret")), "Credentials belong only in authorization headers for official model URLs.");
         Assert(!Directory.EnumerateFiles(root.Root, "*.partial", SearchOption.AllDirectories).Any(), "A rejected download must leave no partial file.");
+        var downloads = Path.Combine(root.Root, "downloads");
+        Directory.CreateDirectory(downloads);
+        var wrongConfig = Path.Combine(downloads, "config (1).json");
+        await File.WriteAllBytesAsync(wrongConfig, new byte[224]);
+        var missing = await backend.ImportBrowserDownloadsAsync(downloads);
+        Assert(missing.Count == 4 && missing.Any(file => file.Path == "ct2/config.json"), "The browser importer must reject a correct-size file with an invalid hash.");
+        Assert(File.Exists(wrongConfig) && !File.Exists(Path.Combine(backend.ManagedModelDirectory, "ct2", "config.json")), "Browser import must leave original files intact and publish only verified bytes.");
+        await TestHuggingFaceLoginAsync();
+        await TestDownloadRedirectsAsync(root);
 
         using var invalidClient = new HttpClient(new ResponseHandler((_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent([1, 2, 3]) })));
         using var invalidBackend = new AnisBackend(new LauncherPaths(root.Root + "-invalid"), client: invalidClient);
@@ -45,6 +58,63 @@ public static class AnisTests
             try { ServerSession.BuildArguments(invalid); throw new Exception("Invalid ANIS launch settings were accepted."); }
             catch (ArgumentException) { }
         }
+    }
+    private static async Task TestDownloadRedirectsAsync(LauncherPaths root)
+    {
+        var requests = new List<(string Host, string? Credential)>();
+        using var client = new HttpClient(new ResponseHandler((request, _) =>
+        {
+            requests.Add((request.RequestUri!.Host, request.Headers.Authorization?.Parameter));
+            return Task.FromResult(requests.Count switch
+            {
+                1 => new HttpResponseMessage(HttpStatusCode.TemporaryRedirect) { Headers = { Location = new Uri("/api/resolve-cache/fixture", UriKind.Relative) } },
+                2 => new HttpResponseMessage(HttpStatusCode.Found) { Headers = { Location = new Uri("https://cdn.example/fixture") } },
+                _ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent([1]) }
+            });
+        }));
+        using var backend = new AnisBackend(new LauncherPaths(root.Root + "-redirect"), client: client);
+        var model = CatalogLoader.Load(Path.Combine(Root, "src/GemmaLauncher.App/Assets/catalog.json")).Models.Single(m => m.Engine == "anis");
+        try { await backend.EnsureModelAsync(model, "hf_oauth_fixture", null); throw new Exception("Invalid redirected bytes were accepted."); }
+        catch (InvalidDataException) { }
+        Assert(requests.SequenceEqual(new (string, string?)[] { ("huggingface.co", "hf_oauth_fixture"), ("huggingface.co", "hf_oauth_fixture"), ("cdn.example", null) }),
+            "Download authorization must stay on the Hugging Face origin and survive its same-origin redirect.");
+    }
+    private static async Task TestHuggingFaceLoginAsync()
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+        var browser = new TaskCompletionSource<Uri>(TaskCreationOptions.RunContinuationsAsynchronously);
+        Dictionary<string, Microsoft.Extensions.Primitives.StringValues>? request = null;
+        using var handler = new ResponseHandler(async (message, token) =>
+        {
+            Assert(message.RequestUri?.AbsoluteUri == "https://huggingface.co/oauth/token", "The callback code must go to the official token endpoint.");
+            var form = await message.Content!.ReadAsStringAsync(token);
+            request = QueryHelpers.ParseQuery(form);
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = JsonContent.Create(new { access_token = "hf_oauth_fixture" }) };
+        });
+        using var login = new HuggingFaceAuthorization("fixture-public-client", handler);
+        var signIn = login.SignInAsync(uri => browser.TrySetResult(uri), timeout.Token);
+        var uri = await browser.Task.WaitAsync(timeout.Token);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+        Assert(uri.Host == "huggingface.co" && uri.AbsolutePath == "/oauth/authorize" && query["scope"] == "gated-repos", "ANIS authorization must request only the gated-download scope from Hugging Face.");
+        var callback = new Uri(query["redirect_uri"].ToString());
+        Assert(callback.IsLoopback && callback.AbsolutePath == "/auth/callback", "OAuth must use the app-owned loopback callback.");
+        using var local = new HttpClient(new SocketsHttpHandler { UseProxy = false });
+        using var wrong = await local.GetAsync(callback + "?state=wrong&code=fixture-code", timeout.Token);
+        Assert(wrong.StatusCode == HttpStatusCode.BadRequest && !signIn.IsCompleted, "A callback for another state must not complete authorization.");
+        using var right = await local.GetAsync(QueryHelpers.AddQueryString(callback.AbsoluteUri, new Dictionary<string, string?>
+        {
+            ["state"] = query["state"].ToString(), ["code"] = "fixture-code"
+        }), timeout.Token);
+        Assert(right.IsSuccessStatusCode && await signIn == "hf_oauth_fixture", "An authorized callback must return the download credential internally.");
+        Assert(login.IsAuthorized && await login.SignInAsync(_ => throw new Exception("Retry opened a new sign-in page."), timeout.Token) == "hf_oauth_fixture",
+            "A download retry must use the same authorization until the installation succeeds or the user explicitly reconnects.");
+        login.ClearAuthorization();
+        Assert(!login.IsAuthorized, "A finished download must discard the temporary credential.");
+        var verifier = request!["code_verifier"].ToString();
+        var challenge = WebEncoders.Base64UrlEncode(SHA256.HashData(Encoding.ASCII.GetBytes(verifier)));
+        Assert(query["code_challenge_method"] == "S256" && query["code_challenge"] == challenge &&
+            request["client_id"] == "fixture-public-client" && request["redirect_uri"] == callback.AbsoluteUri &&
+            request["code"] == "fixture-code" && !request.ContainsKey("client_secret"), "Public client authorization must bind its code exchange to the original PKCE challenge and callback.");
     }
     public static async Task RuntimeSmokeAsync()
     {

@@ -1,4 +1,6 @@
 {
+  "engine.install.connecting": "Connexion pour télécharger {0}",
+  "engine.anis.downloadTimedOut": "Le téléchargement de {0} ne répond plus. Réessayez.",
   "engine.install.timedOut": "Le téléchargement a dépassé le délai d’attente. Réessayez. Les données déjà téléchargées ont été conservées pour permettre la reprise.",
   "engine.session.stopped": "Le serveur d’IA est arrêté.",
   "engine.session.invalidContext": "Choisissez une longueur de contexte prise en charge par ce modèle.",

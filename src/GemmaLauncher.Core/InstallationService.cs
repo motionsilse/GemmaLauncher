@@ -187,6 +187,7 @@ public sealed class InstallationService : IInstallationService, IDisposable
                 request.Headers.UserAgent.ParseAdd("GemmaLauncher/1.0");
                 request.Headers.AcceptEncoding.ParseAdd("identity");
                 if (offset > 0) request.Headers.Range = new RangeHeaderValue(offset, null);
+                progress?.Report(new("connecting", Localization.T("engine.install.connecting", Path.GetFileName(destination))));
                 using var headersTimeout = CancellationTokenSource.CreateLinkedTokenSource(token);
                 headersTimeout.CancelAfter(TimeSpan.FromSeconds(60));
                 using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, headersTimeout.Token);
@@ -246,10 +247,14 @@ public sealed class InstallationService : IInstallationService, IDisposable
             catch (OperationCanceledException exception) when (!token.IsCancellationRequested)
             {
                 if (attempt == 2) throw new TimeoutException(Localization.T("engine.install.timedOut"), exception);
+                progress?.Report(new("retrying", Localization.T("engine.install.interrupted")));
                 await Task.Delay(TimeSpan.FromSeconds(attempt + 1), token);
             }
             catch (Exception exception) when (attempt < 2 && exception is IOException or HttpRequestException or InvalidDataException)
-            { await Task.Delay(TimeSpan.FromSeconds(attempt + 1), token); }
+            {
+                progress?.Report(new("retrying", Localization.T("engine.install.interrupted")));
+                await Task.Delay(TimeSpan.FromSeconds(attempt + 1), token);
+            }
         }
     }
 
