@@ -194,7 +194,7 @@ public sealed class AnisBackend : IDisposable
             if (!string.IsNullOrWhiteSpace(accessToken))
             {
                 accessToken = accessToken.Trim();
-                if (accessToken.Length > 4096 || accessToken.Any(c => !char.IsAsciiLetterOrDigit(c) && c is not ('_' or '-'))) throw new AnisAccessRequiredException();
+                if (!HuggingFaceAuthorization.IsValidAccessToken(accessToken)) throw new AnisAccessRequiredException();
             }
             progress?.Report(new("connecting", Localization.T("engine.install.connecting", expected.Path)));
             using var response = await OpenDownloadAsync(new Uri(url), accessToken, token);

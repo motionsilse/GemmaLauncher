@@ -9,9 +9,14 @@ namespace GemmaLauncher.Tests;
 
 public static class AnisTests
 {
+    private const string OauthCredential = "fixture.header.signature";
     private static string Root => Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
     public static async Task RunAsync()
     {
+        foreach (var value in new[] { OauthCredential, "hf_oauth_fixture", "a-b.c_d~e+f/g==" })
+            Assert(HuggingFaceAuthorization.IsValidAccessToken(value), "Valid OAuth bearer syntax must be accepted.");
+        foreach (var value in new[] { "", "=", "=a", "a=b", "a b", "a\r\nInjected: value", "a\t", "한글", new string('a', 4097) })
+            Assert(!HuggingFaceAuthorization.IsValidAccessToken(value), "Malformed bearer syntax must be rejected.");
         var catalog = CatalogLoader.Load(Path.Combine(Root, "src/GemmaLauncher.App/Assets/catalog.json"));
         var model = catalog.Models.Single(model => model.Id == "anis-trans");
         var root = new LauncherPaths(Path.Combine(Root, "artifacts/tests/anis-" + Guid.NewGuid().ToString("N")));
@@ -74,9 +79,9 @@ public static class AnisTests
         }));
         using var backend = new AnisBackend(new LauncherPaths(root.Root + "-redirect"), client: client);
         var model = CatalogLoader.Load(Path.Combine(Root, "src/GemmaLauncher.App/Assets/catalog.json")).Models.Single(m => m.Engine == "anis");
-        try { await backend.EnsureModelAsync(model, "hf_oauth_fixture", null); throw new Exception("Invalid redirected bytes were accepted."); }
+        try { await backend.EnsureModelAsync(model, OauthCredential, null); throw new Exception("Invalid redirected bytes were accepted."); }
         catch (InvalidDataException) { }
-        Assert(requests.SequenceEqual(new (string, string?)[] { ("huggingface.co", "hf_oauth_fixture"), ("huggingface.co", "hf_oauth_fixture"), ("cdn.example", null) }),
+        Assert(requests.SequenceEqual(new (string, string?)[] { ("huggingface.co", OauthCredential), ("huggingface.co", OauthCredential), ("cdn.example", null) }),
             "Download authorization must stay on the Hugging Face origin and survive its same-origin redirect.");
     }
     private static async Task TestHuggingFaceLoginAsync()
@@ -89,7 +94,7 @@ public static class AnisTests
             Assert(message.RequestUri?.AbsoluteUri == "https://huggingface.co/oauth/token", "The callback code must go to the official token endpoint.");
             var form = await message.Content!.ReadAsStringAsync(token);
             request = QueryHelpers.ParseQuery(form);
-            return new HttpResponseMessage(HttpStatusCode.OK) { Content = JsonContent.Create(new { access_token = "hf_oauth_fixture" }) };
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = JsonContent.Create(new { access_token = OauthCredential }) };
         });
         using var login = new HuggingFaceAuthorization("fixture-public-client", handler);
         var signIn = login.SignInAsync(uri => browser.TrySetResult(uri), timeout.Token);
@@ -105,8 +110,8 @@ public static class AnisTests
         {
             ["state"] = query["state"].ToString(), ["code"] = "fixture-code"
         }), timeout.Token);
-        Assert(right.IsSuccessStatusCode && await signIn == "hf_oauth_fixture", "An authorized callback must return the download credential internally.");
-        Assert(login.IsAuthorized && await login.SignInAsync(_ => throw new Exception("Retry opened a new sign-in page."), timeout.Token) == "hf_oauth_fixture",
+        Assert(right.IsSuccessStatusCode && await signIn == OauthCredential, "An authorized callback must accept the dotted OAuth bearer credential and return it internally.");
+        Assert(login.IsAuthorized && await login.SignInAsync(_ => throw new Exception("Retry opened a new sign-in page."), timeout.Token) == OauthCredential,
             "A download retry must use the same authorization until the installation succeeds or the user explicitly reconnects.");
         login.ClearAuthorization();
         Assert(!login.IsAuthorized, "A finished download must discard the temporary credential.");

@@ -1,0 +1,78 @@
+{
+  "success": true,
+  "signedIn": true,
+  "modelBytes": 300896371,
+  "modelFileCount": 4,
+  "downloadSeconds": 8.1304951,
+  "runtimeSeconds": 54.3843618,
+  "loadSeconds": 1.7580842,
+  "restartedWithoutLogin": true,
+  "translations": [
+    {
+      "direction": "warmup",
+      "input": "\u3053\u3093\u306B\u3061\u306F\u3002",
+      "output": "\uC548\uB155\uD558\uC138\uC694.",
+      "seconds": 0.0911604
+    },
+    {
+      "direction": "ja-ko",
+      "input": "\u660E\u65E5\u306F\u65E9\u304F\u8D77\u304D\u3066\u3001\u671D\u3054\u306F\u3093\u3092\u4F5C\u308A\u307E\u3059\u3002",
+      "output": "\uB0B4\uC77C\uC740 \uC77C\uCC0D \uC77C\uC5B4\uB098\uC11C \uC544\uCE68\uBC25\uC744 \uB9CC\uB4E4\uACA0\uC2B5\uB2C8\uB2E4.",
+      "seconds": 0.0833571
+    },
+    {
+      "direction": "ja-ko",
+      "input": "\u99C5\u307E\u3067\u6B69\u3044\u3066\u4F55\u5206\u304F\u3089\u3044\u304B\u304B\u308A\u307E\u3059\u304B\uFF1F",
+      "output": "\uC5ED\uAE4C\uC9C0 \uAC78\uC5B4\uC11C \uBA87 \uBD84 \uC815\uB3C4 \uAC78\uB9AC\uB098\uC694?",
+      "seconds": 0.07747
+    },
+    {
+      "direction": "ja-ko",
+      "input": "\u4ECA\u65E5\u306F\u96E8\u304C\u964D\u3063\u3066\u3044\u308B\u306E\u3067\u3001\u5098\u3092\u6301\u3063\u3066\u3044\u3063\u3066\u304F\u3060\u3055\u3044\u3002",
+      "output": "\uC624\uB298\uC740 \uBE44\uAC00 \uC624\uACE0 \uC788\uC73C\uB2C8 \uC6B0\uC0B0\uC744 \uAC00\uC838\uAC00\uC138\uC694.",
+      "seconds": 0.0775003
+    },
+    {
+      "direction": "ja-ko",
+      "input": "\u6CE8\u6587\u3057\u305F\u5546\u54C1\u306F\u3044\u3064\u5C4A\u304D\u307E\u3059\u304B\uFF1F",
+      "output": "\uC8FC\uBB38\uD55C \uC0C1\uD488\uC740 \uC5B8\uC81C \uB3C4\uCC29\uD558\uB098\uC694?",
+      "seconds": 0.0858059
+    },
+    {
+      "direction": "ja-ko",
+      "input": "\u624B\u4F1D\u3063\u3066\u304F\u308C\u3066\u3042\u308A\u304C\u3068\u3046\u3054\u3056\u3044\u307E\u3059\u3002",
+      "output": "\uB3C4\uC640\uC8FC\uC154\uC11C \uAC10\uC0AC\uD569\uB2C8\uB2E4.",
+      "seconds": 0.0626091
+    },
+    {
+      "direction": "ko-ja",
+      "input": "\uB0B4\uC77C\uC740 \uC77C\uCC0D \uC77C\uC5B4\uB098\uC11C \uC544\uCE68\uBC25\uC744 \uB9CC\uB4E4 \uAC70\uC608\uC694.",
+      "output": "\u660E\u65E5\u306F\u65E9\u8D77\u304D\u3057\u3066\u671D\u3054\u306F\u3093\u3092\u4F5C\u308A\u307E\u3059\u3002",
+      "seconds": 0.0599544
+    },
+    {
+      "direction": "ko-ja",
+      "input": "\uC5ED\uAE4C\uC9C0 \uAC78\uC5B4\uC11C \uBA87 \uBD84 \uC815\uB3C4 \uAC78\uB9AC\uB098\uC694?",
+      "output": "\u99C5\u307E\u3067\u6B69\u3044\u3066\u4F55\u5206\u304F\u3089\u3044\u304B\u304B\u308A\u307E\u3059\u304B\u3002",
+      "seconds": 0.0636977
+    },
+    {
+      "direction": "ko-ja",
+      "input": "\uC624\uB298\uC740 \uBE44\uAC00 \uC624\uB2C8\uAE4C \uC6B0\uC0B0\uC744 \uAC00\uC9C0\uACE0 \uAC00\uC138\uC694.",
+      "output": "\u4ECA\u65E5\u306F\u96E8\u304C\u964D\u308B\u306E\u3067\u3001\u5098\u3092\u6301\u3063\u3066\u884C\u3063\u3066\u304F\u3060\u3055\u3044\u3002",
+      "seconds": 0.0860567
+    },
+    {
+      "direction": "ko-ja",
+      "input": "\uC8FC\uBB38\uD55C \uC0C1\uD488\uC740 \uC5B8\uC81C \uB3C4\uCC29\uD558\uB098\uC694?",
+      "output": "\u6CE8\u6587\u3057\u305F\u5546\u54C1\u306F\u3044\u3064\u5C4A\u304D\u307E\u3059\u304B\uFF1F",
+      "seconds": 0.0678812
+    },
+    {
+      "direction": "ko-ja",
+      "input": "\uB3C4\uC640\uC8FC\uC154\uC11C \uAC10\uC0AC\uD569\uB2C8\uB2E4.",
+      "output": "\u624B\u4F1D\u3063\u3066\u304F\u3060\u3055\u3063\u3066\u3042\u308A\u304C\u3068\u3046\u3054\u3056\u3044\u307E\u3059\u3002",
+      "seconds": 0.0529222
+    }
+  ]
+}

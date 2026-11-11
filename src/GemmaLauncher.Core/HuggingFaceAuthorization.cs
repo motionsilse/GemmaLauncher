@@ -65,7 +65,7 @@ public sealed class HuggingFaceAuthorization : IDisposable
             using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync(budget.Token));
             if (body.RootElement.ValueKind != JsonValueKind.Object || !body.RootElement.TryGetProperty("access_token", out var value) ||
                 value.ValueKind != JsonValueKind.String || value.GetString() is not { Length: > 0 and <= 4096 } credential ||
-                credential.Any(c => !char.IsAsciiLetterOrDigit(c) && c is not ('_' or '-')))
+                !IsValidAccessToken(credential))
                 throw new IOException(Localization.T("ui.anis.loginFailed"));
             this.credential = credential;
             return credential;
@@ -78,6 +78,19 @@ public sealed class HuggingFaceAuthorization : IDisposable
         {
             throw new IOException(Localization.T("ui.anis.loginFailed"));
         }
+    }
+
+    // RFC 6750 section 2.1: OAuth credentials are opaque bearer values, including JWTs.
+    internal static bool IsValidAccessToken(string value)
+    {
+        if (value.Length is 0 or > 4096 || value[0] == '=') return false;
+        var padding = false;
+        foreach (var character in value)
+        {
+            if (character == '=') { padding = true; continue; }
+            if (padding || !char.IsAsciiLetterOrDigit(character) && character is not ('-' or '.' or '_' or '~' or '+' or '/')) return false;
+        }
+        return true;
     }
 
     public void Dispose() { ClearAuthorization(); client.Dispose(); }
