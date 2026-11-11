@@ -1,4 +1,5 @@
 {
+  "ui.account.loginPortBusy": "其他登录正在使用回调端口（1455）。请完成或取消 Codex 等应用中的登录，然后重试。",
   "ui.update.available": "下载新版本 {0}",
   "ui.anis.login": "登录 Hugging Face",
   "ui.anis.retryDownload": "重试下载",

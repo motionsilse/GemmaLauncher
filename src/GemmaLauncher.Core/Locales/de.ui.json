@@ -1,4 +1,5 @@
 {
+  "ui.account.loginPortBusy": "Eine andere Anmeldung verwendet den Rückruf-Port (1455). Schließen Sie die Anmeldung in Codex oder einer anderen App ab oder brechen Sie sie ab und versuchen Sie es erneut.",
   "ui.update.available": "Neue Version {0} herunterladen",
   "ui.anis.login": "Bei Hugging Face anmelden",
   "ui.anis.retryDownload": "Download erneut versuchen",

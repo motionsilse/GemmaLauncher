@@ -216,6 +216,7 @@ public sealed class AccountConnectionViewModel : ObservableObject, IAsyncDisposa
         "default_model_unavailable" => T("ui.account.modelMissing", ApiModelId),
         "browser_failed" => T("ui.note.browserFailed", "") + " " + T("ui.account.login"),
         "login_declined" => T("ui.account.loginDeclined"),
+        "login_port_in_use" => T("ui.account.loginPortBusy"),
         "stop_failed" => T("ui.account.stopFailed"),
         "authentication_required" => T("ui.account.authRequired"),
         "access_denied" => T("ui.account.accessDenied"),

@@ -56,7 +56,7 @@ Gemma는 모델 이름을 식별하기 위해 사용합니다. 이 런처는 Goo
 
 계정 연결의 제품용 로그인·프록시 호스트·사용량·API 처리는 [motionsilse/CatRoute](https://github.com/motionsilse/CatRoute)의 `c5c74ad`에서 선별 이관했습니다. 연구 폴더·비공개 바이너리·압축 엔진 payload는 포함하지 않았습니다. 저장 경로와 API 키 형식을 보존하고 지연 실행·취소·다운로드 및 네이티브 화면을 통합했습니다.
 
-프록시는 [router-for-me/CLIProxyAPI v8.0.27](https://github.com/router-for-me/CLIProxyAPI/releases/tag/v8.0.27)의 수정하지 않은 공식 Windows amd64 프로그램입니다. 첫 연결 준비 때 다운로드하며 Cat Loader EXE에는 포함하지 않습니다. 원본 [MIT 라이선스](https://github.com/router-for-me/CLIProxyAPI/blob/v8.0.27/LICENSE)와 다운로드 ZIP의 고지를 보존합니다.
+프록시는 [router-for-me/CLIProxyAPI v8.0.66](https://github.com/router-for-me/CLIProxyAPI/releases/tag/v8.0.66)의 수정하지 않은 공식 Windows amd64 프로그램입니다. 첫 연결 준비 때 다운로드하며 Cat Loader EXE에는 포함하지 않습니다. 원본 [MIT 라이선스](https://github.com/router-for-me/CLIProxyAPI/blob/v8.0.66/LICENSE)와 다운로드 ZIP의 고지를 보존합니다.
 
 ```text
 MIT License

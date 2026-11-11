@@ -1,4 +1,5 @@
 {
+  "ui.account.loginPortBusy": "Ginagamit ng ibang pag-sign in ang callback port (1455). Tapusin o kanselahin ang pag-sign in sa Codex o ibang app, saka subukang muli.",
   "ui.update.available": "I-download ang bagong bersyon {0}",
   "ui.anis.login": "Mag-sign in sa Hugging Face",
   "ui.anis.retryDownload": "Subukang muli ang pag-download",

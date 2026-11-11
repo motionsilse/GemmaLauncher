@@ -1,4 +1,5 @@
 {
+  "ui.account.loginPortBusy": "Một lần đăng nhập khác đang dùng cổng phản hồi (1455). Hoàn tất hoặc hủy đăng nhập trong Codex hay ứng dụng khác, rồi thử lại.",
   "ui.update.available": "Tải phiên bản mới {0}",
   "ui.anis.login": "Đăng nhập Hugging Face",
   "ui.anis.retryDownload": "Thử tải lại",

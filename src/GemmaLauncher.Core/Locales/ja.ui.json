@@ -1,4 +1,5 @@
 {
+  "ui.account.loginPortBusy": "別のログインが応答ポート（1455）を使用しています。Codexなどのアプリでログインを完了またはキャンセルしてから、もう一度お試しください。",
   "ui.update.available": "新バージョン {0} をダウンロード",
   "ui.anis.login": "Hugging Face にログイン",
   "ui.anis.retryDownload": "ダウンロードを再試行",

@@ -1,4 +1,5 @@
 {
+  "ui.account.loginPortBusy": "Another sign-in is using the callback port (1455). Finish or cancel sign-in in Codex or another app, then try again.",
   "ui.update.available": "New version {0} · Download",
   "ui.anis.login": "Sign in to Hugging Face",
   "ui.anis.retryDownload": "Retry download",

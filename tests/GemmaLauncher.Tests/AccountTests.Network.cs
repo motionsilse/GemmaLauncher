@@ -13,7 +13,10 @@ public static partial class AccountTests
             using var lease = store.AcquireOwnership();
             using var installer = new GemmaLauncher.Core.InstallationService(new(root), discoverExistingModels: false);
             var runtime = new AccountRuntime(store, installer);
-            var exe = await runtime.EnsureAsync(null, default);
+            var stages = new RuntimeStages();
+            var exe = await runtime.EnsureAsync(stages, default);
+            Assert(stages.Values.Contains(AccountPreparationStage.DownloadingRuntime) && stages.Values.Contains(AccountPreparationStage.ExtractingRuntime)
+                && stages.Values.Last() == AccountPreparationStage.CheckingRuntime, "Fresh runtime preparation must finish with verification, not another download");
             Assert(await runtime.EnsureAsync(null, default) == exe, "Reuse verified runtime");
             using var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0); listener.Start();
             var port = ((System.Net.IPEndPoint)listener.LocalEndpoint).Port; listener.Stop();
@@ -47,6 +50,11 @@ public static partial class AccountTests
     private sealed class Handler(Func<HttpRequestMessage, string> response) : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(response(request), Encoding.UTF8, "application/json") });
+    }
+    private sealed class RuntimeStages : IProgress<ConnectionProgress>
+    {
+        public List<AccountPreparationStage> Values { get; } = [];
+        public void Report(ConnectionProgress value) => Values.Add(value.Stage);
     }
     private static async Task NetworkAsync(string root)
     {

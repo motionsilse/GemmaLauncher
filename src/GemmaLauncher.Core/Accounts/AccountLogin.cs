@@ -134,6 +134,10 @@ public sealed class AccountLogin(HttpClient management, Func<AccountSummary> rea
                 await Task.Delay(350, budget.Token);
             }
         }
+        catch (IOException error) when (error.InnerException is Microsoft.AspNetCore.Connections.AddressInUseException)
+        {
+            throw new ConnectionFailure("login_port_in_use");
+        }
         finally
         {
             if (!completed)

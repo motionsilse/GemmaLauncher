@@ -1,4 +1,5 @@
 {
+  "ui.account.loginPortBusy": "Başka bir giriş işlemi geri çağrı bağlantı noktasını (1455) kullanıyor. Codex veya başka bir uygulamadaki girişi tamamlayın ya da iptal edin, ardından tekrar deneyin.",
   "ui.update.available": "Yeni {0} sürümünü indir",
   "ui.anis.login": "Hugging Face hesabına giriş yap",
   "ui.anis.retryDownload": "İndirmeyi yeniden dene",

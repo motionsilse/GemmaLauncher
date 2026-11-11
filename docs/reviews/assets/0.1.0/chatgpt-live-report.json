@@ -1,0 +1,13 @@
+{
+  "runtime": "8.0.66",
+  "startedAt": "2026-11-11T08:58:24.2063811+00:00",
+  "cancelBeforeAuthorization": true,
+  "realOAuthLogin": true,
+  "modelAvailable": true,
+  "usageWindows": 1,
+  "inferenceMs": 4584.7475,
+  "reportedModel": "gpt-6-luna",
+  "restartWithoutLogin": true,
+  "signOut": true,
+  "result": "PASS"
+}

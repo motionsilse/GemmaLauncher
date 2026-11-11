@@ -27,8 +27,21 @@ public static partial class AccountTests
                 File.WriteAllText(Path.Combine(root, "auth", "codex-test.json"), "{\"type\":\"codex\",\"email\":\"fake@example.invalid\",\"plan_type\":\"test\"}");
                 Assert(store.ReadSummary().State == SavedAccountState.Available, "Read saved account");
                 File.WriteAllText(Path.Combine(root, "auth", "other.json"), "{\"type\":\"other\"}");
+                var journal = Path.Combine(store.AuthDirectory, ".codex-refresh", new string('a', 64));
+                Directory.CreateDirectory(journal);
+                var receipt = Path.Combine(journal, "receipt");
+                File.WriteAllText(receipt, "{\"refresh_token\":\"fixture-renewal-secret\"}");
+                var accountLock = Path.Combine(store.AuthDirectory, "codex-test.json.lock");
+                File.WriteAllText(accountLock, "");
+                using (var lockedReceipt = File.Open(receipt, FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    try { store.ClearLocalLogin(); throw new Exception("Locked renewal credentials silently retained"); }
+                    catch (IOException) { }
+                    Assert(store.ReadSummary().State == SavedAccountState.Available, "Failed cleanup must preserve a retryable saved account");
+                }
                 store.ClearLocalLogin();
                 Assert(File.Exists(Path.Combine(root, "auth", "other.json")) && store.ReadSummary().State == SavedAccountState.Missing, "Only remove codex account");
+                Assert(!Directory.Exists(Path.Combine(store.AuthDirectory, ".codex-refresh")) && !File.Exists(accountLock), "Sign-out must remove renewal credentials and account identity lock files too");
                 File.WriteAllText(Path.Combine(root, "auth", "broken.json"), "{");
                 Assert(store.ReadSummary().State == SavedAccountState.Unreadable, "Corrupt is not missing");
             }
@@ -41,6 +54,7 @@ public static partial class AccountTests
             }
             await Task.CompletedTask;
             await NetworkAsync(root);
+            await LoginFlowAsync();
             await HealthNotificationAsync(root);
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }

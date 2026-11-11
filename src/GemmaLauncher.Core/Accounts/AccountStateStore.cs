@@ -98,6 +98,28 @@ public sealed class AccountStateStore(string directory) : IDisposable
         if (!Directory.Exists(AuthDirectory)) return;
         var accounts = ReadAccounts();
         if (accounts.Count > 1) throw new ConnectionFailure("multiple_accounts");
+        // CLIProxyAPI 8.0.66 keeps rotated credentials outside the account JSON.
+        // The caller has stopped the owned engine and holds the directory lease.
+        // Check every path before deleting; never follow a junction/symlink.
+        var files = accounts.Select(account => account.File + ".lock").ToList();
+        var directories = new List<string>();
+        var journal = Path.Combine(AuthDirectory, ".codex-refresh");
+        CheckPath(journal);
+        if (Directory.Exists(journal)) directories.Add(journal);
+        for (var i = 0; i < directories.Count; i++)
+        {
+            CheckPath(directories[i]);
+            foreach (var entry in Directory.EnumerateFileSystemEntries(directories[i]))
+            {
+                CheckPath(entry);
+                if ((File.GetAttributes(entry) & FileAttributes.Directory) != 0) directories.Add(entry);
+                else files.Add(entry);
+            }
+        }
+        foreach (var file in files) CheckPath(file);
+        foreach (var file in files) { CheckPath(file); File.Delete(file); }
+        for (var i = directories.Count - 1; i >= 0; i--) { CheckPath(directories[i]); Directory.Delete(directories[i]); }
+        // Keep the saved account visible if cleanup failed, so logout can be retried.
         foreach (var account in accounts) { CheckPath(account.File); File.Delete(account.File); }
     }
     public void Dispose() { ownership?.Dispose(); ownership = null; }

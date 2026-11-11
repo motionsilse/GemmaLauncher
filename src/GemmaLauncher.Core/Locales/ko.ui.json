@@ -1,4 +1,5 @@
 {
+  "ui.account.loginPortBusy": "다른 로그인 창이 로그인 응답 포트(1455)를 사용 중입니다. Codex 등 다른 앱의 진행 중인 로그인을 완료하거나 취소한 뒤 다시 로그인하세요.",
   "ui.update.available": "새 버전 {0} 다운로드",
   "ui.anis.login": "Hugging Face 로그인",
   "ui.anis.retryDownload": "다운로드 다시 시도",

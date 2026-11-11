@@ -1,4 +1,5 @@
 {
+  "ui.account.loginPortBusy": "Outro início de sessão está a usar a porta de retorno (1455). Conclua ou cancele o início de sessão no Codex ou noutra aplicação e tente novamente.",
   "ui.update.available": "Baixar nova versão {0}",
   "ui.anis.login": "Entrar no Hugging Face",
   "ui.anis.retryDownload": "Tentar baixar novamente",

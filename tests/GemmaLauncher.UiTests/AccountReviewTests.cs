@@ -75,7 +75,7 @@ public static partial class Program
         foreach (var language in Localization.Current.Languages)
         {
             Localization.Current.SetLanguage(language.Code);
-            foreach (var (code, detail) in new[] { ("session_in_use", "CatRoute"), ("port_in_use", "8319"), ("default_model_unavailable", "gpt-6-luna") })
+            foreach (var (code, detail) in new[] { ("session_in_use", "CatRoute"), ("port_in_use", "8319"), ("login_port_in_use", "1455"), ("default_model_unavailable", "gpt-6-luna") })
             {
                 account.Connect = _ => Task.FromException(new ConnectionFailure(code));
                 await vm.StartAsync();

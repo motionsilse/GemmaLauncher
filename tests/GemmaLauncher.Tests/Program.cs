@@ -7,6 +7,7 @@ try
     if (await SessionTests.TryRunChildAsync(args)) return;
     Localization.Current.SetLanguage("ko");
     if (args.Length == 2 && args[0] == "--anis-live-smoke") { await AnisLiveSmoke.RunAsync(args[1]); return; }
+    if (args.Length == 2 && args[0] == "--account-live-smoke") { await AccountLiveSmoke.RunAsync(args[1]); return; }
     if (args.Contains("--account-runtime-smoke")) { await AccountTests.RuntimeSmokeAsync(); return; }
     if (args.Contains("--account-tests")) { await AccountTests.RunAsync(); Console.WriteLine("Account tests passed."); return; }
     await AccountTests.RunAsync();

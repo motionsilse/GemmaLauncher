@@ -1,4 +1,5 @@
 {
+  "ui.account.loginPortBusy": "Log masuk lain sedang menggunakan port panggil balik (1455). Selesaikan atau batalkan log masuk dalam Codex atau aplikasi lain, kemudian cuba lagi.",
   "ui.update.available": "Muat turun versi baharu {0}",
   "ui.anis.login": "Log masuk ke Hugging Face",
   "ui.anis.retryDownload": "Cuba muat turun semula",

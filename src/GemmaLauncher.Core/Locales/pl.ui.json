@@ -1,4 +1,5 @@
 {
+  "ui.account.loginPortBusy": "Inne logowanie używa portu zwrotnego (1455). Zakończ lub anuluj logowanie w Codex lub innej aplikacji i spróbuj ponownie.",
   "ui.update.available": "Pobierz nową wersję {0}",
   "ui.anis.login": "Zaloguj się do Hugging Face",
   "ui.anis.retryDownload": "Ponów pobieranie",
