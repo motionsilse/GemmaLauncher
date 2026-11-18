@@ -78,6 +78,7 @@ public static class GatewayTests
         await gateway.StopAsync();
         await gateway.StartAsync(0, backendPort, TaskPreset.Empty);
         Assert(gateway.PublicPort > 0, "Gateway must support stop/start reuse.");
+        await PlamoRequestTests.RunAsync();
     }
     private static void Assert(bool condition, string message) { if (!condition) throw new Exception(message); }
 }

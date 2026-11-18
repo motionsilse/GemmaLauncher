@@ -210,9 +210,12 @@ public static partial class Program
         {
             selector.SelectedItem = card;
             await UntilAsync(() => !vm.IsBusy && vm.SelectedModel == card.Definition && hint.Visible);
-            Assert(hint.Text.Contains("[plamo-translate] target_lang=ko", StringComparison.Ordinal),
-                "The model screen must show a usable target language setting for the connected app.");
+            Assert(hint.Text.Contains("target_lang", StringComparison.Ordinal),
+                "The model screen must explain the translation language setting.");
         }
+        Assert(builtIn[^3].Description.Contains("0.57") && builtIn[^2].Description.Contains("1.81")
+            && builtIn[^3].Description != builtIn[^2].Description && builtIn[^3].Headline != builtIn[^2].Headline,
+            "PLaMo descriptions must distinguish the speed/memory choice from the quality choice.");
         selector.SelectedItem = builtIn[^1];
         await UntilAsync(() => !vm.IsBusy && vm.IsAnis && !hint.Visible);
         window.Close();

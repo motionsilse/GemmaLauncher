@@ -1,4 +1,5 @@
 {
+  "engine.plamo.invalidRequest": "Kiểm tra định dạng văn bản nguồn và cài đặt ngôn ngữ trong yêu cầu dịch PLaMo.",
   "engine.install.connecting": "Đang kết nối để tải {0}",
   "engine.anis.downloadTimedOut": "Quá trình tải {0} đã ngừng phản hồi. Hãy thử lại.",
   "engine.install.timedOut": "Quá thời gian chờ tải xuống. Vui lòng thử lại. Dữ liệu đã tải được giữ lại để có thể tiếp tục.",

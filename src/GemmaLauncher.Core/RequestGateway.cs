@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 namespace GemmaLauncher.Core;
 
 /// <summary>One local API/Web UI origin. Presets are captured once per request; response bytes are streamed unchanged.</summary>
-public sealed class RequestGateway : IAsyncDisposable
+public sealed class RequestGateway(bool usePlamoTranslationTemplate = false) : IAsyncDisposable
 {
     private readonly HttpClient _client = new(new HttpClientHandler { UseProxy = false, AllowAutoRedirect = false, UseCookies = false }) { Timeout = Timeout.InfiniteTimeSpan };
     private WebApplication? _application;
@@ -90,6 +90,7 @@ public sealed class RequestGateway : IAsyncDisposable
                 var input = await JsonNode.ParseAsync(context.Request.Body, cancellationToken: token).ConfigureAwait(false) as JsonObject
                     ?? throw new InvalidDataException(Localization.T("engine.library.presetRequest"));
                 var transformed = Volatile.Read(ref _preset).Apply(input, chat, nativeCompletion: path is "/completion" or "/completions");
+                if (chat && usePlamoTranslationTemplate) PlamoRequestAdapter.Apply(transformed);
                 request.Content = new StringContent(transformed.ToJsonString(), Encoding.UTF8, "application/json");
             }
             else if (context.Features.Get<IHttpRequestBodyDetectionFeature>()?.CanHaveBody == true)

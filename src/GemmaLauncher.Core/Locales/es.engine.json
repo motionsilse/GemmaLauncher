@@ -1,4 +1,5 @@
 {
+  "engine.plamo.invalidRequest": "Comprueba el formato del texto de origen y los idiomas de la solicitud de traducción de PLaMo.",
   "engine.install.connecting": "Conectando para descargar {0}",
   "engine.anis.downloadTimedOut": "La descarga de {0} dejó de responder. Vuelve a intentarlo.",
   "engine.install.timedOut": "Se agotó el tiempo de espera de la descarga. Inténtalo de nuevo. Los datos descargados se han conservado para poder continuar.",

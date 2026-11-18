@@ -1,4 +1,5 @@
 {
+  "engine.plamo.invalidRequest": "Suriin ang format ng pinagmulang teksto at mga wika sa kahilingan sa pagsasalin ng PLaMo.",
   "engine.install.connecting": "Kumokonekta para i-download ang {0}",
   "engine.anis.downloadTimedOut": "Hindi na tumutugon ang download ng {0}. Subukan muli.",
   "engine.install.timedOut": "Lumampas sa takdang oras ang pag-download. Subukan ulit. Naka-save ang na-download nang data para maipagpatuloy ito.",

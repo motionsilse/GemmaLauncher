@@ -131,7 +131,7 @@ public sealed class ServerSession : IServerSession
                 reservation.Start();
                 var backendPort = ((IPEndPoint)reservation.LocalEndpoint).Port;
                 reservation.Stop();
-                _gateway = new RequestGateway();
+                _gateway = new RequestGateway(configuration.Model.Definition.UsesPlamoTranslationTemplate);
                 var preset = configuration.Model.Definition.SupportsTaskPresets ? configuration.Preset ?? TaskPreset.Empty : TaskPreset.Empty;
                 await _gateway.StartAsync(configuration.Port, backendPort, preset, startup.Token).ConfigureAwait(false);
                 configuration = configuration with { Port = backendPort };

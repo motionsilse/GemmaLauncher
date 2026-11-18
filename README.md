@@ -72,6 +72,8 @@ The service is available on this PC only. Streaming and cancellation are support
 
 Select 0.8B or 2B and choose **Download and start**. Cat Loader downloads the official Preferred Networks GGUF and runs it with llama.cpp. The shared API address stays the same. Copy the selected model ID into your client.
 
+CatBridge requests that label the source and target languages and wrap the source text are converted automatically into PLaMo's format. 0.8B favors speed and lower memory use. 2B uses more memory and processing time to prioritize translation quality.
+
 Put the text to translate in the user message. For Korean output, put `[plamo-translate] target_lang=ko` in the client's system prompt, or send `"chat_template_kwargs": {"target_lang": "ko"}` with the text in a Chat Completions request. For Japanese output use `ja`. PLaMo can detect the source language when you set the target. With no target, it defaults to Japanese ↔ English. PLaMo's own template handles the translation settings and glossary. [PFN API examples and license](https://huggingface.co/pfnet/plamo-3-translate-2b-GGUF#translating-with-the-api)
 
 ## ANIS Trans
@@ -179,6 +181,8 @@ E2B와 E4B에는 대사·자막 번역 튜닝과 SSD를 활용한 메모리 최�
 ## PLaMo 3 Translate
 
 0.8B 또는 2B를 선택하고 **다운로드하고 시작**을 누르세요. Cat Loader가 Preferred Networks의 공식 GGUF 파일을 받아 llama.cpp로 실행합니다. 공용 로컬 API 주소에 선택한 모델 ID를 사용하세요.
+
+CatBridge가 원문·대상 언어와 구분자로 감싼 원문을 보내면 Cat Loader가 PLaMo 형식으로 자동 변환합니다. 0.8B는 빠른 응답과 낮은 메모리 부담을, 2B는 번역 품질을 우선하는 선택입니다.
 
 번역할 원문은 사용자 메시지로 보냅니다. 한국어로 번역하려면 연결 앱의 시스템 프롬프트에 `[plamo-translate] target_lang=ko`를 넣거나 Chat Completions 요청에 `"chat_template_kwargs": {"target_lang": "ko"}`를 추가하세요. 일본어 번역은 `ja`를 사용합니다. 대상 언어를 지정하면 원문 언어를 자동 감지합니다. 대상 언어를 생략하면 일본어 ↔ 영어로 동작합니다. 번역 설정과 용어집은 PLaMo 전용 템플릿에서 처리합니다. [PFN 요청 예제 및 라이선스](https://huggingface.co/pfnet/plamo-3-translate-2b-GGUF#translating-with-the-api)
 

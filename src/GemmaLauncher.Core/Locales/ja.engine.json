@@ -1,4 +1,5 @@
 {
+  "engine.plamo.invalidRequest": "PLaMo 翻訳リクエストの原文形式と言語設定を確認してください。",
   "engine.install.connecting": "{0} のダウンロードに接続中",
   "engine.anis.downloadTimedOut": "{0} のダウンロードが応答しません。もう一度お試しください。",
   "engine.install.timedOut": "ダウンロードがタイムアウトしました。もう一度お試しください。再開できるよう、ダウンロード済みのデータは保存されています。",

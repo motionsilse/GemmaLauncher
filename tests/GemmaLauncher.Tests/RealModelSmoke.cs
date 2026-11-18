@@ -157,6 +157,10 @@ public static class RealModelSmoke
             text => text.Any(character => character is >= '\uAC00' and <= '\uD7A3'));
         await TranslateAsync(["[plamo-translate] target_lang=ja", "기차는 내일 아침 일곱 시에 출발합니다."], null, "ko-ja",
             text => text.Any(character => character is >= '\u3041' and <= '\u30FF'));
+        await TranslateAsync(["Translate the supplied text.", "Source language: English\nTarget language: Korean\n<source_text>\nThe train leaves at seven.\n</source_text>"],
+            null, "en-ko-envelope", text => text.Any(character => character is >= '\uAC00' and <= '\uD7A3') && !text.Contains("source_text"));
+        await TranslateAsync(["Translate the supplied text.", "Source language: Korean\nTarget language: Japanese\n<source_text>\n기차는 일곱 시에 출발합니다.\n</source_text>"],
+            null, "ko-ja-envelope", text => text.Any(character => character is >= '\u3041' and <= '\u30FF') && !text.Contains("source_text"));
 
         async Task TranslateAsync(string[] contents, object? templateOptions, string direction, Func<string, bool> targetScript)
         {

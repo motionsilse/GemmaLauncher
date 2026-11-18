@@ -1,4 +1,5 @@
 {
+  "engine.plamo.invalidRequest": "PLaMo çeviri isteğindeki kaynak metin biçimini ve dil ayarlarını kontrol edin.",
   "engine.install.connecting": "{0} indirmesi için bağlanılıyor",
   "engine.anis.downloadTimedOut": "{0} indirmesi yanıt vermiyor. Tekrar deneyin.",
   "engine.install.timedOut": "İndirme zaman aşımına uğradı. Tekrar deneyin. İndirilen veriler, indirmeye devam edebilmeniz için korundu.",

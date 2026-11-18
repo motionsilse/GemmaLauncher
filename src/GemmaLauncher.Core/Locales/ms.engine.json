@@ -1,4 +1,5 @@
 {
+  "engine.plamo.invalidRequest": "Semak format teks sumber dan tetapan bahasa dalam permintaan terjemahan PLaMo.",
   "engine.install.connecting": "Menyambung untuk memuat turun {0}",
   "engine.anis.downloadTimedOut": "Muat turun {0} tidak lagi bertindak balas. Cuba lagi.",
   "engine.install.timedOut": "Muat turun tamat masa. Cuba lagi. Data yang telah dimuat turun disimpan supaya muat turun boleh disambung.",
