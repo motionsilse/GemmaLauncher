@@ -33,9 +33,13 @@ Windows용 단일 EXE는 PC에 설치된 .NET 10 Desktop Runtime과 ASP.NET Core
 | 12B MTP | [unsloth/gemma-4-12B-it-qat-GGUF](https://huggingface.co/unsloth/gemma-4-12B-it-qat-GGUF) |
 | HY-MT2 1.8B Q4_K_M | [unsloth/Hy-MT2-1.8B-GGUF](https://huggingface.co/unsloth/Hy-MT2-1.8B-GGUF) |
 | HY-MT2 7B Q4_K_M | [unsloth/Hy-MT2-7B-GGUF](https://huggingface.co/unsloth/Hy-MT2-7B-GGUF) |
+| PLaMo 3 Translate 0.8B Q4_K_M | [Preferred Networks · pfnet/plamo-3-translate-0.8b-GGUF](https://huggingface.co/pfnet/plamo-3-translate-0.8b-GGUF) |
+| PLaMo 3 Translate 2B Q4_K_M | [Preferred Networks · pfnet/plamo-3-translate-2b-GGUF](https://huggingface.co/pfnet/plamo-3-translate-2b-GGUF) |
 | ANIS Trans (일본어 전용) | [ANIS · jintigers/anis-trans](https://huggingface.co/jintigers/anis-trans) |
 
 기본 모델 카탈로그의 `sourceUrl`과 `licenseUrl`에도 각 출처가 기록되어 있습니다. 추가 모델은 해당 모델의 카탈로그와 원본 저장소의 조건을 확인하세요.
+
+**Built with PLaMo** · Preferred Networks. 모델을 선택해 실행하면 PFN 공식 저장소에서 해당 파일을 다운로드합니다. PLaMo 모델에는 [PLaMo Community License](https://huggingface.co/pfnet/plamo-3-translate-2b-GGUF/blob/4f672106b847200bfdc0f6af6c321cd94eba1aed/LICENSE/en)가 적용됩니다. 상업적 이용에는 PFN의 사전 등록 및 매출 요건 또는 별도 라이선스가 적용됩니다.
 
 ## ANIS Trans 선택 시 준비하는 프로그램
 

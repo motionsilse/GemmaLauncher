@@ -45,6 +45,10 @@ public sealed record ModelDefinition
     public bool HasChatTemplate { get; init; } = true;
     public string Credit { get; init; } = "";
     public string Engine { get; init; } = "llama";
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool UsesPlamoTranslationTemplate => Engine == "llama" && FamilyId == "plamo-3-translate" && Architecture == "plamo3";
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool SupportsTaskPresets => Engine == "llama" && !UsesPlamoTranslationTemplate;
     public required string ApiModelId { get; init; }
     public required string Category { get; init; }
     public required string Headline { get; init; }

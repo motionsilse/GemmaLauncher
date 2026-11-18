@@ -1,4 +1,11 @@
 {
+  "models.plamo.category": "Pagsasalin sa maraming wika",
+  "models.plamo.headline": "Magaan na pagsasalin sa maraming wika",
+  "models.plamo.description": "Sinusuportahan ng modelo ng Preferred Networks ang 53 wika, kabilang ang Korean, Japanese at English.",
+  "models.plamo.hardwareGuide": "Para magsalin sa Korean, ilagay ang [plamo-translate] target_lang=ko sa system prompt ng nakakonektang app.",
+  "models.plamo.memoryGuide": "Nakadepende ang memory sa konteksto at paggamit ng GPU.",
+  "models.plamo.benefit1": "Opisyal na 4-bit GGUF para sa lokal na pagsasalin",
+  "models.plamo.benefit2": "Tinutukoy ang pinagmulang wika kapag itinakda ang target na wika",
   "models.e2b.category": "Magaan na pagsasalin",
   "models.e2b.headline": "Magaan at mabilis na pagsasalin",
   "models.e2b.description": "Isang magaan na modelo para sa pagsasalin ng diyalogo sa laro at mga subtitle. Natural na salin na isinasaalang-alang ang usapan at tono.",

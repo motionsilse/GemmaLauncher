@@ -33,7 +33,8 @@ public sealed class ServerSession : IServerSession
     public event EventHandler<SessionStatus>? StatusChanged;
     public void UpdatePreset(TaskPreset preset)
     {
-        if (_requestedConfiguration?.Model.Definition.Engine != "anis") Volatile.Read(ref _gateway)?.UpdatePreset(preset);
+        if (_requestedConfiguration?.Model.Definition.SupportsTaskPresets == true)
+            Volatile.Read(ref _gateway)?.UpdatePreset(preset);
     }
 
     public static IReadOnlyList<string> BuildArguments(LaunchConfiguration configuration)
@@ -79,6 +80,7 @@ public sealed class ServerSession : IServerSession
             "--min-p", profile.MinP.ToString(CultureInfo.InvariantCulture),
             "--repeat-penalty", profile.RepeatPenalty.ToString(CultureInfo.InvariantCulture), "--fit", options?.GpuLayers == "auto" ? "on" : "off"
         ];
+        if (model.UsesPlamoTranslationTemplate) arguments.Add("--no-prefill-assistant");
         if (!string.IsNullOrWhiteSpace(options?.ChatTemplate)) arguments.AddRange(["--chat-template", options.ChatTemplate]);
         if (configuration.Model.MtpPath is { } mtp && options?.UseMtp != false)
         {
@@ -130,7 +132,8 @@ public sealed class ServerSession : IServerSession
                 var backendPort = ((IPEndPoint)reservation.LocalEndpoint).Port;
                 reservation.Stop();
                 _gateway = new RequestGateway();
-                await _gateway.StartAsync(configuration.Port, backendPort, configuration.Model.Definition.Engine == "anis" ? TaskPreset.Empty : configuration.Preset ?? TaskPreset.Empty, startup.Token).ConfigureAwait(false);
+                var preset = configuration.Model.Definition.SupportsTaskPresets ? configuration.Preset ?? TaskPreset.Empty : TaskPreset.Empty;
+                await _gateway.StartAsync(configuration.Port, backendPort, preset, startup.Token).ConfigureAwait(false);
                 configuration = configuration with { Port = backendPort };
                 arguments = BuildArguments(configuration);
             }

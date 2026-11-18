@@ -8,8 +8,23 @@ public static class CatalogTests
     {
         var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
         var catalog = CatalogLoader.Load(Path.Combine(root, "src/GemmaLauncher.App/Assets/catalog.json"));
-        if (catalog.Models.Length != 6 || catalog.Models[^1].Id != "anis-trans") throw new Exception("All five existing choices and ANIS must be built in, with ANIS last.");
-        if (catalog.Models.Length != 6 || catalog.Models[0].Profile.Lazy != "on" || catalog.Models[1].Profile.Lazy != "on" || catalog.Models[2].Profile.MtpDraftMax != 4) throw new Exception("Model defaults were lost.");
+        var ordered = catalog.Models.OrderBy(model => model.FamilyOrder).ToArray();
+        if (ordered.Length != 8 || !ordered.TakeLast(3).Select(model => model.Id).SequenceEqual(
+            ["plamo-3-translate-0.8b", "plamo-3-translate-2b", "anis-trans"]))
+            throw new Exception("Both PLaMo choices must appear directly above ANIS in the built-in list.");
+        foreach (var modelChoice in ordered.TakeLast(3).Take(2))
+        {
+            var configuration = new LaunchConfiguration(new(modelChoice, "model.gguf", null), "llama-server.exe", modelChoice.Profile.DefaultContext, ".", 8080);
+            var arguments = ServerSession.BuildArguments(configuration);
+            if (modelChoice.Engine != "llama" || modelChoice.Architecture != "plamo3" || modelChoice.Artifacts.Length != 1 ||
+                modelChoice.SupportsTaskPresets || !arguments.Contains("--no-prefill-assistant") || arguments.Contains("--spec-draft-model"))
+                throw new Exception("PLaMo must load the official single GGUF with its translation template and no MTP.");
+            var otherPlamo = modelChoice with { FamilyId = "user-plamo", Origin = "local" };
+            var otherArguments = ServerSession.BuildArguments(configuration with { Model = new(otherPlamo, "model.gguf", null) });
+            if (!otherPlamo.SupportsTaskPresets || otherArguments.Contains("--no-prefill-assistant"))
+                throw new Exception("A shared architecture alone must not impose the PLaMo Translate prompt contract.");
+        }
+        if (catalog.Models[0].Profile.Lazy != "on" || catalog.Models[1].Profile.Lazy != "on" || catalog.Models[2].Profile.MtpDraftMax != 4) throw new Exception("Model defaults were lost.");
         foreach (var hy in catalog.Models.Where(model => model.FamilyId == "hy-mt2"))
             if (hy.Profile.Lazy != "off" || hy.Artifacts.Length != 1 || hy.Profile.MtpDraftMax != 0 || hy.Profile.TopP != .6 || hy.Profile.Temperature != .7 || hy.Profile.RepeatPenalty != 1.05)
                 throw new Exception("HY-MT2 must retain independent translation defaults without MTP.");

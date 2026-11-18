@@ -1,6 +1,6 @@
 # Cat Loader by Drugged Cat
 
-**Cat Loader 0.1.0** starts a new release series, replacing the earlier Gemma Launcher and Cat Loader 0.4.x releases. Existing model files, settings and account data stay in their current locations. Download this release manually when moving from 0.4.x, because its version number is lower. Future releases appear in an in-app download notice.
+**Cat Loader 0.1.1** adds PLaMo 3 Translate 0.8B and 2B. The in-app download notice links to the new release from 0.1.0. When moving from 0.4.x, download the new EXE manually. Existing model files, settings and account data stay in their current locations.
 
 Prepare an OpenAI-compatible API for other apps from one small Windows launcher. Choose **Local models** to run a model on your PC, or **ChatGPT connection** to connect a ChatGPT account through the optional proxy engine. Each has its own address, status and stop button.
 
@@ -8,7 +8,7 @@ Local models use RAM/VRAM. ChatGPT needs internet access and shares the account'
 
 ## ChatGPT connection
 
-Open **ChatGPT connection** and choose **Sign in to ChatGPT**. If needed, Cat Loader downloads and verifies the official CLIProxyAPI v8.0.27 engine before opening sign-in in your browser. Complete sign-in yourself, then choose **Start server**. Login prepares the saved account; the separate server button opens the local API. **Stop server** keeps the login, while **Sign out** confirms and removes the saved login.
+Open **ChatGPT connection** and choose **Sign in to ChatGPT**. If needed, Cat Loader downloads and verifies the official CLIProxyAPI engine before opening sign-in in your browser. Complete sign-in yourself, then choose **Start server**. Login prepares the saved account. The separate server button opens the local API. **Stop server** keeps the login, while **Sign out** confirms and removes the saved login.
 
 Copy the API address (`http://127.0.0.1:8319/v1`), local API key and model (`gpt-6-luna`) into your app. **Check usage** shows remaining quota for each period and its reset time. **Connection diagnostics → Test with a real request** sends one inference request and can count toward usage. A saved login and a running API are separate states. The default model is never silently replaced if unavailable.
 
@@ -18,14 +18,14 @@ Closing the window follows the common tray setting for both services; **Full exi
 
 1. Download the Windows x64 EXE from the [latest stable release](https://github.com/motionsilse/GemmaLauncher/releases/latest).
 2. Install the **.NET 10 Desktop Runtime (x64)** and **ASP.NET Core Runtime 10 (x64)**, then run the EXE. The .NET 10 SDK also includes both. .NET 8 alone is insufficient. No ZIP extraction or companion folder is needed.
-3. Choose one of the **six built-in models** on the main screen. Choose **Download and start**, or **Start server** if its files are ready. No library registration is needed.
+3. Choose one of the **eight built-in models** on the main screen. Choose **Download and start**, or **Start server** if its files are ready. No library registration is needed.
 4. Copy the API address and model name into your connected app. GGUF models also offer a Web UI under advanced run settings.
 
 The first download needs internet access and sufficient disk space. Keep your graphics card's Vulkan driver current. If Microsoft Visual C++ x64 runtime components are missing, the launcher links to Microsoft's installer; that installer may require administrator approval.
 
 Runtime installers: [Microsoft .NET downloads](https://dotnet.microsoft.com/en-us/download/dotnet/10.0). Choose both Windows x64 runtimes; the Desktop installer includes the base .NET runtime. See [Microsoft's installation guide](https://learn.microsoft.com/en-us/dotnet/core/install/windows#choose-the-correct-runtime).
 
-All six built-in choices remain visible before downloading. The first launch selects E2B without starting a download. A check marks prepared files separately from each model's purpose. **Add model** connects your own GGUF files or public Hugging Face repositories. Stop and cancel remain available while editing presets or opening settings dialogs.
+All eight built-in choices are available before downloading. The first launch selects E2B without starting a download. A check marks prepared files separately from each model's purpose. **Add model** connects your own GGUF files or public Hugging Face repositories. Stop and cancel remain available while editing presets or opening settings dialogs.
 
 ## Choose by purpose
 
@@ -36,6 +36,8 @@ All six built-in choices remain visible before downloading. The first launch sel
 | HY-MT2 · 1.8B Q4_K_M | Responsive multilingual translation with a smaller memory footprint | 1.13 GB |
 | HY-MT2 · 7B Q4_K_M | Quality-focused translation of complex sentences and context | 4.62 GB |
 | Gemma 4 · 12B Heretic StyleTune | Translation, writing, roleplay and natural conversation | 8.30 GB |
+| PLaMo 3 Translate · 0.8B Q4_K_M | Lightweight multilingual translation | 0.57 GB |
+| PLaMo 3 Translate · 2B Q4_K_M | Multilingual translation with more emphasis on quality | 1.81 GB |
 | ANIS Trans (Japanese only) | Specialized Japanese ↔ Korean translation | 0.30 GB |
 
 E2B and E4B combine dialogue/subtitle tuning with SSD-backed memory optimization. The 12B model combines uncensored tuning for freer expression with StyleTune for a distinctive voice. These three Gemma configurations include their own MTP acceleration files. HY-MT2 uses its own translation settings and runs without MTP.
@@ -66,9 +68,15 @@ Saved instructions and terminology apply to both Web UI and API requests. Client
 
 The service is available on this PC only. Streaming and cancellation are supported. Text presets require text prompts or user messages; raw token-only requests can use **Model defaults**. If port 8080 is occupied, stop the other server first.
 
+## PLaMo 3 Translate
+
+Select 0.8B or 2B and choose **Download and start**. Cat Loader downloads the official Preferred Networks GGUF and runs it with llama.cpp. The shared API address stays the same. Copy the selected model ID into your client.
+
+Put the text to translate in the user message. For Korean output, put `[plamo-translate] target_lang=ko` in the client's system prompt, or send `"chat_template_kwargs": {"target_lang": "ko"}` with the text in a Chat Completions request. For Japanese output use `ja`. PLaMo can detect the source language when you set the target. With no target, it defaults to Japanese ↔ English. PLaMo's own template handles the translation settings and glossary. [PFN API examples and license](https://huggingface.co/pfnet/plamo-3-translate-2b-GGUF#translating-with-the-api)
+
 ## ANIS Trans
 
-[ANIS · jintigers](https://huggingface.co/jintigers/anis-trans) provides the sixth model and its [official API program](https://github.com/jintigers/anis-trans). Select it and choose **Download and start**. When Hugging Face requires access, sign in and authorize Cat Loader in the browser. Cat Loader then downloads and verifies the files and starts ANIS. Complete any access request on the official model page. You can also select a folder containing files you already downloaded.
+[ANIS · jintigers](https://huggingface.co/jintigers/anis-trans) provides the Japanese ↔ Korean model and its [official API program](https://github.com/jintigers/anis-trans). Select it and choose **Download and start**. When Hugging Face requires access, sign in and authorize Cat Loader in the browser. Cat Loader then downloads and verifies the files and starts ANIS. Complete any access request on the official model page. You can also select a folder containing files you already downloaded.
 
 The launcher prepares a private Python/CTranslate2 environment and runs the upstream API on the shared local model address. Use `anis-trans:auto` for automatic Japanese ↔ Korean direction. ANIS uses its own translation engine and its [separate license](https://github.com/jintigers/anis-trans/blob/1165f0cda25a9afdd0c8e0491038e949d9446e6e/LICENSE-ko.md) applies to the model and official program. Commercial use requires a separate agreement with ANIS.
 
@@ -104,7 +112,7 @@ Use `--data-dir "D:\GemmaLauncherData" --model-folder "D:\Models"` for custom da
 
 # Cat Loader by Drugged Cat
 
-**Cat Loader 0.1.0**부터 릴리즈 번호를 새로 시작합니다. 기존 Gemma Launcher와 Cat Loader 0.4.x 릴리즈를 대체하며 모델 파일·설정·계정 데이터의 저장 위치는 유지합니다. 0.4.x에서 넘어올 때는 번호가 낮아졌으므로 이번 EXE를 직접 받아 실행하세요. 이후 새 버전은 앱 안의 다운로드 알림으로 안내합니다.
+**Cat Loader 0.1.1**에 PLaMo 3 Translate 0.8B와 2B를 추가했습니다. 0.1.0에서는 앱의 업데이트 알림에서 새 릴리즈를 열 수 있습니다. 0.4.x에서 넘어올 때는 새 EXE를 직접 받아 실행하세요. 모델 파일·설정·계정 데이터는 기존 위치에서 계속 사용합니다.
 
 AI 모델의 설치부터 실행·관리까지, 클릭 한 번으로 시작하세요. 번역·글쓰기·대화에 맞는 모델을 고르면 필요한 파일을 준비하고 서버를 켭니다. **브라우저 대화 화면과 OpenAI 호환 API**를 함께 제공하므로 CatBridge 같은 앱에도 바로 연결할 수 있습니다.
 
@@ -120,12 +128,12 @@ Windows EXE 하나로 시작하고, 원하는 모델을 추가하고, 저장한 
 
 1. [최신 정식 릴리즈](https://github.com/motionsilse/GemmaLauncher/releases/latest)에서 Windows x64 EXE를 내려받습니다.
 2. **.NET 10 Desktop Runtime(x64)**과 **ASP.NET Core Runtime 10(x64)**을 설치한 뒤 EXE를 실행합니다. .NET 10 SDK에도 둘 다 포함됩니다. .NET 8만 설치되어 있으면 실행할 수 없습니다. 압축 해제나 별도 폴더는 필요하지 않습니다.
-3. 메인 화면에 펼쳐진 **기본 모델 6개** 중 하나를 고르고 **다운로드하고 시작**을 누르세요. 파일이 있으면 **서버 켜기**로 바로 실행합니다. 별도 등록은 필요하지 않습니다.
+3. 메인 화면에서 **기본 모델 8개** 중 하나를 고르고 **다운로드하고 시작**을 누르세요. 파일이 있으면 **서버 켜기**로 바로 실행합니다. 별도 등록은 필요하지 않습니다.
 4. 같은 화면의 API 주소와 모델 이름을 복사해 다른 앱에 입력하세요. GGUF 모델은 **고급 실행 설정**에서 Web UI도 열 수 있습니다.
 
 첫 다운로드에는 인터넷과 저장 공간이 필요합니다. 그래픽카드의 Vulkan 드라이버를 최신 상태로 유지하세요. Microsoft Visual C++ x64 실행 구성 요소가 없으면 공식 설치 프로그램을 안내합니다. 해당 설치에는 관리자 승인이 필요할 수 있습니다.
 
-기본 모델 6개는 다운로드 여부와 관계없이 표시됩니다. 처음에는 E2B를 선택해 안내하며 자동으로 받거나 실행하지 않습니다. 모델 용도는 설명으로, 파일 준비 상태는 별도 체크로 구분합니다. **모델 추가**에서 사용자 GGUF를 연결할 수 있습니다. 프롬프트 편집 화면과 설정 대화상자에서도 다운로드 취소·서버 종료를 사용할 수 있습니다.
+기본 모델 8개는 다운로드 여부와 관계없이 표시됩니다. 처음에는 E2B를 선택해 안내하며 자동으로 받거나 실행하지 않습니다. 모델 용도는 설명으로, 파일 준비 상태는 별도 체크로 구분합니다. **모델 추가**에서 사용자 GGUF를 연결할 수 있습니다. 프롬프트 편집 화면과 설정 대화상자에서도 다운로드 취소·서버 종료를 사용할 수 있습니다.
 
 ## 용도에 맞게 고르세요
 
@@ -136,6 +144,8 @@ Windows EXE 하나로 시작하고, 원하는 모델을 추가하고, 저장한 
 | HY-MT2 · 1.8B Q4_K_M | 메모리 부담을 줄이면서 다국어 번역을 빠르게 사용할 때 | 1.13 GB |
 | HY-MT2 · 7B Q4_K_M | 복잡한 문장과 문맥의 정확성·표현력을 중시할 때 | 4.62 GB |
 | Gemma 4 · 12B Heretic StyleTune | 번역, 글쓰기, 롤플레잉과 사람 같은 자연스러운 대화 | 8.30 GB |
+| PLaMo 3 Translate · 0.8B Q4_K_M | 가벼운 다국어 번역 | 0.57 GB |
+| PLaMo 3 Translate · 2B Q4_K_M | 품질을 조금 더 중시하는 다국어 번역 | 1.81 GB |
 | ANIS Trans (일본어 전용) | 일본어 ↔ 한국어에 특화된 번역 | 0.30 GB |
 
 E2B와 E4B에는 대사·자막 번역 튜닝과 SSD를 활용한 메모리 최적화를 적용했습니다. 12B에는 무검열 튜닝으로 자유로운 표현을, 스타일 튜닝으로 말투의 개성을 더했습니다. Gemma 세 구성에는 각각 맞는 MTP 가속용 파일이 포함됩니다. HY-MT2는 별도의 번역 설정을 사용하며 MTP 없이 실행합니다.
@@ -166,9 +176,15 @@ E2B와 E4B에는 대사·자막 번역 튜닝과 SSD를 활용한 메모리 최�
 
 이 PC 안에서만 접속할 수 있으며 스트리밍과 취소를 지원합니다. 텍스트 프리셋은 글 또는 사용자 메시지가 필요합니다. 숫자 토큰만 보내는 요청에는 **모델 기본값**을 사용하세요. 다른 프로그램이 8080 포트를 사용 중이면 해당 서버를 먼저 종료하세요.
 
+## PLaMo 3 Translate
+
+0.8B 또는 2B를 선택하고 **다운로드하고 시작**을 누르세요. Cat Loader가 Preferred Networks의 공식 GGUF 파일을 받아 llama.cpp로 실행합니다. 공용 로컬 API 주소에 선택한 모델 ID를 사용하세요.
+
+번역할 원문은 사용자 메시지로 보냅니다. 한국어로 번역하려면 연결 앱의 시스템 프롬프트에 `[plamo-translate] target_lang=ko`를 넣거나 Chat Completions 요청에 `"chat_template_kwargs": {"target_lang": "ko"}`를 추가하세요. 일본어 번역은 `ja`를 사용합니다. 대상 언어를 지정하면 원문 언어를 자동 감지합니다. 대상 언어를 생략하면 일본어 ↔ 영어로 동작합니다. 번역 설정과 용어집은 PLaMo 전용 템플릿에서 처리합니다. [PFN 요청 예제 및 라이선스](https://huggingface.co/pfnet/plamo-3-translate-2b-GGUF#translating-with-the-api)
+
 ## ANIS Trans
 
-여섯 번째 모델은 [ANIS · jintigers](https://huggingface.co/jintigers/anis-trans)의 일본어 ↔ 한국어 전용 모델입니다. **다운로드하고 시작**을 누르세요. Hugging Face가 접근을 확인해야 하면 브라우저에서 로그인하고 Cat Loader의 다운로드 권한을 승인하세요. 앱이 필요한 파일을 내려받아 검증하고 실행합니다. 모델 접근 확인이 필요하면 공식 모델 페이지에서 진행하세요. 이미 받은 파일도 다운로드 폴더를 선택해 사용할 수 있습니다.
+마지막 모델은 [ANIS · jintigers](https://huggingface.co/jintigers/anis-trans)의 일본어 ↔ 한국어 전용 모델입니다. **다운로드하고 시작**을 누르세요. Hugging Face가 접근을 확인해야 하면 브라우저에서 로그인하고 Cat Loader의 다운로드 권한을 승인하세요. 앱이 필요한 파일을 내려받아 검증하고 실행합니다. 모델 접근 확인이 필요하면 공식 모델 페이지에서 진행하세요. 이미 받은 파일도 다운로드 폴더를 선택해 사용할 수 있습니다.
 
 전용 Python/CTranslate2 실행 환경을 준비해 [공식 API 프로그램](https://github.com/jintigers/anis-trans)을 실행합니다. 공용 로컬 API 주소에 `anis-trans:auto`를 입력하면 입력 문장에 따라 번역 방향을 고릅니다. 모델과 공식 프로그램에는 [별도 라이선스](https://github.com/jintigers/anis-trans/blob/1165f0cda25a9afdd0c8e0491038e949d9446e6e/LICENSE-ko.md)가 적용되며 영리 이용은 ANIS와 별도 계약이 필요합니다.
 

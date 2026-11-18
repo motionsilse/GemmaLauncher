@@ -1,4 +1,11 @@
 {
+  "models.plamo.category": "Çok dilli çeviri",
+  "models.plamo.headline": "Hafif çok dilli çeviri",
+  "models.plamo.description": "Preferred Networks çeviri modeli Korece, Japonca ve İngilizce dahil 53 dili destekler.",
+  "models.plamo.hardwareGuide": "Koreceye çevirmek için bağlı uygulamanın sistem istemine [plamo-translate] target_lang=ko yazın.",
+  "models.plamo.memoryGuide": "Bellek kullanımı bağlama ve GPU’ya aktarılan katmanlara bağlıdır.",
+  "models.plamo.benefit1": "Yerel çeviri için resmî 4 bit GGUF",
+  "models.plamo.benefit2": "Hedef dil belirtildiğinde kaynak dili algılar",
   "models.e2b.category": "Hafif çeviri",
   "models.e2b.headline": "Hafif ve hızlı çeviri",
   "models.e2b.description": "Oyun diyalogları ve altyazılar için hafif bir çeviri modeli. Konuşmayı ve üslubu dikkate alan doğal çeviriler.",

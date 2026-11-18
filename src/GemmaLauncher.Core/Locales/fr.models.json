@@ -1,4 +1,11 @@
 {
+  "models.plamo.category": "Traduction multilingue",
+  "models.plamo.headline": "Traduction multilingue légère",
+  "models.plamo.description": "Le modèle de traduction de Preferred Networks prend en charge 53 langues, dont le coréen, le japonais et l’anglais.",
+  "models.plamo.hardwareGuide": "Pour traduire en coréen, ajoutez [plamo-translate] target_lang=ko au prompt système de l’application connectée.",
+  "models.plamo.memoryGuide": "La mémoire dépend du contexte et des couches placées sur le GPU.",
+  "models.plamo.benefit1": "GGUF officiel à 4 bits pour la traduction locale",
+  "models.plamo.benefit2": "Détecte la langue source lorsque la langue cible est précisée",
   "models.e2b.category": "Traduction légère",
   "models.e2b.headline": "Traduction légère et rapide",
   "models.e2b.description": "Un modèle de traduction léger pour les dialogues de jeux et les sous-titres. Des traductions naturelles qui tiennent compte de la conversation et du ton.",

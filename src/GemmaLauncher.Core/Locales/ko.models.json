@@ -1,4 +1,11 @@
 {
+  "models.plamo.category": "다국어 번역",
+  "models.plamo.headline": "가벼운 다국어 번역",
+  "models.plamo.description": "Preferred Networks가 개발한 번역 모델로 한국어·일본어·영어를 포함해 53개 언어를 지원합니다.",
+  "models.plamo.hardwareGuide": "한국어로 번역하려면 연결 앱의 시스템 프롬프트에 [plamo-translate] target_lang=ko를 넣으세요.",
+  "models.plamo.memoryGuide": "메모리 사용량은 대화 길이와 GPU 할당에 따라 달라집니다.",
+  "models.plamo.benefit1": "로컬 번역용 공식 4비트 GGUF",
+  "models.plamo.benefit2": "대상 언어를 지정하면 원문 언어를 자동 감지",
   "models.e2b.category": "경량 번역",
   "models.e2b.headline": "가볍고 빠른 번역",
   "models.e2b.description": "게임 대사와 영상 자막을 위한 경량 번역 모델. 앞선 대화와 말투를 고려한 자연스러운 번역을 가볍게 시작하세요.",

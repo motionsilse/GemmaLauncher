@@ -1,4 +1,11 @@
 {
+  "models.plamo.category": "Mehrsprachige Übersetzung",
+  "models.plamo.headline": "Leichtgewichtige mehrsprachige Übersetzung",
+  "models.plamo.description": "Das Übersetzungsmodell von Preferred Networks unterstützt 53 Sprachen, darunter Koreanisch, Japanisch und Englisch.",
+  "models.plamo.hardwareGuide": "Zum Übersetzen ins Koreanische tragen Sie [plamo-translate] target_lang=ko in den Systemprompt der verbundenen App ein.",
+  "models.plamo.memoryGuide": "Der Speicherbedarf hängt von Kontext und GPU-Auslagerung ab.",
+  "models.plamo.benefit1": "Offizielles 4-Bit-GGUF für lokale Übersetzungen",
+  "models.plamo.benefit2": "Erkennt die Ausgangssprache bei Angabe der Zielsprache",
   "models.e2b.category": "Leichte Übersetzung",
   "models.e2b.headline": "Leichte, schnelle Übersetzung",
   "models.e2b.description": "Ein leichtes Übersetzungsmodell für Spieldialoge und Untertitel. Natürliche Übersetzungen, die den Gesprächsverlauf und Ton berücksichtigen.",

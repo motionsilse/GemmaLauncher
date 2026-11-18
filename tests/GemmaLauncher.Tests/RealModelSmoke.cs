@@ -10,23 +10,31 @@ namespace GemmaLauncher.Tests;
 // Explicit opt-in integration run. This never runs as part of the ordinary test suite.
 public static class RealModelSmoke
 {
-    public static async Task RunAsync()
+    public static async Task RunAsync(string? testDirectory = null)
     {
         var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
         var catalog = CatalogLoader.Load(Path.Combine(root, "src/GemmaLauncher.App/Assets/catalog.json"));
-        var paths = new LauncherPaths(Path.Combine(root, ".superpowers/launcher-smoke"));
+        var paths = new LauncherPaths(testDirectory ?? Path.Combine(root, ".superpowers/launcher-smoke"));
         Directory.CreateDirectory(paths.Root);
         var resultsPath = Path.Combine(paths.Root, "smoke-results.json");
         var progress = new ConsoleProgress();
-        using var installer = new InstallationService(paths, searchDirectories:
-            [Path.Combine(root, ".superpowers/benchmarks/2026-09-05-models/models")]);
+        var cacheDirectories = new[]
+        {
+            new LauncherPaths().Models,
+            Path.Combine(root, ".superpowers/benchmarks/2026-09-05-models/models"),
+            Path.Combine(root, "artifacts/cat-loader/translation-benchmark-20261111/cache/models")
+        };
+        var cachedFolders = cacheDirectories.Where(Directory.Exists)
+            .SelectMany(directory => Directory.EnumerateFiles(directory, "*.gguf", SearchOption.AllDirectories))
+            .Select(Path.GetDirectoryName).OfType<string>();
+        using var installer = new InstallationService(paths, searchDirectories: cachedFolders);
         var report = new SmokeReport { StartedAt = DateTimeOffset.Now, Runtime = catalog.Runtime };
         await WriteReportAsync();
         try
         {
             report.RuntimeExecutable = await installer.EnsureRuntimeAsync(catalog.Runtime, progress);
             await WriteReportAsync();
-            foreach (var definition in catalog.Models)
+            foreach (var definition in catalog.Models.Where(model => model.Engine == "llama").OrderBy(model => model.Architecture != "plamo3"))
             {
                 var result = new ModelResult
                 {
@@ -47,7 +55,12 @@ public static class RealModelSmoke
                     result.ModelPath = installed.ModelPath;
                     result.MtpPath = installed.MtpPath;
                     var startup = Stopwatch.StartNew();
-                    await session.StartAsync(new(installed, report.RuntimeExecutable, definition.Profile.DefaultContext, paths.Logs, result.Port));
+                    var plamo = definition.Architecture == "plamo3";
+                    await session.StartAsync(new(installed, report.RuntimeExecutable, definition.Profile.DefaultContext, paths.Logs, result.Port)
+                    {
+                        EnableGateway = true,
+                        Preset = plamo ? TaskPreset.Empty with { Prompt = "This preset must not become part of the translation." } : TaskPreset.Empty
+                    });
                     result.StartupSeconds = startup.Elapsed.TotalSeconds;
                     result.ProcessId = session.Status.ProcessId;
                     using var client = new HttpClient(new HttpClientHandler { UseProxy = false, AllowAutoRedirect = false })
@@ -58,7 +71,19 @@ public static class RealModelSmoke
                     result.ModelsResponse = models.RootElement.Clone();
                     if (!models.RootElement.GetProperty("data").EnumerateArray().Any(model => model.GetProperty("id").GetString() == definition.ApiModelId))
                         throw new InvalidOperationException("The live API does not advertise the configured model id.");
-                    var isTranslation = definition.Id.Contains("translate", StringComparison.OrdinalIgnoreCase);
+                    if (plamo)
+                    {
+                        await CheckPlamoAsync(client, definition, result);
+                        if (result.ProcessId is int pid)
+                        {
+                            using var metrics = new ProcessMetrics(pid);
+                            result.Memory = metrics.Read();
+                        }
+                        result.Status = "passed";
+                        Console.WriteLine($"Completed: {definition.Id}, startup {result.StartupSeconds:0.00}s, both Japanese/Korean directions");
+                        continue;
+                    }
+                    var isTranslation = definition.FamilyId is "gemma-translation" or "hy-mt2";
                     var messages = isTranslation
                         ? new[]
                         {
@@ -126,6 +151,39 @@ public static class RealModelSmoke
         }
     }
 
+    private static async Task CheckPlamoAsync(HttpClient client, ModelDefinition definition, ModelResult result)
+    {
+        await TranslateAsync(["列車は明日の朝七時に出発します。"], new { target_lang = "ko" }, "ja-ko",
+            text => text.Any(character => character is >= '\uAC00' and <= '\uD7A3'));
+        await TranslateAsync(["[plamo-translate] target_lang=ja", "기차는 내일 아침 일곱 시에 출발합니다."], null, "ko-ja",
+            text => text.Any(character => character is >= '\u3041' and <= '\u30FF'));
+
+        async Task TranslateAsync(string[] contents, object? templateOptions, string direction, Func<string, bool> targetScript)
+        {
+            var messages = contents.Select((text, i) => new { role = i == contents.Length - 1 ? "user" : "system", content = text });
+            var request = new Dictionary<string, object>
+            {
+                ["model"] = definition.ApiModelId,
+                ["messages"] = messages,
+                ["max_tokens"] = 128
+            };
+            if (templateOptions is not null) request["chat_template_kwargs"] = templateOptions;
+            var timer = Stopwatch.StartNew();
+            using var response = await client.PostAsJsonAsync("v1/chat/completions", request);
+            var body = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode) throw new IOException($"Translation failed ({(int)response.StatusCode}): {body}");
+            using var document = JsonDocument.Parse(body);
+            var choice = document.RootElement.GetProperty("choices")[0];
+            var output = choice.GetProperty("message").GetProperty("content").GetString();
+            if (choice.GetProperty("finish_reason").GetString() != "stop" || string.IsNullOrWhiteSpace(output) ||
+                !targetScript(output) || output.Contains("<|plamo:") || output.Contains("preset", StringComparison.OrdinalIgnoreCase))
+                throw new IOException($"Expected clean {direction} translation: {output}");
+            result.Translations.Add(new(direction, output, timer.Elapsed.TotalMilliseconds));
+        }
+    }
+
+    private sealed record TranslationResult(string Direction, string Output, double Milliseconds);
+
     private static int AvailablePort()
     {
         using var listener = new TcpListener(IPAddress.Loopback, 0);
@@ -178,6 +236,8 @@ public static class RealModelSmoke
         public int? ProcessId { get; set; }
         public double? StartupSeconds { get; set; }
         public double? CompletionSeconds { get; set; }
+        public List<TranslationResult> Translations { get; } = [];
+        public ProcessMemorySnapshot? Memory { get; set; }
         public JsonElement? ModelsResponse { get; set; }
         public JsonElement? Request { get; set; }
         public JsonElement? Response { get; set; }

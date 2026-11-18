@@ -1,4 +1,11 @@
 {
+  "models.plamo.category": "Multilingual translation",
+  "models.plamo.headline": "Lightweight multilingual translation",
+  "models.plamo.description": "Preferred Networks’ translation model supports Korean, Japanese, English and 50 other languages.",
+  "models.plamo.hardwareGuide": "For Korean output, put [plamo-translate] target_lang=ko in the connected app’s system prompt.",
+  "models.plamo.memoryGuide": "Memory depends on context and GPU offload.",
+  "models.plamo.benefit1": "Official 4-bit GGUF for local translation",
+  "models.plamo.benefit2": "Detects the source language when you specify the target",
   "models.e2b.category": "Lightweight translation",
   "models.e2b.headline": "Lightweight, fast translation",
   "models.e2b.description": "A lightweight translation model for game dialogue and subtitles. Natural translations that take the conversation and tone into account.",

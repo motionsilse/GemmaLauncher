@@ -19,7 +19,7 @@ try
     await HuggingFaceTests.RunAsync();
     Console.WriteLine("Hugging Face tests passed.");
     if (args.Contains("--localization-tests")) { await LocalizationTests.RunAsync(); Console.WriteLine("Localization tests passed."); return; }
-    if (args.Contains("--real-model-smoke")) { await RealModelSmoke.RunAsync(); return; }
+    if (args.Length is 1 or 2 && args[0] == "--real-model-smoke") { await RealModelSmoke.RunAsync(args.ElementAtOrDefault(1)); return; }
     if (args.Contains("--session-tests")) { await SessionTests.RunAsync(); Console.WriteLine("Session tests passed."); return; }
     await ReleaseUpdateTests.RunAsync();
     Console.WriteLine("Release update tests passed.");

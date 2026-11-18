@@ -1,4 +1,11 @@
 {
+  "models.plamo.category": "Tłumaczenie wielojęzyczne",
+  "models.plamo.headline": "Lekki model do tłumaczenia wielojęzycznego",
+  "models.plamo.description": "Model tłumaczeniowy Preferred Networks obsługuje 53 języki, w tym koreański, japoński i angielski.",
+  "models.plamo.hardwareGuide": "Aby tłumaczyć na koreański, wpisz [plamo-translate] target_lang=ko w instrukcji systemowej połączonej aplikacji.",
+  "models.plamo.memoryGuide": "Zużycie pamięci zależy od kontekstu i warstw przeniesionych na GPU.",
+  "models.plamo.benefit1": "Oficjalny 4-bitowy GGUF do tłumaczenia lokalnego",
+  "models.plamo.benefit2": "Rozpoznaje język źródłowy po wskazaniu języka docelowego",
   "models.e2b.category": "Lekkie tłumaczenie",
   "models.e2b.headline": "Lekkie i szybkie tłumaczenie",
   "models.e2b.description": "Lekki model tłumaczenia dialogów w grach i napisów. Naturalne tłumaczenia uwzględniające przebieg rozmowy i ton wypowiedzi.",

@@ -199,9 +199,22 @@ public static partial class Program
         var vm = migrated.ViewModel;
         await UntilAsync(() => !vm.IsBusy);
         using var window = new MainWindow(vm); window.Show(); await Task.Delay(40);
-        var selector = Controls(window).Single(c => c.Name == "RunModelSelector");
-        var count = selector is ListBox list ? list.Items.Count : ((ComboBox)selector).Items.Count;
-        Assert(count == vm.Models.Count, "Every bundled model must remain discoverable even with only one previously registered model.");
+        var selector = Controls(window).OfType<ListBox>().Single(c => c.Name == "RunModelSelector");
+        Assert(selector.Items.Count == vm.Models.Count, "Every bundled model must remain discoverable even with only one previously registered model.");
+        var builtIn = selector.Items.Cast<ModelPresentation>().Where(card => !card.IsUserModel).ToArray();
+        Assert(builtIn.TakeLast(3).Select(card => card.Definition.Id).SequenceEqual(
+            ["plamo-3-translate-0.8b", "plamo-3-translate-2b", "anis-trans"]),
+            "The visible PLaMo options must be consecutive and directly above ANIS.");
+        var hint = Controls(window).Single(control => control.Name == "RunTranslationHint");
+        foreach (var card in builtIn.TakeLast(3).Take(2))
+        {
+            selector.SelectedItem = card;
+            await UntilAsync(() => !vm.IsBusy && vm.SelectedModel == card.Definition && hint.Visible);
+            Assert(hint.Text.Contains("[plamo-translate] target_lang=ko", StringComparison.Ordinal),
+                "The model screen must show a usable target language setting for the connected app.");
+        }
+        selector.SelectedItem = builtIn[^1];
+        await UntilAsync(() => !vm.IsBusy && vm.IsAnis && !hint.Visible);
         window.Close();
     }
     private static async Task TestUnsavedPresetIsNotRegisteredAsync()
@@ -218,7 +231,7 @@ public static partial class Program
         Assert(!typeof(MainWindow).Assembly.GetReferencedAssemblies().Any(name => name.Name is "PresentationFramework" or "PresentationCore" or "WindowsBase"), "The launcher must not reference WPF assemblies.");
         var expected = CatalogLoader.Load(Path.Combine(Root, "src/GemmaLauncher.App/Assets/catalog.json"));
         var bundled = BundledResources.LoadCatalog();
-        Assert(bundled.Models.Length == 6 && bundled.Models[^1].Engine == "anis", "A standalone launcher must contain all five models and ANIS last.");
+        Assert(bundled.Models.Length == 8 && bundled.Models[^1].Engine == "anis", "A standalone launcher must contain eight models with ANIS last.");
         Assert(JsonSerializer.Serialize(expected, CatalogLoader.JsonOptions) == JsonSerializer.Serialize(bundled, CatalogLoader.JsonOptions),
             "Bundling must preserve every model/runtime URL, hash, profile and display field from the source catalog.");
         Assert(typeof(BundledResources).Assembly.GetManifestResourceNames().Contains("GemmaLauncher.Catalog.json"),
@@ -571,7 +584,9 @@ public static partial class Program
         await using var fixture = new Fixture();
         var vm = fixture.ViewModel;
         await UntilAsync(() => !vm.IsBusy);
-        Assert(vm.Families.Count == 4, "The catalog must retain Gemma, HY-MT2 and ANIS families without hiding their individual models.");
+        Assert(vm.Families.Count == 5, "The catalog must retain the existing families and add PLaMo.");
+        var plamo = vm.Families.Single(family => family.Name == "PLaMo 3 Translate");
+        Assert(plamo.Variants.Select(variant => variant.Definition.Variant).SequenceEqual(["0.8B", "2B"]), "PLaMo must expose both sizes.");
         var hy = vm.Families.Single(family => family.Name == "HY-MT2");
         Assert(hy.Variants.Count == 2, "HY-MT2 must offer only 1.8B and 7B.");
         var lightweightCopy = hy.Selected.Headline;

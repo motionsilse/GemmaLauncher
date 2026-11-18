@@ -33,6 +33,9 @@ public sealed class LauncherWorkspace : LauncherPage
         var category = Value(selected, () => vm.SelectedPresentation?.Category ?? ""); category.ForeColor = Ui.Green; Ui.SetFont(category, Ui.SecondaryFontSize, FontStyle.Bold);
         var title = Value(selected, () => vm.SelectedPresentation?.DisplayName ?? ""); Ui.SetFont(title, 18, FontStyle.Bold);
         Value(selected, () => vm.SelectedPresentation?.Description ?? "");
+        var translationHint = Value(selected, () => vm.SelectedPresentation?.HardwareGuide ?? "");
+        translationHint.Name = "RunTranslationHint";
+        Bindings.Visible(translationHint, () => vm.SelectedModel?.UsesPlamoTranslationTemplate == true);
         var resourceTitle = Heading(selected,"ui.resources.title"); Ui.SetFont(resourceTitle,12,FontStyle.Bold);
         var resource = Value(selected,()=>vm.SelectedPresentation?.ResourceGuide ?? ""); resource.Name="RunResourceEstimate";
         var specs = Ui.Label(); specs.Name="RunLiveMemory"; Bindings.MemoryText(specs, () => vm.MemoryUsageLabel + "\n" + vm.MemoryUsage); Bindings.Visible(specs,()=>vm.CanOpenWebUi); Ui.Add(selected, specs); specs.ForeColor = Ui.Muted; specs.Margin = new Padding(0, 4, 0, 6);
@@ -50,7 +53,7 @@ public sealed class LauncherWorkspace : LauncherPage
         Bindings.Enabled(presets, () => vm.CanChangePreset); presets.Margin = new Padding(0, 6, 10, 0); presetRow.Controls.Add(presets, 0, 0);
         var editPreset = Ui.Button(); Bindings.Localize(editPreset, "ui.preset.edit"); editPreset.Click += (_, _) => vm.PageIndex = 2; presetRow.Controls.Add(editPreset, 1, 0);
         Heading(settingsRow, "ui.library.taskPreset"); Ui.Add(settingsRow, presetRow); Ui.Add(selected, settingsRow);
-        Bindings.Visible(settingsRow, () => !vm.IsAnis);
+        Bindings.Visible(settingsRow, () => vm.SelectedModel?.SupportsTaskPresets == true);
         Ui.Add(selected, OperationHost);
         var connection = Ui.Stack();
         connection.Name = "LocalConnection";

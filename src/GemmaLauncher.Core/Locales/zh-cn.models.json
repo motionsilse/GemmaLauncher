@@ -1,4 +1,11 @@
 {
+  "models.plamo.category": "多语言翻译",
+  "models.plamo.headline": "轻量多语言翻译",
+  "models.plamo.description": "Preferred Networks 的翻译模型支持韩语、日语、英语等 53 种语言。",
+  "models.plamo.hardwareGuide": "要翻译成韩语，请在连接应用的系统提示词中填写 [plamo-translate] target_lang=ko。",
+  "models.plamo.memoryGuide": "内存占用取决于上下文长度和 GPU 卸载设置。",
+  "models.plamo.benefit1": "用于本地翻译的官方 4 位 GGUF",
+  "models.plamo.benefit2": "指定目标语言后自动识别原文语言",
   "models.e2b.category": "轻量翻译",
   "models.e2b.headline": "轻巧快速的翻译",
   "models.e2b.description": "面向游戏对白和字幕的轻量翻译模型。兼顾对话脉络与语气，让译文自然流畅。",

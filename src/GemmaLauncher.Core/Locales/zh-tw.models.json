@@ -1,4 +1,11 @@
 {
+  "models.plamo.category": "多語翻譯",
+  "models.plamo.headline": "輕量多語翻譯",
+  "models.plamo.description": "Preferred Networks 的翻譯模型支援韓文、日文、英文等 53 種語言。",
+  "models.plamo.hardwareGuide": "若要翻譯成韓文，請在連線應用程式的系統提示詞中填入 [plamo-translate] target_lang=ko。",
+  "models.plamo.memoryGuide": "記憶體用量取決於上下文長度和 GPU 卸載設定。",
+  "models.plamo.benefit1": "用於本機翻譯的官方 4 位元 GGUF",
+  "models.plamo.benefit2": "指定目標語言後自動辨識原文語言",
   "models.e2b.category": "輕量翻譯",
   "models.e2b.headline": "輕巧快速的翻譯",
   "models.e2b.description": "專為遊戲對白與字幕設計的輕量翻譯模型。兼顧對話脈絡與語氣，讓譯文自然流暢。",

@@ -1,4 +1,11 @@
 {
+  "models.plamo.category": "Dịch đa ngôn ngữ",
+  "models.plamo.headline": "Dịch đa ngôn ngữ với mô hình nhẹ",
+  "models.plamo.description": "Mô hình dịch của Preferred Networks hỗ trợ 53 ngôn ngữ, bao gồm tiếng Hàn, tiếng Nhật và tiếng Anh.",
+  "models.plamo.hardwareGuide": "Để dịch sang tiếng Hàn, nhập [plamo-translate] target_lang=ko vào lời nhắc hệ thống của ứng dụng đã kết nối.",
+  "models.plamo.memoryGuide": "Bộ nhớ phụ thuộc vào ngữ cảnh và số lớp chạy trên GPU.",
+  "models.plamo.benefit1": "GGUF 4 bit chính thức để dịch cục bộ",
+  "models.plamo.benefit2": "Nhận diện ngôn ngữ nguồn khi chỉ định ngôn ngữ đích",
   "models.e2b.category": "Dịch thuật nhẹ",
   "models.e2b.headline": "Dịch nhanh, nhẹ máy",
   "models.e2b.description": "Mô hình dịch nhẹ dành cho hội thoại trong game và phụ đề. Bản dịch tự nhiên, có xét đến mạch hội thoại và giọng điệu.",

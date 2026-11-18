@@ -333,7 +333,7 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
         await _session.StartAsync(new(_installed, runtime, context, _paths.Logs, _serverPort)
         {
             LoadOptions = launchOptions,
-            Preset = model.Engine == "anis" ? TaskPreset.Empty : SelectedPreset?.Preset ?? TaskPreset.Empty,
+            Preset = model.SupportsTaskPresets ? SelectedPreset?.Preset ?? TaskPreset.Empty : TaskPreset.Empty,
             EnableGateway = true, BackendSourceDirectory = sourceDirectory, AnisDevice = AnisDevice
         }, cancellationToken);
         RememberModel(model); SaveSettings();

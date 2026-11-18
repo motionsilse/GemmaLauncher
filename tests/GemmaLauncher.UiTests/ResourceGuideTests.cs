@@ -17,7 +17,7 @@ public static partial class Program
         {
             vm.SelectedModel=model; await UntilAsync(()=>!vm.IsBusy); await Task.Delay(40);
             Assert(guide.Text.Contains(model.DownloadLabel) && guide.Text.Contains("RAM") && guide.Text.Contains("VRAM"),model.Id+": show model storage, RAM and VRAM together.");
-            Assert(!guide.Text.Contains(Localization.T("ui.resources.unknown")),model.Id+": all six built-in models need a reference estimate.");
+            Assert(!guide.Text.Contains(Localization.T("ui.resources.unknown")),model.Id+": all built-in models need a reference estimate.");
             if(model.Engine!="anis") Assert(guide.Text.Contains(model.Profile.DefaultContext.ToString("N0")),"The memory reference must identify its context basis.");
             await Capture("resource-"+model.Id);
         }
@@ -48,7 +48,7 @@ public static partial class Program
         Assert(unknownGuide.Contains(Localization.T("ui.resources.sizeUnknown")) && !unknownGuide.Contains(Localization.T("ui.resources.install", "2.0 GB")), "Unknown model size must not produce a complete installation-space estimate.");
         var invalid = definition with { Resources = new() { RamMinGb = double.NaN, RamMaxGb = 3, VramMinGb = 1, VramMaxGb = 2 } };
         Assert(new ModelPresentation(invalid).ResourceGuide.Contains(Localization.T("ui.resources.unknown")), "Invalid imported resource metadata must fall back safely.");
-        Console.WriteLine("Resource estimates: six models, selection, telemetry separation and 17 languages PASS.");
+        Console.WriteLine("Resource estimates: eight models, selection, telemetry separation and 17 languages PASS.");
         async Task Capture(string name)
         {
             await Task.Delay(40); var directory=Path.Combine(Root,"artifacts/cat-loader/resource-guides"); Directory.CreateDirectory(directory);

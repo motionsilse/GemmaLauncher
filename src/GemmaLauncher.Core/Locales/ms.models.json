@@ -1,4 +1,11 @@
 {
+  "models.plamo.category": "Terjemahan berbilang bahasa",
+  "models.plamo.headline": "Terjemahan berbilang bahasa ringan",
+  "models.plamo.description": "Model terjemahan Preferred Networks menyokong 53 bahasa, termasuk bahasa Korea, Jepun dan Inggeris.",
+  "models.plamo.hardwareGuide": "Untuk menterjemah ke bahasa Korea, masukkan [plamo-translate] target_lang=ko dalam gesaan sistem aplikasi yang disambungkan.",
+  "models.plamo.memoryGuide": "Penggunaan memori bergantung pada konteks dan lapisan yang dipindahkan ke GPU.",
+  "models.plamo.benefit1": "GGUF 4 bit rasmi untuk terjemahan setempat",
+  "models.plamo.benefit2": "Mengesan bahasa sumber apabila bahasa sasaran ditetapkan",
   "models.e2b.category": "Terjemahan ringan",
   "models.e2b.headline": "Terjemahan ringan dan pantas",
   "models.e2b.description": "Model terjemahan ringan untuk dialog permainan dan sari kata. Menghasilkan terjemahan semula jadi yang mengambil kira perbualan dan nada.",

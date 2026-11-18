@@ -1,4 +1,11 @@
 {
+  "models.plamo.category": "多言語翻訳",
+  "models.plamo.headline": "軽量な多言語翻訳",
+  "models.plamo.description": "Preferred Networks の翻訳モデル。日本語・韓国語・英語を含む53言語に対応します。",
+  "models.plamo.hardwareGuide": "韓国語に翻訳するには、接続先アプリのシステムプロンプトに [plamo-translate] target_lang=ko を入力します。",
+  "models.plamo.memoryGuide": "メモリ使用量はコンテキスト長と GPU への割り当てにより異なります。",
+  "models.plamo.benefit1": "ローカル翻訳用の公式4ビットGGUF",
+  "models.plamo.benefit2": "翻訳先を指定すると原文の言語を自動検出",
   "models.e2b.category": "軽量翻訳",
   "models.e2b.headline": "軽快でスピーディーな翻訳",
   "models.e2b.description": "ゲームのセリフや字幕のための軽量翻訳モデル。会話の流れや口調を踏まえた自然な翻訳を手軽に利用できます。",

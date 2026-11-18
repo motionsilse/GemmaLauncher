@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "runtime": {
-    "version": "b10795",
-    "url": "https://github.com/ggml-org/llama.cpp/releases/download/b10795/llama-b10795-bin-win-vulkan-x64.zip",
-    "bytes": 35208196,
-    "sha256": "d6f81f2cbbaf457aa4392080a6b8d7675e0cb4ef0163ee26076439dfc956aab4",
+    "version": "b12359",
+    "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12359/llama-b12359-bin-win-vulkan-x64.zip",
+    "bytes": 38090643,
+    "sha256": "e8d18c6e4210cca87e7307c2ea78363ac8d158e4e1397358ec96ab70b53a0d5e",
     "executableRelativePath": "llama-server.exe"
   },
   "models": [
@@ -248,18 +248,110 @@
       }
     },
     {
+      "id": "plamo-3-translate-0.8b",
+      "displayName": "PLaMo 3 Translate · 0.8B",
+      "apiModelId": "plamo-3-translate-0.8b",
+      "familyId": "plamo-3-translate",
+      "familyName": "PLaMo 3 Translate",
+      "familyOrder": 3,
+      "variant": "0.8B",
+      "localizationPrefix": "models.plamo",
+      "architecture": "plamo3",
+      "credit": "Preferred Networks (PFN) · Built with PLaMo",
+      "order": 5,
+      "sourceUrl": "https://huggingface.co/pfnet/plamo-3-translate-0.8b-GGUF",
+      "licenseUrl": "https://huggingface.co/pfnet/plamo-3-translate-0.8b-GGUF/blob/1cf96ae02133958a20074bfdfab76517bb737d00/LICENSE/en",
+      "profile": {
+        "defaultContext": 8192,
+        "contextSizes": [
+          2048,
+          4096,
+          8192,
+          16384
+        ],
+        "lazy": "off",
+        "mtpDraftMax": 0,
+        "temperature": 0,
+        "topP": 1,
+        "topK": 1,
+        "minP": 0,
+        "repeatPenalty": 1
+      },
+      "artifacts": [
+        {
+          "role": "model",
+          "filename": "plamo-3-translate-0.8b-Q4_K_M.gguf",
+          "url": "https://huggingface.co/pfnet/plamo-3-translate-0.8b-GGUF/resolve/1cf96ae02133958a20074bfdfab76517bb737d00/plamo-3-translate-0.8b-Q4_K_M.gguf",
+          "bytes": 573126848,
+          "sha256": "70891ec70dc7ab4205745a38307867c2881b99239f20327927633abfe4bc9ec6"
+        }
+      ],
+      "resources": {
+        "ramMinGb": 0.8,
+        "ramMaxGb": 1.5,
+        "vramMinGb": 0.6,
+        "vramMaxGb": 1.2
+      }
+    },
+    {
+      "id": "plamo-3-translate-2b",
+      "displayName": "PLaMo 3 Translate · 2B",
+      "apiModelId": "plamo-3-translate-2b",
+      "familyId": "plamo-3-translate",
+      "familyName": "PLaMo 3 Translate",
+      "familyOrder": 3,
+      "variant": "2B",
+      "localizationPrefix": "models.plamo",
+      "architecture": "plamo3",
+      "credit": "Preferred Networks (PFN) · Built with PLaMo",
+      "order": 6,
+      "sourceUrl": "https://huggingface.co/pfnet/plamo-3-translate-2b-GGUF",
+      "licenseUrl": "https://huggingface.co/pfnet/plamo-3-translate-2b-GGUF/blob/4f672106b847200bfdc0f6af6c321cd94eba1aed/LICENSE/en",
+      "profile": {
+        "defaultContext": 8192,
+        "contextSizes": [
+          2048,
+          4096,
+          8192,
+          16384
+        ],
+        "lazy": "off",
+        "mtpDraftMax": 0,
+        "temperature": 0,
+        "topP": 1,
+        "topK": 1,
+        "minP": 0,
+        "repeatPenalty": 1
+      },
+      "artifacts": [
+        {
+          "role": "model",
+          "filename": "plamo-3-translate-2b-Q4_K_M.gguf",
+          "url": "https://huggingface.co/pfnet/plamo-3-translate-2b-GGUF/resolve/4f672106b847200bfdc0f6af6c321cd94eba1aed/plamo-3-translate-2b-Q4_K_M.gguf",
+          "bytes": 1807203040,
+          "sha256": "1ffd9073afcc70e35ccc942428aa2b73d7aa2b9ea779bf504b775369e0276c13"
+        }
+      ],
+      "resources": {
+        "ramMinGb": 2,
+        "ramMaxGb": 3,
+        "vramMinGb": 1.9,
+        "vramMaxGb": 3
+      }
+    },
+    {
       "id": "anis-trans",
       "displayName": "ANIS Trans (Japanese only)",
       "apiModelId": "anis-trans:auto",
       "engine": "anis",
       "familyId": "anis-trans",
       "familyName": "ANIS Trans",
-      "familyOrder": 3,
+      "familyOrder": 4,
       "variant": "Japanese ↔ Korean",
       "localizationPrefix": "models.anis",
       "architecture": "ctranslate2",
       "credit": "ANIS · jintigers",
-      "order": 5,
+      "order": 7,
       "sourceUrl": "https://huggingface.co/jintigers/anis-trans",
       "licenseUrl": "https://huggingface.co/jintigers/anis-trans/blob/main/LICENSE-ko.md",
       "profile": {
