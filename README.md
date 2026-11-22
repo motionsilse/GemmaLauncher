@@ -1,6 +1,6 @@
 # Cat Loader by Drugged Cat
 
-**Cat Loader 0.1.1** adds PLaMo 3 Translate 0.8B and 2B. The in-app download notice links to the new release from 0.1.0. When moving from 0.4.x, download the new EXE manually. Existing model files, settings and account data stay in their current locations.
+**Cat Loader 0.1.5** adds Unsloth Gemma 4 QAT E2B and E4B just below Translate Gemma 4 Sub. Open the in-app update notice for the latest release. When moving from 0.4.x, download the new EXE manually. Existing model files, settings and account data stay in their current locations.
 
 Prepare an OpenAI-compatible API for other apps from one small Windows launcher. Choose **Local models** to run a model on your PC, or **ChatGPT connection** to connect a ChatGPT account through the optional proxy engine. Each has its own address, status and stop button.
 
@@ -18,21 +18,23 @@ Closing the window follows the common tray setting for both services; **Full exi
 
 1. Download the Windows x64 EXE from the [latest stable release](https://github.com/motionsilse/GemmaLauncher/releases/latest).
 2. Install the **.NET 10 Desktop Runtime (x64)** and **ASP.NET Core Runtime 10 (x64)**, then run the EXE. The .NET 10 SDK also includes both. .NET 8 alone is insufficient. No ZIP extraction or companion folder is needed.
-3. Choose one of the **eight built-in models** on the main screen. Choose **Download and start**, or **Start server** if its files are ready. No library registration is needed.
+3. Choose one of the **ten built-in models** on the main screen. Choose **Download and start**, or **Start server** if its files are ready. No library registration is needed.
 4. Copy the API address and model name into your connected app. GGUF models also offer a Web UI under advanced run settings.
 
 The first download needs internet access and sufficient disk space. Keep your graphics card's Vulkan driver current. If Microsoft Visual C++ x64 runtime components are missing, the launcher links to Microsoft's installer; that installer may require administrator approval.
 
 Runtime installers: [Microsoft .NET downloads](https://dotnet.microsoft.com/en-us/download/dotnet/10.0). Choose both Windows x64 runtimes; the Desktop installer includes the base .NET runtime. See [Microsoft's installation guide](https://learn.microsoft.com/en-us/dotnet/core/install/windows#choose-the-correct-runtime).
 
-All eight built-in choices are available before downloading. The first launch selects E2B without starting a download. A check marks prepared files separately from each model's purpose. **Add model** connects your own GGUF files or public Hugging Face repositories. Stop and cancel remain available while editing presets or opening settings dialogs.
+All ten built-in choices are available before downloading. The first launch selects E2B without starting a download. A check marks prepared files separately from each model's purpose. **Add model** connects your own GGUF files or public Hugging Face repositories. Stop and cancel remain available while editing presets or opening settings dialogs.
 
 ## Choose by purpose
 
 | Model | Best suited to | Model download |
 |---|---|---:|
-| Translate Gemma 4 · E2B | Lightweight, fast translation of game dialogue and subtitles | 3.26 GB |
-| Translate Gemma 4 · E4B | Translation that prioritizes context, nuance and expression | 5.20 GB |
+| Translate Gemma 4 Sub · E2B | Translation tuned for short chats and subtitles | 3.26 GB |
+| Translate Gemma 4 Sub · E4B | Translation tuned for tone and expression across several lines | 5.20 GB |
+| Unsloth Gemma 4 QAT · E2B | Short chats and dialogue with lower weight-memory needs | 2.68 GB |
+| Unsloth Gemma 4 QAT · E4B | Contextual dialogue in a 4-bit model trained to preserve accuracy | 4.28 GB |
 | HY-MT2 · 1.8B Q4_K_M | Responsive multilingual translation with a smaller memory footprint | 1.13 GB |
 | HY-MT2 · 7B Q4_K_M | Quality-focused translation of complex sentences and context | 4.62 GB |
 | Gemma 4 · 12B Heretic StyleTune | Translation, writing, roleplay and natural conversation | 8.30 GB |
@@ -40,7 +42,7 @@ All eight built-in choices are available before downloading. The first launch se
 | PLaMo 3 Translate · 2B Q4_K_M | Multilingual translation with more emphasis on quality | 1.81 GB |
 | ANIS Trans (Japanese only) | Specialized Japanese ↔ Korean translation | 0.30 GB |
 
-E2B and E4B combine dialogue/subtitle tuning with SSD-backed memory optimization. The 12B model combines uncensored tuning for freer expression with StyleTune for a distinctive voice. These three Gemma configurations include their own MTP acceleration files. HY-MT2 uses its own translation settings and runs without MTP.
+Translate Gemma 4 Sub is tuned for dialogue and subtitles. Unsloth converts Google's Gemma 4 QAT checkpoints to `UD-Q4_K_XL` GGUF. The 12B model combines uncensored tuning for freer expression with StyleTune for a distinctive voice. Each Gemma choice includes a matching MTP acceleration file. HY-MT2 uses its own translation settings and runs without MTP.
 
 Selecting a model shows its model storage, recommended free space for first installation, and approximate RAM/VRAM at default settings. GB means one billion bytes; Gemma totals include MTP files. The execution engine downloads separately. Installation space includes a 2 GB allowance for runtime, extraction and caches; connected local files are not copied. Memory references are estimates, not minimum PC specifications or measured guarantees. GPU offload, context, cache and CPU mode change memory use. Live server measurements remain separate. See [estimate basis](docs/model-resource-estimates.md).
 
@@ -114,7 +116,7 @@ Use `--data-dir "D:\GemmaLauncherData" --model-folder "D:\Models"` for custom da
 
 # Cat Loader by Drugged Cat
 
-**Cat Loader 0.1.1**에 PLaMo 3 Translate 0.8B와 2B를 추가했습니다. 0.1.0에서는 앱의 업데이트 알림에서 새 릴리즈를 열 수 있습니다. 0.4.x에서 넘어올 때는 새 EXE를 직접 받아 실행하세요. 모델 파일·설정·계정 데이터는 기존 위치에서 계속 사용합니다.
+**Cat Loader 0.1.5**에 Unsloth Gemma 4 QAT E2B와 E4B를 추가했습니다. Translate Gemma 4 Sub 바로 아래에서 선택할 수 있습니다. 앱의 업데이트 알림을 누르면 최신 릴리즈가 열립니다. 0.4.x에서 넘어올 때는 새 EXE를 직접 받아 실행하세요. 모델 파일·설정·계정 데이터는 기존 위치에서 계속 사용합니다.
 
 AI 모델의 설치부터 실행·관리까지, 클릭 한 번으로 시작하세요. 번역·글쓰기·대화에 맞는 모델을 고르면 필요한 파일을 준비하고 서버를 켭니다. **브라우저 대화 화면과 OpenAI 호환 API**를 함께 제공하므로 CatBridge 같은 앱에도 바로 연결할 수 있습니다.
 
@@ -130,19 +132,21 @@ Windows EXE 하나로 시작하고, 원하는 모델을 추가하고, 저장한 
 
 1. [최신 정식 릴리즈](https://github.com/motionsilse/GemmaLauncher/releases/latest)에서 Windows x64 EXE를 내려받습니다.
 2. **.NET 10 Desktop Runtime(x64)**과 **ASP.NET Core Runtime 10(x64)**을 설치한 뒤 EXE를 실행합니다. .NET 10 SDK에도 둘 다 포함됩니다. .NET 8만 설치되어 있으면 실행할 수 없습니다. 압축 해제나 별도 폴더는 필요하지 않습니다.
-3. 메인 화면에서 **기본 모델 8개** 중 하나를 고르고 **다운로드하고 시작**을 누르세요. 파일이 있으면 **서버 켜기**로 바로 실행합니다. 별도 등록은 필요하지 않습니다.
+3. 메인 화면에서 **기본 모델 10개** 중 하나를 고르고 **다운로드하고 시작**을 누르세요. 파일이 있으면 **서버 켜기**로 바로 실행합니다. 별도 등록은 필요하지 않습니다.
 4. 같은 화면의 API 주소와 모델 이름을 복사해 다른 앱에 입력하세요. GGUF 모델은 **고급 실행 설정**에서 Web UI도 열 수 있습니다.
 
 첫 다운로드에는 인터넷과 저장 공간이 필요합니다. 그래픽카드의 Vulkan 드라이버를 최신 상태로 유지하세요. Microsoft Visual C++ x64 실행 구성 요소가 없으면 공식 설치 프로그램을 안내합니다. 해당 설치에는 관리자 승인이 필요할 수 있습니다.
 
-기본 모델 8개는 다운로드 여부와 관계없이 표시됩니다. 처음에는 E2B를 선택해 안내하며 자동으로 받거나 실행하지 않습니다. 모델 용도는 설명으로, 파일 준비 상태는 별도 체크로 구분합니다. **모델 추가**에서 사용자 GGUF를 연결할 수 있습니다. 프롬프트 편집 화면과 설정 대화상자에서도 다운로드 취소·서버 종료를 사용할 수 있습니다.
+기본 모델 10개는 다운로드 여부와 관계없이 표시됩니다. 처음에는 E2B를 선택해 안내하며 자동으로 받거나 실행하지 않습니다. 모델 용도는 설명으로, 파일 준비 상태는 별도 체크로 구분합니다. **모델 추가**에서 사용자 GGUF를 연결할 수 있습니다. 프롬프트 편집 화면과 설정 대화상자에서도 다운로드 취소·서버 종료를 사용할 수 있습니다.
 
 ## 용도에 맞게 고르세요
 
 | 모델 | 이런 용도에 어울립니다 | 모델 다운로드 |
 |---|---|---:|
-| Translate Gemma 4 · E2B | 게임 대사와 자막을 가볍고 빠르게 번역할 때 | 3.26 GB |
-| Translate Gemma 4 · E4B | 문맥과 표현의 뉘앙스를 살리는 번역이 필요할 때 | 5.20 GB |
+| Translate Gemma 4 Sub · E2B | 짧게 오가는 채팅이나 한 줄씩 나오는 자막을 번역할 때 | 3.26 GB |
+| Translate Gemma 4 Sub · E4B | 여러 줄에 걸쳐 이어지는 대화의 말투와 표현을 살릴 때 | 5.20 GB |
+| Unsloth Gemma 4 QAT · E2B | 가중치 메모리 부담을 줄이면서 짧은 채팅과 대사를 번역할 때 | 2.68 GB |
+| Unsloth Gemma 4 QAT · E4B | 4비트 모델에서 앞선 대화의 문맥을 참고해 대사를 번역할 때 | 4.28 GB |
 | HY-MT2 · 1.8B Q4_K_M | 메모리 부담을 줄이면서 다국어 번역을 빠르게 사용할 때 | 1.13 GB |
 | HY-MT2 · 7B Q4_K_M | 복잡한 문장과 문맥의 정확성·표현력을 중시할 때 | 4.62 GB |
 | Gemma 4 · 12B Heretic StyleTune | 번역, 글쓰기, 롤플레잉과 사람 같은 자연스러운 대화 | 8.30 GB |
@@ -150,7 +154,7 @@ Windows EXE 하나로 시작하고, 원하는 모델을 추가하고, 저장한 
 | PLaMo 3 Translate · 2B Q4_K_M | 품질을 조금 더 중시하는 다국어 번역 | 1.81 GB |
 | ANIS Trans (일본어 전용) | 일본어 ↔ 한국어에 특화된 번역 | 0.30 GB |
 
-E2B와 E4B에는 대사·자막 번역 튜닝과 SSD를 활용한 메모리 최적화를 적용했습니다. 12B에는 무검열 튜닝으로 자유로운 표현을, 스타일 튜닝으로 말투의 개성을 더했습니다. Gemma 세 구성에는 각각 맞는 MTP 가속용 파일이 포함됩니다. HY-MT2는 별도의 번역 설정을 사용하며 MTP 없이 실행합니다.
+Translate Gemma 4 Sub는 대사와 자막에 맞춰 번역 튜닝을 한 모델입니다. Unsloth는 Google Gemma 4 QAT를 `UD-Q4_K_XL` GGUF로 변환했습니다. 12B에는 무검열 튜닝으로 자유로운 표현을, 스타일 튜닝으로 말투의 개성을 더했습니다. Gemma 모델에는 각각 맞는 MTP 가속용 파일이 포함됩니다. HY-MT2는 별도의 번역 설정을 사용하며 MTP 없이 실행합니다.
 
 모델을 선택하면 모델 저장공간, 첫 설치 권장 여유공간과 기본 설정의 RAM·VRAM 추정치를 보여줍니다. GB는 10억 바이트 기준이며 Gemma 용량에는 MTP도 포함됩니다. 설치 여유공간에는 실행환경·압축 해제·캐시용 2 GB를 더하며, 연결한 로컬 파일은 복사하지 않습니다. 메모리 수치는 최소 PC 사양이나 보장된 실측값이 아닙니다. GPU 할당·대화 길이·캐시·CPU 모드에 따라 달라지며 실행 중 실측값은 별도로 표시합니다. [추정 근거](docs/model-resource-estimates.md)를 참고하세요.
 

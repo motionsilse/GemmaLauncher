@@ -5,7 +5,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <AssemblyName>CatLoader</AssemblyName>
-    <Version>0.1.1</Version>
+    <Version>0.1.5</Version>
     <HuggingFaceClientId Condition="'$(HuggingFaceClientId)' == ''">b5a9b43f-5d3d-4379-b729-e9033aee4c88</HuggingFaceClientId>
     <StartupObject>GemmaLauncher.App.Program</StartupObject>
     <ApplicationManifest>app.manifest</ApplicationManifest>

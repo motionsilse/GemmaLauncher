@@ -1,6 +1,6 @@
 # 로컬 모델 리소스 추정
 
-2026-11-18 · Cat Loader 0.1.1
+2026-11-22 · Cat Loader
 
 모델 선택 화면은 다운로드 전부터 저장공간과 기본 설정의 RAM·VRAM 참고치를 표시한다. 이 수치는 모델 프로세스의 대략적인 예산이며 Windows·다른 앱의 메모리를 포함한 최소 시스템 사양이 아니다. 전체 모델을 같은 장비에서 측정한 벤치마크도 아니다. 실행 중 조회하는 실제 서버 RAM·VRAM은 별도 항목으로 유지한다.
 
@@ -8,6 +8,8 @@
 |---|---:|---:|---:|---|
 | Translate Gemma 4 E2B | 3.26 GB | 약 2.1 GB | 약 1.9 GB | 기존 앱의 lazy/GPU 배치 참고값 유지 |
 | Translate Gemma 4 E4B | 5.20 GB | 약 3.7 GB | 약 3.6 GB | 기존 앱의 lazy/GPU 배치 참고값 유지 |
+| Unsloth Gemma 4 QAT E2B | 2.68 GB | 약 1.8 GB | 약 1.5 GB | 8,192 토큰, Vulkan 및 MTP 기본 설정으로 한영·영한 번역 후 측정 |
+| Unsloth Gemma 4 QAT E4B | 4.28 GB | 약 3.0 GB | 약 2.9 GB | 같은 설정에서 한영·영한 번역 후 측정 |
 | HY-MT2 1.8B | 1.13 GB | 약 2–4 GB | 약 2–4 GB | 파일 크기에 컨텍스트·버퍼 여유를 더한 앱 추정 범위, 미실측 |
 | HY-MT2 7B | 4.62 GB | 약 6–9 GB | 약 6–9 GB | 파일 크기에 컨텍스트·버퍼 여유를 더한 앱 추정 범위, 미실측 |
 | Gemma 4 12B Heretic StyleTune | 8.30 GB | 약 8.1 GB | 약 8.3 GB | 기존 앱의 GPU 배치 참고값 유지 |
@@ -22,5 +24,7 @@ GGUF 참고값의 기본 대화 길이는 E2B/E4B/HY-MT2 8,192, 12B 32,768이다
 [ANIS 공식 README](https://github.com/jintigers/anis-trans/blob/1165f0cda25a9afdd0c8e0491038e949d9446e6e/README.md)는 CPU RAM 약 1 GB, 설치 디스크 약 0.6 GB와 GPU cuBLAS 추가분을 안내한다. 화면에서도 CPU RAM 제작자 참고값과 CUDA VRAM 앱 추정치를 구분한다. CPU에서는 VRAM을 사용하지 않는다. 실제 접근 승인된 모델로 CUDA 사용량을 측정한 수치는 아니다.
 
 2026-11-18 RTX 5080에서 llama.cpp b12359로 양방향 번역 후 확인한 PLaMo 프로세스 상주 RAM과 전용 GPU 메모리는 0.8B가 약 0.76/0.56 GB, 2B가 약 1.92/1.82 GB였다. 위 범위는 이 구성의 짧은 번역을 기준으로 잡은 참고치다.
+
+2026-11-22 RTX 5080에서 같은 llama.cpp 버전과 각 Gemma 모델의 기본 MTP 설정으로 양방향 번역을 실행했다. 번역 직후 Unsloth QAT E2B의 상주 RAM/전용 VRAM은 약 1.75/1.47 GB, E4B는 약 3.02/2.88 GB였다. 같은 장비에서 Translate Gemma 4 Sub E4B는 약 3.61/3.47 GB였다.
 
 추정치는 `config/launcher-models.json`의 선택 사항인 `resources`에 둔다. 잘못된 숫자나 추정 정보가 없는 사용자 모델에는 정보 없음으로 표시한다. 실행 설정이 바뀌어도 이 안내를 현재 설정의 실측값으로 바꾸지 않고 기본 설정 참고치라는 설명을 유지한다.

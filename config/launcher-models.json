@@ -109,6 +109,108 @@
       }
     },
     {
+      "id": "unsloth-gemma4-qat-e2b-ud-q4-k-xl",
+      "displayName": "Unsloth Gemma 4 QAT · E2B",
+      "apiModelId": "Unsloth-Gemma-4-QAT-E2B",
+      "credit": "Google DeepMind · Unsloth",
+      "sourceUrl": "https://huggingface.co/unsloth/gemma-4-E2B-it-qat-GGUF",
+      "licenseUrl": "https://huggingface.co/unsloth/gemma-4-E2B-it-qat-GGUF/blob/66a399f68ddd113b06dff02fca9523e55465d11d/README.md",
+      "profile": {
+        "defaultContext": 8192,
+        "contextSizes": [
+          4096,
+          8192,
+          16384
+        ],
+        "lazy": "on",
+        "mtpDraftMax": 2,
+        "temperature": 0,
+        "topP": 0.95,
+        "topK": 64,
+        "minP": 0.05
+      },
+      "artifacts": [
+        {
+          "role": "model",
+          "filename": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+          "url": "https://huggingface.co/unsloth/gemma-4-E2B-it-qat-GGUF/resolve/66a399f68ddd113b06dff02fca9523e55465d11d/gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+          "bytes": 2620370976,
+          "sha256": "e531007218dfab990486a5de7676a6932d6ea8dea233d1f698d7c21cf8a16889"
+        },
+        {
+          "role": "mtp",
+          "filename": "mtp-gemma-4-E2B-it.gguf",
+          "url": "https://huggingface.co/unsloth/gemma-4-E2B-it-qat-GGUF/resolve/66a399f68ddd113b06dff02fca9523e55465d11d/mtp-gemma-4-E2B-it.gguf",
+          "bytes": 59235648,
+          "sha256": "586f2460b909008640981ec34060aa864e03c144fbabfb3173c4335087e4aae0"
+        }
+      ],
+      "order": 2,
+      "familyId": "gemma-unsloth-qat",
+      "familyName": "Unsloth Gemma 4 QAT",
+      "familyOrder": 1,
+      "variant": "E2B",
+      "localizationPrefix": "models.unslothQatE2B",
+      "architecture": "gemma4",
+      "resources": {
+        "ramMinGb": 1.8,
+        "ramMaxGb": 1.8,
+        "vramMinGb": 1.5,
+        "vramMaxGb": 1.5
+      }
+    },
+    {
+      "id": "unsloth-gemma4-qat-e4b-ud-q4-k-xl",
+      "displayName": "Unsloth Gemma 4 QAT · E4B",
+      "apiModelId": "Unsloth-Gemma-4-QAT-E4B",
+      "credit": "Google DeepMind · Unsloth",
+      "sourceUrl": "https://huggingface.co/unsloth/gemma-4-E4B-it-qat-GGUF",
+      "licenseUrl": "https://huggingface.co/unsloth/gemma-4-E4B-it-qat-GGUF/blob/8c5a9e4fd5482e2be20fe0bf013b4c262a8f4265/README.md",
+      "profile": {
+        "defaultContext": 8192,
+        "contextSizes": [
+          4096,
+          8192,
+          16384
+        ],
+        "lazy": "on",
+        "mtpDraftMax": 2,
+        "temperature": 0,
+        "topP": 0.95,
+        "topK": 64,
+        "minP": 0.05
+      },
+      "artifacts": [
+        {
+          "role": "model",
+          "filename": "gemma-4-E4B-it-qat-UD-Q4_K_XL.gguf",
+          "url": "https://huggingface.co/unsloth/gemma-4-E4B-it-qat-GGUF/resolve/8c5a9e4fd5482e2be20fe0bf013b4c262a8f4265/gemma-4-E4B-it-qat-UD-Q4_K_XL.gguf",
+          "bytes": 4215695776,
+          "sha256": "df0fd4ee07072c607c29a0a1cb4f98918426cca12f45a2776bdd6ee6d09a4de3"
+        },
+        {
+          "role": "mtp",
+          "filename": "mtp-gemma-4-E4B-it.gguf",
+          "url": "https://huggingface.co/unsloth/gemma-4-E4B-it-qat-GGUF/resolve/8c5a9e4fd5482e2be20fe0bf013b4c262a8f4265/mtp-gemma-4-E4B-it.gguf",
+          "bytes": 59678016,
+          "sha256": "423074e537504b4f9ec5eafed5c639fac82c96631626efccacdd3c4039b20605"
+        }
+      ],
+      "order": 3,
+      "familyId": "gemma-unsloth-qat",
+      "familyName": "Unsloth Gemma 4 QAT",
+      "familyOrder": 1,
+      "variant": "E4B",
+      "localizationPrefix": "models.unslothQatE4B",
+      "architecture": "gemma4",
+      "resources": {
+        "ramMinGb": 3.0,
+        "ramMaxGb": 3.0,
+        "vramMinGb": 2.9,
+        "vramMaxGb": 2.9
+      }
+    },
+    {
       "id": "gemma4-12b-qat-heretic-styletune-q4-q8head",
       "displayName": "Gemma 4 · 12B Heretic StyleTune",
       "apiModelId": "Gemma-4-12B-QAT-Heretic-StyleTune",
@@ -145,10 +247,10 @@
           "sha256": "fcb35dea42c71333db904cee11baac525c9ef872818ee3753f6cb156f3c6f4f6"
         }
       ],
-      "order": 2,
+      "order": 4,
       "familyId": "gemma-creative",
       "familyName": "Gemma 4 · 12B Heretic StyleTune",
-      "familyOrder": 2,
+      "familyOrder": 3,
       "variant": "12B",
       "localizationPrefix": "models.12b",
       "architecture": "gemma4",
@@ -165,11 +267,11 @@
       "apiModelId": "HY-MT2-1.8B",
       "familyId": "hy-mt2",
       "familyName": "HY-MT2",
-      "familyOrder": 1,
+      "familyOrder": 2,
       "variant": "1.8B",
       "localizationPrefix": "models.hy18",
       "architecture": "hunyuan-dense",
-      "order": 3,
+      "order": 5,
       "sourceUrl": "https://huggingface.co/unsloth/Hy-MT2-1.8B-GGUF",
       "licenseUrl": "https://huggingface.co/unsloth/Hy-MT2-1.8B-GGUF/blob/0378cc2780f462f0fd397d0cdd244d2f769de40e/README.md",
       "profile": {
@@ -209,11 +311,11 @@
       "apiModelId": "HY-MT2-7B",
       "familyId": "hy-mt2",
       "familyName": "HY-MT2",
-      "familyOrder": 1,
+      "familyOrder": 2,
       "variant": "7B",
       "localizationPrefix": "models.hy7",
       "architecture": "hunyuan-dense",
-      "order": 4,
+      "order": 6,
       "sourceUrl": "https://huggingface.co/unsloth/Hy-MT2-7B-GGUF",
       "licenseUrl": "https://huggingface.co/unsloth/Hy-MT2-7B-GGUF/blob/818a655121a71debd854df6ae252f94380e28d61/README.md",
       "profile": {
@@ -253,12 +355,12 @@
       "apiModelId": "plamo-3-translate-0.8b",
       "familyId": "plamo-3-translate",
       "familyName": "PLaMo 3 Translate",
-      "familyOrder": 3,
+      "familyOrder": 4,
       "variant": "0.8B",
       "localizationPrefix": "models.plamo08",
       "architecture": "plamo3",
       "credit": "Preferred Networks (PFN) · Built with PLaMo",
-      "order": 5,
+      "order": 7,
       "sourceUrl": "https://huggingface.co/pfnet/plamo-3-translate-0.8b-GGUF",
       "licenseUrl": "https://huggingface.co/pfnet/plamo-3-translate-0.8b-GGUF/blob/1cf96ae02133958a20074bfdfab76517bb737d00/LICENSE/en",
       "profile": {
@@ -299,12 +401,12 @@
       "apiModelId": "plamo-3-translate-2b",
       "familyId": "plamo-3-translate",
       "familyName": "PLaMo 3 Translate",
-      "familyOrder": 3,
+      "familyOrder": 4,
       "variant": "2B",
       "localizationPrefix": "models.plamo2",
       "architecture": "plamo3",
       "credit": "Preferred Networks (PFN) · Built with PLaMo",
-      "order": 6,
+      "order": 8,
       "sourceUrl": "https://huggingface.co/pfnet/plamo-3-translate-2b-GGUF",
       "licenseUrl": "https://huggingface.co/pfnet/plamo-3-translate-2b-GGUF/blob/4f672106b847200bfdc0f6af6c321cd94eba1aed/LICENSE/en",
       "profile": {
@@ -346,12 +448,12 @@
       "engine": "anis",
       "familyId": "anis-trans",
       "familyName": "ANIS Trans",
-      "familyOrder": 4,
+      "familyOrder": 5,
       "variant": "Japanese ↔ Korean",
       "localizationPrefix": "models.anis",
       "architecture": "ctranslate2",
       "credit": "ANIS · jintigers",
-      "order": 7,
+      "order": 9,
       "sourceUrl": "https://huggingface.co/jintigers/anis-trans",
       "licenseUrl": "https://huggingface.co/jintigers/anis-trans/blob/main/LICENSE-ko.md",
       "profile": {

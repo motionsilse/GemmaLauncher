@@ -29,6 +29,8 @@ Windows용 단일 EXE는 PC에 설치된 .NET 10 Desktop Runtime과 ASP.NET Core
 |---|---|
 | E2B 번역 모델 · MTP | [17slever17/translate-gemma-4-sub-e2b-GGUF](https://huggingface.co/17slever17/translate-gemma-4-sub-e2b-GGUF) |
 | E4B 번역 모델 · MTP | [17slever17/translate-gemma-4-sub-e4b-GGUF](https://huggingface.co/17slever17/translate-gemma-4-sub-e4b-GGUF) |
+| Unsloth Gemma 4 QAT E2B · MTP | [unsloth/gemma-4-E2B-it-qat-GGUF](https://huggingface.co/unsloth/gemma-4-E2B-it-qat-GGUF) · Apache 2.0 |
+| Unsloth Gemma 4 QAT E4B · MTP | [unsloth/gemma-4-E4B-it-qat-GGUF](https://huggingface.co/unsloth/gemma-4-E4B-it-qat-GGUF) · Apache 2.0 |
 | 12B Heretic StyleTune 모델 | [motionsilse/Gemma-4-12B-QAT-Heretic-StyleTune-GGUF](https://huggingface.co/motionsilse/Gemma-4-12B-QAT-Heretic-StyleTune-GGUF) |
 | 12B MTP | [unsloth/gemma-4-12B-it-qat-GGUF](https://huggingface.co/unsloth/gemma-4-12B-it-qat-GGUF) |
 | HY-MT2 1.8B Q4_K_M | [unsloth/Hy-MT2-1.8B-GGUF](https://huggingface.co/unsloth/Hy-MT2-1.8B-GGUF) |

@@ -56,9 +56,9 @@
         "vramMinGb": 1.9,
         "vramMaxGb": 1.9
       },
-      "category": "Lightweight translation",
-      "headline": "Lightweight, fast translation",
-      "description": "A lightweight translation model for game dialogue and subtitles. Natural translations that take the conversation and tone into account.",
+      "category": "Translation-tuned",
+      "headline": "Translation-tuned",
+      "description": "A lightweight model tuned for dialogue and subtitle translation. Suited to short chat exchanges and subtitles that appear one line at a time.",
       "hardwareGuide": "Start here if you want a lighter load on your PC.",
       "memoryGuide": "RAM ≈ 2.1 GB · VRAM ≈ 1.9 GB",
       "benefits": [
@@ -114,13 +114,131 @@
         "vramMinGb": 3.6,
         "vramMaxGb": 3.6
       },
-      "category": "Quality-focused translation",
-      "headline": "Translation that captures the nuance",
-      "description": "A dedicated translation model focused on conversation flow and subtle meaning. Choose it when translation quality comes first, from subtitles to longer dialogue.",
+      "category": "Translation-tuned",
+      "headline": "Translation-tuned",
+      "description": "Tuned to capture changes in tone and expression based on earlier dialogue. Suited to conversations that span several lines.",
       "hardwareGuide": "Recommended when you have graphics memory to spare.",
       "memoryGuide": "RAM ≈ 3.7 GB · VRAM ≈ 3.6 GB",
       "benefits": [
         "Translation that preserves context and tone",
+        "Memory optimization that reads only the needed data from SSD"
+      ]
+    },
+    {
+      "id": "unsloth-gemma4-qat-e2b-ud-q4-k-xl",
+      "displayName": "Unsloth Gemma 4 QAT · E2B",
+      "apiModelId": "Unsloth-Gemma-4-QAT-E2B",
+      "credit": "Google DeepMind · Unsloth",
+      "sourceUrl": "https://huggingface.co/unsloth/gemma-4-E2B-it-qat-GGUF",
+      "licenseUrl": "https://huggingface.co/unsloth/gemma-4-E2B-it-qat-GGUF/blob/66a399f68ddd113b06dff02fca9523e55465d11d/README.md",
+      "profile": {
+        "defaultContext": 8192,
+        "contextSizes": [
+          4096,
+          8192,
+          16384
+        ],
+        "lazy": "on",
+        "mtpDraftMax": 2,
+        "temperature": 0,
+        "topP": 0.95,
+        "topK": 64,
+        "minP": 0.05
+      },
+      "artifacts": [
+        {
+          "role": "model",
+          "filename": "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+          "url": "https://huggingface.co/unsloth/gemma-4-E2B-it-qat-GGUF/resolve/66a399f68ddd113b06dff02fca9523e55465d11d/gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+          "bytes": 2620370976,
+          "sha256": "e531007218dfab990486a5de7676a6932d6ea8dea233d1f698d7c21cf8a16889"
+        },
+        {
+          "role": "mtp",
+          "filename": "mtp-gemma-4-E2B-it.gguf",
+          "url": "https://huggingface.co/unsloth/gemma-4-E2B-it-qat-GGUF/resolve/66a399f68ddd113b06dff02fca9523e55465d11d/mtp-gemma-4-E2B-it.gguf",
+          "bytes": 59235648,
+          "sha256": "586f2460b909008640981ec34060aa864e03c144fbabfb3173c4335087e4aae0"
+        }
+      ],
+      "familyId": "gemma-unsloth-qat",
+      "familyName": "Unsloth Gemma 4 QAT",
+      "familyOrder": 1,
+      "variant": "E2B",
+      "localizationPrefix": "models.unslothQatE2B",
+      "architecture": "gemma4",
+      "resources": {
+        "ramMinGb": 1.8,
+        "ramMaxGb": 1.8,
+        "vramMinGb": 1.5,
+        "vramMaxGb": 1.5
+      },
+      "category": "4-bit optimization",
+      "headline": "4-bit optimization",
+      "description": "A lightweight model that can use earlier conversation to translate short chats and dialogue. Its weights need less memory than Translate Gemma 4 Sub E2B.",
+      "hardwareGuide": "Start here if you want a lighter load on your PC.",
+      "memoryGuide": "RAM ≈ 1.8 GB · VRAM ≈ 1.5 GB",
+      "benefits": [
+        "Unsloth · UD-Q4_K_XL",
+        "Memory optimization that reads only the needed data from SSD"
+      ]
+    },
+    {
+      "id": "unsloth-gemma4-qat-e4b-ud-q4-k-xl",
+      "displayName": "Unsloth Gemma 4 QAT · E4B",
+      "apiModelId": "Unsloth-Gemma-4-QAT-E4B",
+      "credit": "Google DeepMind · Unsloth",
+      "sourceUrl": "https://huggingface.co/unsloth/gemma-4-E4B-it-qat-GGUF",
+      "licenseUrl": "https://huggingface.co/unsloth/gemma-4-E4B-it-qat-GGUF/blob/8c5a9e4fd5482e2be20fe0bf013b4c262a8f4265/README.md",
+      "profile": {
+        "defaultContext": 8192,
+        "contextSizes": [
+          4096,
+          8192,
+          16384
+        ],
+        "lazy": "on",
+        "mtpDraftMax": 2,
+        "temperature": 0,
+        "topP": 0.95,
+        "topK": 64,
+        "minP": 0.05
+      },
+      "artifacts": [
+        {
+          "role": "model",
+          "filename": "gemma-4-E4B-it-qat-UD-Q4_K_XL.gguf",
+          "url": "https://huggingface.co/unsloth/gemma-4-E4B-it-qat-GGUF/resolve/8c5a9e4fd5482e2be20fe0bf013b4c262a8f4265/gemma-4-E4B-it-qat-UD-Q4_K_XL.gguf",
+          "bytes": 4215695776,
+          "sha256": "df0fd4ee07072c607c29a0a1cb4f98918426cca12f45a2776bdd6ee6d09a4de3"
+        },
+        {
+          "role": "mtp",
+          "filename": "mtp-gemma-4-E4B-it.gguf",
+          "url": "https://huggingface.co/unsloth/gemma-4-E4B-it-qat-GGUF/resolve/8c5a9e4fd5482e2be20fe0bf013b4c262a8f4265/mtp-gemma-4-E4B-it.gguf",
+          "bytes": 59678016,
+          "sha256": "423074e537504b4f9ec5eafed5c639fac82c96631626efccacdd3c4039b20605"
+        }
+      ],
+      "familyId": "gemma-unsloth-qat",
+      "familyName": "Unsloth Gemma 4 QAT",
+      "familyOrder": 1,
+      "variant": "E4B",
+      "localizationPrefix": "models.unslothQatE4B",
+      "architecture": "gemma4",
+      "resources": {
+        "ramMinGb": 3.0,
+        "ramMaxGb": 3.0,
+        "vramMinGb": 2.9,
+        "vramMaxGb": 2.9
+      },
+      "category": "4-bit optimization",
+      "headline": "4-bit optimization",
+      "description": "Uses earlier conversation to translate dialogue that depends on context. Trained to preserve accuracy at 4 bits, its weights need less memory than Translate Gemma 4 Sub E4B.",
+      "hardwareGuide": "Recommended when you have graphics memory to spare.",
+      "memoryGuide": "RAM ≈ 3.0 GB · VRAM ≈ 2.9 GB",
+      "benefits": [
+        "Unsloth · UD-Q4_K_XL",
         "Memory optimization that reads only the needed data from SSD"
       ]
     },
@@ -163,7 +281,7 @@
       ],
       "familyId": "gemma-creative",
       "familyName": "Gemma 4 · 12B Heretic StyleTune",
-      "familyOrder": 2,
+      "familyOrder": 3,
       "variant": "12B",
       "localizationPrefix": "models.12b",
       "architecture": "gemma4",
@@ -189,7 +307,7 @@
       "apiModelId": "HY-MT2-1.8B",
       "familyId": "hy-mt2",
       "familyName": "HY-MT2",
-      "familyOrder": 1,
+      "familyOrder": 2,
       "variant": "1.8B",
       "localizationPrefix": "models.hy18",
       "architecture": "hunyuan-dense",
@@ -241,7 +359,7 @@
       "apiModelId": "HY-MT2-7B",
       "familyId": "hy-mt2",
       "familyName": "HY-MT2",
-      "familyOrder": 1,
+      "familyOrder": 2,
       "variant": "7B",
       "localizationPrefix": "models.hy7",
       "architecture": "hunyuan-dense",
@@ -293,7 +411,7 @@
       "apiModelId": "plamo-3-translate-0.8b",
       "familyId": "plamo-3-translate",
       "familyName": "PLaMo 3 Translate",
-      "familyOrder": 3,
+      "familyOrder": 4,
       "variant": "0.8B",
       "localizationPrefix": "models.plamo08",
       "architecture": "plamo3",
@@ -347,7 +465,7 @@
       "apiModelId": "plamo-3-translate-2b",
       "familyId": "plamo-3-translate",
       "familyName": "PLaMo 3 Translate",
-      "familyOrder": 3,
+      "familyOrder": 4,
       "variant": "2B",
       "localizationPrefix": "models.plamo2",
       "architecture": "plamo3",
@@ -402,7 +520,7 @@
       "engine": "anis",
       "familyId": "anis-trans",
       "familyName": "ANIS Trans",
-      "familyOrder": 4,
+      "familyOrder": 5,
       "variant": "Japanese ↔ Korean",
       "localizationPrefix": "models.anis",
       "architecture": "ctranslate2",

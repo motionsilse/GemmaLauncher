@@ -234,7 +234,7 @@ public static partial class Program
         Assert(!typeof(MainWindow).Assembly.GetReferencedAssemblies().Any(name => name.Name is "PresentationFramework" or "PresentationCore" or "WindowsBase"), "The launcher must not reference WPF assemblies.");
         var expected = CatalogLoader.Load(Path.Combine(Root, "src/GemmaLauncher.App/Assets/catalog.json"));
         var bundled = BundledResources.LoadCatalog();
-        Assert(bundled.Models.Length == 8 && bundled.Models[^1].Engine == "anis", "A standalone launcher must contain eight models with ANIS last.");
+        Assert(bundled.Models.Length == 10 && bundled.Models[^1].Engine == "anis", "A standalone launcher must contain ten models with ANIS last.");
         Assert(JsonSerializer.Serialize(expected, CatalogLoader.JsonOptions) == JsonSerializer.Serialize(bundled, CatalogLoader.JsonOptions),
             "Bundling must preserve every model/runtime URL, hash, profile and display field from the source catalog.");
         Assert(typeof(BundledResources).Assembly.GetManifestResourceNames().Contains("GemmaLauncher.Catalog.json"),
@@ -587,7 +587,9 @@ public static partial class Program
         await using var fixture = new Fixture();
         var vm = fixture.ViewModel;
         await UntilAsync(() => !vm.IsBusy);
-        Assert(vm.Families.Count == 5, "The catalog must retain the existing families and add PLaMo.");
+        Assert(vm.Families.Count == 6 && vm.Families[1].Name == "Unsloth Gemma 4 QAT", "Unsloth QAT must have its own family below Translate Gemma Sub.");
+        var unsloth = vm.Families[1];
+        Assert(unsloth.Variants.Select(variant => variant.Variant).SequenceEqual(["E2B", "E4B"]), "Unsloth QAT must expose both sizes.");
         var plamo = vm.Families.Single(family => family.Name == "PLaMo 3 Translate");
         Assert(plamo.Variants.Select(variant => variant.Definition.Variant).SequenceEqual(["0.8B", "2B"]), "PLaMo must expose both sizes.");
         var hy = vm.Families.Single(family => family.Name == "HY-MT2");

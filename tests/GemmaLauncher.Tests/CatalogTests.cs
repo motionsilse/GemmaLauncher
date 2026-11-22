@@ -9,9 +9,27 @@ public static class CatalogTests
         var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
         var catalog = CatalogLoader.Load(Path.Combine(root, "src/GemmaLauncher.App/Assets/catalog.json"));
         var ordered = catalog.Models.OrderBy(model => model.FamilyOrder).ToArray();
-        if (ordered.Length != 8 || !ordered.TakeLast(3).Select(model => model.Id).SequenceEqual(
+        if (ordered.Length != 10 || !ordered.TakeLast(3).Select(model => model.Id).SequenceEqual(
             ["plamo-3-translate-0.8b", "plamo-3-translate-2b", "anis-trans"]))
             throw new Exception("Both PLaMo choices must appear directly above ANIS in the built-in list.");
+        var gemmaModels = new[]
+        {
+            "translate-gemma4-sub-e2b-q4-k-xl", "translate-gemma4-sub-e4b-q4-k-xl",
+            "unsloth-gemma4-qat-e2b-ud-q4-k-xl", "unsloth-gemma4-qat-e4b-ud-q4-k-xl"
+        };
+        if (!ordered.Take(4).Select(model => model.Id).SequenceEqual(gemmaModels) ||
+            !catalog.Models.Take(4).Select(model => model.Id).SequenceEqual(gemmaModels))
+            throw new Exception("Both Unsloth QAT models must appear directly below Translate Gemma Sub.");
+        foreach (var modelChoice in ordered.Skip(2).Take(2))
+        {
+            var configuration = new LaunchConfiguration(new(modelChoice, "model.gguf", "mtp.gguf"), "llama-server.exe", modelChoice.Profile.DefaultContext, ".", 8080);
+            var arguments = ServerSession.BuildArguments(configuration);
+            if (!modelChoice.DisplayName.StartsWith("Unsloth Gemma 4 QAT", StringComparison.Ordinal) ||
+                modelChoice.Architecture != "gemma4" || !modelChoice.SupportsTaskPresets ||
+                !modelChoice.Artifacts.Single(a => a.Role == "model").Filename.EndsWith("-UD-Q4_K_XL.gguf", StringComparison.Ordinal) ||
+                modelChoice.Artifacts.Count(a => a.Role == "mtp") != 1 || !arguments.Contains("--spec-draft-model"))
+                throw new Exception("Unsloth QAT must use its own UD-Q4_K_XL weights and matching MTP draft model.");
+        }
         foreach (var modelChoice in ordered.TakeLast(3).Take(2))
         {
             var configuration = new LaunchConfiguration(new(modelChoice, "model.gguf", null), "llama-server.exe", modelChoice.Profile.DefaultContext, ".", 8080);
@@ -24,7 +42,7 @@ public static class CatalogTests
             if (!otherPlamo.SupportsTaskPresets || otherArguments.Contains("--no-prefill-assistant"))
                 throw new Exception("A shared architecture alone must not impose the PLaMo Translate prompt contract.");
         }
-        if (catalog.Models[0].Profile.Lazy != "on" || catalog.Models[1].Profile.Lazy != "on" || catalog.Models[2].Profile.MtpDraftMax != 4) throw new Exception("Model defaults were lost.");
+        if (catalog.Models[0].Profile.Lazy != "on" || catalog.Models[1].Profile.Lazy != "on" || catalog.Models.Single(model => model.FamilyId == "gemma-creative").Profile.MtpDraftMax != 4) throw new Exception("Model defaults were lost.");
         foreach (var hy in catalog.Models.Where(model => model.FamilyId == "hy-mt2"))
             if (hy.Profile.Lazy != "off" || hy.Artifacts.Length != 1 || hy.Profile.MtpDraftMax != 0 || hy.Profile.TopP != .6 || hy.Profile.Temperature != .7 || hy.Profile.RepeatPenalty != 1.05)
                 throw new Exception("HY-MT2 must retain independent translation defaults without MTP.");

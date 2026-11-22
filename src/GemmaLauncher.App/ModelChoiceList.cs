@@ -49,7 +49,13 @@ public sealed class ModelChoiceList : ListBox
         if (selected) { using var accent = new SolidBrush(Ui.Green); e.Graphics.FillRectangle(accent, e.Bounds.Left, e.Bounds.Top + 8 * scale, 4 * scale, e.Bounds.Height - 16 * scale); }
         var name = new Rectangle(e.Bounds.Left + pad, e.Bounds.Top + (int)(7 * scale), Math.Max(1, e.Bounds.Width - pad * 2 - (int)(20 * scale)), _nameFont.Height * 2);
         var displayName = model.DisplayName;
-        if (e.Bounds.Width / scale < 235 && model.Definition.FamilyId == "gemma-translation") displayName = "Gemma 4 · " + model.Variant;
+        if (e.Bounds.Width / scale < 235)
+            displayName = model.Definition.FamilyId switch
+            {
+                "gemma-translation" => "Gemma 4 Sub · " + model.Variant,
+                "gemma-unsloth-qat" => "Unsloth QAT · " + model.Variant,
+                _ => displayName
+            };
         TextRenderer.DrawText(e.Graphics, displayName, _nameFont, name, Enabled ? Ui.Ink : Ui.Muted, TextFormatFlags.WordBreak | TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
         var detail = new Rectangle(name.Left, e.Bounds.Bottom - (int)(8 * scale) - _detailFont.Height, name.Width, _detailFont.Height);
         TextRenderer.DrawText(e.Graphics, model.DownloadLabel + "  ·  " + model.Category, _detailFont, detail, Ui.Muted, TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
