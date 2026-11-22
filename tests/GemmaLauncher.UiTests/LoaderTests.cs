@@ -7,6 +7,7 @@ public static partial class Program
     private static async Task TestLoaderAsync()
     {
         await TestLoaderSettingsSaveFailureAsync();
+        TestStartupRegistration();
         await using var fixture = new Fixture();
         var account = new FakeAccount();
         var paths = new GemmaLauncher.Core.LauncherPaths(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")));
@@ -14,17 +15,36 @@ public static partial class Program
         var localCalls = 0;
         await using var shell = new LoaderShellViewModel(settings, new(paths), () => { localCalls++; return fixture.ViewModel; }, () => new(account));
         var available = new TaskCompletionSource<ReleaseUpdate?>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var release = new ReleaseUpdate(new Version(0, 10, 0), new Uri("https://github.com/motionsilse/GemmaLauncher/releases/tag/v0.10.0"));
+        var release = new ReleaseUpdate(new Version(0, 10, 0), new Uri("https://github.com/motionsilse/GemmaLauncher/releases/tag/v0.10.0"),
+            new(new Uri("https://github.com/motionsilse/GemmaLauncher/releases/download/v0.10.0/CatLoader-0.10.0-win-x64.exe"), 3, new string('0', 64)));
         Uri? openedRelease = null;
-        using var window = new LoaderWindow(shell, checkUpdate: token => available.Task.WaitAsync(token), openRelease: uri => openedRelease = uri);
+        var attempt = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var installCalls = 0;
+        using var window = new LoaderWindow(shell, checkUpdate: token => available.Task.WaitAsync(token), openRelease: uri => openedRelease = uri,
+            installUpdate: async (target, progress, token) =>
+            {
+                Assert(target == release, "The requested package must match the update shown.");
+                if (++installCalls != 1) return;
+                progress.Report(42);
+                await attempt.Task.WaitAsync(token);
+                throw new IOException("Simulated download failure");
+            });
         window.Show(); await Task.Delay(50);
         var update = Controls(window).OfType<Button>().Single(button => button.Name == "UpdateNotice");
         Assert(!update.Visible, "The update notice must stay hidden until a new release is found.");
         available.SetResult(release);
         await UntilAsync(() => update.Visible);
-        Assert(update.Text == Localization.T("ui.update.available", "0.10.0"), "The notice must show the new version.");
+        Assert(update.Text == Localization.T("ui.update.install", "0.10.0"), "The notice must show the new version and restart action.");
         update.PerformClick();
-        Assert(openedRelease == release.DownloadPage, "The notice must open that version's download page.");
+        await UntilAsync(() => !update.Enabled && update.Text == Localization.T("ui.update.progress", 42));
+        Assert(openedRelease is null, "Clicking a verified update should download in the app.");
+        attempt.SetResult();
+        var failure = Controls(window).OfType<Label>().Single(label => label.Name == "UpdateError");
+        await UntilAsync(() => failure.Visible && update.Enabled);
+        Controls(window).OfType<Button>().Single(button => button.Name == "UpdateReleasePage").PerformClick();
+        Assert(openedRelease == release.DownloadPage, "The fallback must open that version's official download page.");
+        update.PerformClick();
+        await UntilAsync(() => installCalls == 2 && !failure.Visible && update.Enabled);
         Assert(localCalls == 0 && account.Starts == 0, "Restoring ChatGPT must not create local VM or connect");
         var vm = shell.Account!;
         await vm.StartAsync();
@@ -42,10 +62,29 @@ public static partial class Program
         Assert(localAction.Visible && window.ClientRectangle.Contains(window.RectangleToClient(localAction.RectangleToScreen(localAction.ClientRectangle))), "Local primary must stay visible in unified shell");
         localAction.PerformClick(); await UntilAsync(() => fixture.ViewModel.IsServerRunning && !fixture.ViewModel.IsBusy);
         Assert(vm.IsConnected, "Starting local server must keep account connection");
+        window.WindowState = FormWindowState.Minimized;
+        await UntilAsync(() => !window.Visible);
+        Assert(fixture.ViewModel.IsServerRunning && vm.IsConnected, "Minimizing to the tray must preserve both running connections.");
+        window.WindowState = FormWindowState.Normal;
+        window.Show();
+        Assert(fixture.ViewModel.IsServerRunning && vm.IsConnected, "Restoring the window must preserve both running connections.");
+        fixture.ViewModel.SelectedContext = fixture.ViewModel.ContextChoices.Last();
+        Assert(fixture.ViewModel.HasPendingContext, "The recovery test must have a load option that has not been applied.");
+        fixture.Session.ExitUnexpectedly();
+        await UntilAsync(() => fixture.Session.Starts.Count == 2 && fixture.ViewModel.IsServerRunning && !fixture.ViewModel.IsBusy);
+        Assert(fixture.Session.Starts[0].Context == fixture.Session.Starts[1].Context, "Recovery must reuse the live configuration without applying pending load options.");
+        fixture.Session.ExitUnexpectedly();
+        Assert(fixture.Session.Starts.Count == 2 && !fixture.ViewModel.IsServerRunning && fixture.ViewModel.HasError, "A second unexpected exit must surface the failure instead of looping.");
+        fixture.ViewModel.PrimaryCommand.Execute(null);
+        await UntilAsync(() => fixture.ViewModel.IsServerRunning && !fixture.ViewModel.IsBusy);
         account.StoppingGate = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        var stopping = vm.StopAsync(); await Task.Delay(50);
-        var backgroundStop = Controls(window).OfType<Button>().Single(b => b.Text.Contains(Localization.T("ui.loader.chat")) && b.Text.Contains(Localization.T("ui.account.stopping")));
-        try { Assert(!backgroundStop.Enabled, "Background stop must be disabled during cleanup"); }
+        var stopping = vm.StopAsync();
+        try
+        {
+            Button? backgroundStop = null;
+            await UntilAsync(() => (backgroundStop = Controls(window).OfType<Button>().SingleOrDefault(b => b.Visible && b.Text.Contains(Localization.T("ui.loader.chat")) && b.Text.Contains(Localization.T("ui.account.stopping")))) is not null);
+            Assert(!backgroundStop!.Enabled, "Background stop must be disabled during cleanup");
+        }
         finally { account.StoppingGate.TrySetResult(); }
         await stopping;
         Assert(fixture.ViewModel.IsServerRunning, "Stopping account must keep local server running");
@@ -58,6 +97,27 @@ public static partial class Program
         window.Close();
         if (Directory.Exists(paths.Root)) Directory.Delete(paths.Root, true);
         await TestLoaderCleanupAsync();
+    }
+
+    private static void TestStartupRegistration()
+    {
+        var keyPath = @"Software\CatLoader.Tests-" + Guid.NewGuid().ToString("N");
+        var executable = Path.Combine(Path.GetTempPath(), "Cat Loader test.exe");
+        var startup = new WindowsStartup(executable, keyPath);
+        try
+        {
+            Assert(!startup.IsEnabled, "Startup is opt-in.");
+            startup.SetEnabled(true);
+            using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(keyPath))
+                Assert(key?.GetValue("Cat Loader") as string == $"\"{executable}\" --start-in-tray", "Windows startup must pass the hidden start argument and quote the executable path.");
+            var replacement = new WindowsStartup(Path.Combine(Path.GetTempPath(), "Cat Loader newer.exe"), keyPath);
+            replacement.RefreshExecutable();
+            using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(keyPath))
+                Assert((key?.GetValue("Cat Loader") as string)?.Contains("Cat Loader newer.exe", StringComparison.Ordinal) == true, "An update must refresh the registered executable.");
+            startup.SetEnabled(false);
+            Assert(!startup.IsEnabled, "Disabling startup must remove the launcher entry.");
+        }
+        finally { Microsoft.Win32.Registry.CurrentUser.DeleteSubKey(keyPath, throwOnMissingSubKey: false); }
     }
     private static async Task TestLoaderSettingsSaveFailureAsync()
     {

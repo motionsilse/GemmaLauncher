@@ -107,7 +107,7 @@ public interface IInstallationService
 
 public enum ServerState { Stopped, Starting, Running, Stopping, Faulted }
 public sealed class ModelLoadMemoryException(Exception inner) : IOException(Localization.T("engine.session.memoryFailed"), inner);
-public sealed record SessionStatus(ServerState State, string Message, int? ProcessId = null, string? ModelId = null);
+public sealed record SessionStatus(ServerState State, string Message, int? ProcessId = null, string? ModelId = null, bool UnexpectedExit = false);
 public sealed record LaunchConfiguration(InstalledModel Model, string RuntimeExecutable, int Context, string LogDirectory, int Port = 8080)
 {
     public ModelLoadOptions? LoadOptions { get; init; }

@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "Mettre à jour vers {0} et redémarrer",
+  "ui.update.progress": "Téléchargement de la mise à jour · {0}%",
+  "ui.update.applying": "Installation de la mise à jour",
+  "ui.update.failed": "Échec de la mise à jour. {0}",
+  "ui.update.releasePage": "Page de la version",
   "ui.account.loginPortBusy": "Une autre connexion utilise le port de retour (1455). Terminez ou annulez la connexion dans Codex ou une autre application, puis réessayez.",
   "ui.update.available": "Télécharger la nouvelle version {0}",
   "ui.anis.login": "Se connecter à Hugging Face",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "Korean → Japanese",
   "ui.anis.device": "Execution device",
   "ui.settings.done": "Terminé",
-  "ui.settings.closeToTray": "Continuer dans la zone de notification à la fermeture",
+  "ui.settings.closeToTray": "Continuer dans la zone de notification après fermeture ou réduction",
   "ui.source.license": "Licence",
   "ui.source.program": "Source du programme",
   "ui.connection.localOnly": "Exécution sur ce PC uniquement",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "Estimation RAM/VRAM indisponible. Consultez les mesures après démarrage.",
   "ui.resources.sizeUnknown": "Taille inconnue",
   "ui.resources.basis": "Référence pour le contexte par défaut de {0} tokens. Varie avec le GPU et le cache. Le mode CPU n’utilise pas la VRAM du modèle et peut exiger plus de RAM.",
-  "ui.resources.anisBasis": "RAM : référence CPU de l’auteur. VRAM : estimation CUDA. Le mode CPU n’utilise pas la VRAM du modèle."
+  "ui.resources.anisBasis": "RAM : référence CPU de l’auteur. VRAM : estimation CUDA. Le mode CPU n’utilise pas la VRAM du modèle.",
+  "ui.settings.startWithWindows": "Démarrer dans la zone de notification au démarrage de Windows",
+  "ui.tray.hide": "Masquer dans la zone de notification",
+  "ui.model.deleteFiles": "Supprimer les fichiers du modèle",
+  "ui.model.deleteFilesHint": "Supprimer définitivement les fichiers ci-dessous pour {0} ?",
+  "ui.model.filesDeleted": "Les fichiers sélectionnés du modèle ont été supprimés.",
+  "ui.note.serverRecovered": "Le serveur a redémarré après un arrêt inattendu."
 }

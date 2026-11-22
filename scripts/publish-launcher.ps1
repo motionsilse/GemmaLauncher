@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [ValidatePattern('^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$')]
-    [string]$Version = '0.1.5',
+    [string]$Version = '0.1.6',
     [string]$DotnetPath = 'dotnet',
     [string]$PythonPath = 'python',
     [string]$HuggingFaceClientId = $env:CAT_LOADER_HF_CLIENT_ID

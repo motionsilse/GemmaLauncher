@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "{0} 업데이트 및 재시작",
+  "ui.update.progress": "업데이트 다운로드 중 · {0}%",
+  "ui.update.applying": "업데이트 적용 중",
+  "ui.update.failed": "업데이트할 수 없습니다. {0}",
+  "ui.update.releasePage": "릴리즈 페이지",
   "ui.account.loginPortBusy": "다른 로그인 창이 로그인 응답 포트(1455)를 사용 중입니다. Codex 등 다른 앱의 진행 중인 로그인을 완료하거나 취소한 뒤 다시 로그인하세요.",
   "ui.update.available": "새 버전 {0} 다운로드",
   "ui.anis.login": "Hugging Face 로그인",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "한국어 → 일본어",
   "ui.anis.device": "실행 장치",
   "ui.settings.done": "완료",
-  "ui.settings.closeToTray": "창을 닫아도 트레이에서 계속 실행",
+  "ui.settings.closeToTray": "창을 닫거나 최소화할 때 트레이에서 계속 실행",
   "ui.source.license": "라이선스",
   "ui.source.program": "프로그램 출처",
   "ui.connection.localOnly": "이 PC에서만 실행됩니다",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "RAM·VRAM 추정 정보 없음. 실행 후 실측값을 확인하세요.",
   "ui.resources.sizeUnknown": "크기 정보 없음",
   "ui.resources.basis": "기본 대화 길이 {0} 기준 참고치입니다. GPU 할당·캐시에 따라 달라집니다. CPU 모드는 VRAM을 쓰지 않으며 RAM이 더 필요할 수 있습니다.",
-  "ui.resources.anisBasis": "RAM은 CPU 실행 제작자 참고값, VRAM은 CUDA 실행 추정치입니다. CPU 모드에서는 VRAM을 사용하지 않습니다."
+  "ui.resources.anisBasis": "RAM은 CPU 실행 제작자 참고값, VRAM은 CUDA 실행 추정치입니다. CPU 모드에서는 VRAM을 사용하지 않습니다.",
+  "ui.settings.startWithWindows": "Windows 시작 시 트레이에서 실행",
+  "ui.tray.hide": "트레이로 보내기",
+  "ui.model.deleteFiles": "모델 파일 삭제",
+  "ui.model.deleteFilesHint": "{0}에 사용되는 아래 파일을 디스크에서 삭제할까요?",
+  "ui.model.filesDeleted": "선택한 모델 파일을 삭제했습니다.",
+  "ui.note.serverRecovered": "예기치 않게 종료된 서버를 다시 시작했습니다."
 }

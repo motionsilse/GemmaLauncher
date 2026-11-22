@@ -18,8 +18,11 @@ public sealed class LoaderWindow : Form
     private readonly CancellationTokenSource updateLifetime = new();
     public event EventHandler? ActivationRequested;
     public event EventHandler? ExitRequested;
+    public event EventHandler? HiddenToTray;
+    public event EventHandler<ReleaseUpdate>? UpdateFound;
     public LoaderWindow(LoaderShellViewModel shell, uint activateMessage = 0, uint legacyActivateMessage = 0,
-        Func<CancellationToken, Task<ReleaseUpdate?>>? checkUpdate = null, Action<Uri>? openRelease = null)
+        Func<CancellationToken, Task<ReleaseUpdate?>>? checkUpdate = null,
+        Func<ReleaseUpdate, IProgress<int>, CancellationToken, Task>? installUpdate = null, Action<Uri>? openRelease = null)
     {
         this.shell = shell; this.activateMessage = activateMessage; legacyMessage = legacyActivateMessage;
         Text = "Cat Loader"; Font = ownedFont; BackColor = Ui.Paper; ForeColor = Ui.Ink;
@@ -46,39 +49,98 @@ public sealed class LoaderWindow : Form
         root.Controls.Add(saveError, 0, 2);
         if (checkUpdate is not null)
         {
+            var notice = Ui.Stack();
+            notice.Padding = Padding.Empty;
+            notice.BackColor = Ui.Paper;
+            notice.Margin = new Padding(24, 6, 24, 0);
             var update = Ui.Button();
             update.Name = "UpdateNotice";
-            update.Visible = false;
-            update.Anchor = AnchorStyles.Left;
-            update.Margin = new Padding(24, 6, 24, 0);
             update.BackColor = Ui.Tint;
-            root.Controls.Add(update, 0, 1);
+            var actions = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, WrapContents = true, Margin = Padding.Empty };
+            actions.Controls.Add(update);
+            var releasePage = Ui.Button();
+            releasePage.Name = "UpdateReleasePage";
+            bindings.Localize(releasePage, "ui.update.releasePage");
+            actions.Controls.Add(releasePage);
+            Ui.Add(notice, actions);
+            var errorLabel = Ui.Label();
+            errorLabel.Name = "UpdateError";
+            errorLabel.ForeColor = Color.Firebrick;
+            notice.SizeChanged += (_, _) => errorLabel.MaximumSize = new(Math.Max(1, notice.ClientSize.Width), 0);
+            Ui.Add(notice, errorLabel);
+            root.Controls.Add(notice, 0, 1);
             ReleaseUpdate? available = null;
+            Version? lastNotified = null;
             var checking = false;
-            bindings.Text(update, () => available is null ? "" : T("ui.update.available", available.Version.ToString(3)));
-            bindings.Visible(update, () => available is not null);
-            update.Click += (_, _) =>
+            var installing = false;
+            var percent = 0;
+            string? installError = null;
+            bool CanInstall() => installUpdate is not null && available?.Package is not null;
+            bindings.ActionText(update, () => available is null ? "" : installing
+                ? percent >= 100 ? T("ui.update.applying") : T("ui.update.progress", percent)
+                : T(CanInstall() ? "ui.update.install" : "ui.update.available", available.Version.ToString(3)));
+            bindings.Visible(notice, () => available is not null);
+            bindings.Enabled(update, () => !installing);
+            bindings.Visible(releasePage, () => installError is not null && CanInstall());
+            bindings.Text(errorLabel, () => installError is null ? "" : T("ui.update.failed", installError));
+            bindings.Visible(errorLabel, () => installError is not null);
+            releasePage.Click += (_, _) => { if (available is not null) OpenRelease(available); };
+            update.Click += async (_, _) =>
             {
-                if (available is null) return;
+                if (available is null || installing) return;
+                if (!CanInstall()) { OpenRelease(available); return; }
+                var token = updateLifetime.Token;
+                installing = true;
+                installError = null;
+                percent = 0;
+                bindings.Refresh();
                 try
                 {
-                    if (openRelease is not null) openRelease(available.DownloadPage);
-                    else System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(available.DownloadPage.AbsoluteUri) { UseShellExecute = true });
+                    var progress = new Progress<int>(value => { percent = value; bindings.RequestRefresh(); });
+                    await installUpdate!(available, progress, token);
                 }
-                catch (System.ComponentModel.Win32Exception ex) { MessageBox.Show(this, T("ui.note.browserFailed", ex.Message), Text); }
+                catch (OperationCanceledException) when (token.IsCancellationRequested) { }
+                catch (Exception error) when (error is IOException or UnauthorizedAccessException or InvalidDataException or HttpRequestException or OperationCanceledException or System.Security.SecurityException)
+                {
+                    installError = error is OperationCanceledException ? T("engine.install.timedOut") : error.Message;
+                }
+                finally
+                {
+                    installing = false;
+                    if (!token.IsCancellationRequested) bindings.RequestRefresh();
+                }
             };
             updateTimer = new() { Interval = (int)TimeSpan.FromHours(1).TotalMilliseconds };
-            Shown += async (_, _) => { updateTimer.Start(); await RefreshUpdateAsync(); };
+            HandleCreated += async (_, _) => { if (!updateTimer.Enabled) { updateTimer.Start(); await RefreshUpdateAsync(); } };
             updateTimer.Tick += async (_, _) => await RefreshUpdateAsync();
+
+            void OpenRelease(ReleaseUpdate release)
+            {
+                try
+                {
+                    if (openRelease is not null) openRelease(release.DownloadPage);
+                    else System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(release.DownloadPage.AbsoluteUri) { UseShellExecute = true });
+                }
+                catch (System.ComponentModel.Win32Exception ex) { MessageBox.Show(this, T("ui.note.browserFailed", ex.Message), Text); }
+            }
 
             async Task RefreshUpdateAsync()
             {
-                if (checking) return;
+                if (checking || installing) return;
                 checking = true;
                 try
                 {
-                    available = await checkUpdate(updateLifetime.Token);
-                    if (!updateLifetime.IsCancellationRequested) bindings.RequestRefresh();
+                    var token = updateLifetime.Token;
+                    var result = await checkUpdate(token);
+                    if (token.IsCancellationRequested || installing) return;
+                    if (available?.Version != result?.Version) installError = null;
+                    available = result;
+                    bindings.RequestRefresh();
+                    if (result is not null && lastNotified != result.Version)
+                    {
+                        lastNotified = result.Version;
+                        UpdateFound?.Invoke(this, result);
+                    }
                 }
                 catch (Exception error) when (error is HttpRequestException or IOException or OperationCanceledException or System.Text.Json.JsonException) { }
                 finally { checking = false; }
@@ -144,7 +206,11 @@ public sealed class LoaderWindow : Form
         settingsBindings.Localize(dialog,"ui.settings.title");
         var stack = Ui.Stack(); dialog.Body.Controls.Add(Ui.Scroll(stack));
         var text = Ui.Label(); settingsBindings.Localize(text,"ui.loader.closeHint"); Ui.Add(stack,text);
-        var close = new CheckBox { AutoSize = true }; settingsBindings.Localize(close,"ui.settings.closeToTray"); settingsBindings.Check(close,() => shell.CloseToTray,value => shell.CloseToTray = value); Ui.Add(stack,close);
+        var close = new CheckBox { AutoSize = true, Name = "CloseToTray" }; settingsBindings.Localize(close,"ui.settings.closeToTray"); settingsBindings.Check(close,() => shell.CloseToTray,value => shell.CloseToTray = value); Ui.Add(stack,close);
+        var startup = new CheckBox { AutoSize = true, Name = "StartWithWindows" };
+        settingsBindings.Localize(startup, "ui.settings.startWithWindows");
+        settingsBindings.Check(startup, () => shell.StartWithWindows, value => shell.StartWithWindows = value);
+        Ui.Add(stack, startup);
         var language = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, DisplayMember = "Name", ValueMember = "Code", Width = 240 };
         IEnumerable<LanguageOption> Languages() => new[] { new LanguageOption("auto",T("ui.language.auto")) }.Concat(Localization.Current.Languages);
         settingsBindings.Choice(language,Languages,() => Languages().FirstOrDefault(option => option.Code == shell.LanguageSelection),option => shell.LanguageSelection = option.Code,option => option.Name); Ui.Add(stack,language);
@@ -152,6 +218,17 @@ public sealed class LoaderWindow : Form
         settingsBindings.Start(); return dialog;
     }
     protected override void OnShown(EventArgs e) { WindowLayout.FitToWorkArea(this,Screen.FromControl(this).WorkingArea); base.OnShown(e); }
+    internal void SendToTray()
+    {
+        if (!Visible) return;
+        Hide();
+        HiddenToTray?.Invoke(this, EventArgs.Empty);
+    }
+    protected override void OnResize(EventArgs e)
+    {
+        base.OnResize(e);
+        if (WindowState == FormWindowState.Minimized && shell is { CloseToTray: true }) SendToTray();
+    }
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData) { if (keyData == (Keys.Control | Keys.Q)) { ExitRequested?.Invoke(this,EventArgs.Empty); return true; } return base.ProcessCmdKey(ref msg,keyData); }
     protected override void WndProc(ref Message m) { if (m.Msg != 0 && ((uint)m.Msg == activateMessage || (uint)m.Msg == legacyMessage)) { ActivationRequested?.Invoke(this,EventArgs.Empty); return; } base.WndProc(ref m); }
     protected override void Dispose(bool disposing)

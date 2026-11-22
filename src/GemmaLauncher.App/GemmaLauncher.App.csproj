@@ -5,7 +5,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <AssemblyName>CatLoader</AssemblyName>
-    <Version>0.1.5</Version>
+    <Version>0.1.6</Version>
     <HuggingFaceClientId Condition="'$(HuggingFaceClientId)' == ''">b5a9b43f-5d3d-4379-b729-e9033aee4c88</HuggingFaceClientId>
     <StartupObject>GemmaLauncher.App.Program</StartupObject>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -16,6 +16,12 @@
     <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
       <_Parameter1>HuggingFaceClientId</_Parameter1>
       <_Parameter2>$(HuggingFaceClientId)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <ItemGroup Condition="'$(PublishSingleFile)' == 'true'">
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>CatLoaderPortable</_Parameter1>
+      <_Parameter2>true</_Parameter2>
     </AssemblyAttribute>
   </ItemGroup>
   <ItemGroup>

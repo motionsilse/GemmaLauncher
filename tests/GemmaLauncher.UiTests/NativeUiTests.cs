@@ -73,6 +73,81 @@ public static partial class Program
         window.Close();
     }
 
+    private static async Task TestManagedModelActionsAsync()
+    {
+        await using var fixture = new Fixture();
+        var vm = fixture.ViewModel;
+        await UntilAsync(() => !vm.IsBusy);
+        var model = vm.SelectedModel!;
+        var artifact = model.Artifacts.Single(file => file.Role == "model");
+        var folder = Path.Combine(fixture.Paths.Models, model.Id);
+        var file = Path.Combine(folder, artifact.Sha256[..12], artifact.Filename);
+        Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+        await File.WriteAllTextAsync(file, "simulated cache");
+        string? opened = null;
+        vm.OpenModelDirectory = path => opened = path;
+        await using var shell = BenchmarkShell(fixture);
+        using var window = new LoaderWindow(shell);
+        window.Show();
+        await UntilAsync(() => Controls(window).Any(control => control.Name == "OpenModelFolder"));
+        var open = Controls(window).OfType<Button>().Single(button => button.Name == "OpenModelFolder");
+        var delete = Controls(window).OfType<Button>().Single(button => button.Name == "DeleteModelFiles");
+        var description = Controls(window).Single(control => control.Name == "RunModelDescription");
+        Assert(open.Visible && delete.Visible && delete.Enabled, "Managed model actions must be available from the Run page.");
+        Assert(InViewport(open) && InViewport(delete) && open.PointToScreen(Point.Empty).Y < description.PointToScreen(Point.Empty).Y,
+            "Both model file actions must appear above the description without scrolling.");
+        open.PerformClick();
+        Assert(opened == folder, "Open folder must point at the selected model's managed files.");
+        vm.PrimaryCommand.Execute(null);
+        await UntilAsync(() => vm.IsServerRunning && !delete.Enabled);
+        Assert(open.Enabled && File.Exists(file), "The folder must remain accessible while the server uses the files.");
+        vm.PrimaryCommand.Execute(null);
+        await UntilAsync(() => !vm.IsBusy && !vm.IsServerRunning && delete.Enabled);
+        fixture.Installer.MissingModels.Add(model.Id);
+        vm.DeleteModelFilesCommand.Execute(vm.ModelFilesToDelete);
+        await UntilAsync(() => !vm.IsBusy && !delete.Enabled && !open.Enabled);
+        Assert(!File.Exists(file) && vm.SelectedModel == model && vm.PrimaryLabel == Localization.T("ui.action.download"), "Deleting files must keep the model available for a new download.");
+        Assert(open.Visible && delete.Visible && !open.Enabled, "Both controls must stay in place when their files are missing.");
+
+        var discovered = Path.Combine(fixture.Paths.Root, "search folder", artifact.Filename);
+        Directory.CreateDirectory(Path.GetDirectoryName(discovered)!);
+        await File.WriteAllTextAsync(discovered, "simulated model from a search folder");
+        fixture.Installer.DiscoveredMainFiles[model.Id] = discovered;
+        fixture.Installer.MissingModels.Remove(model.Id);
+        vm.SelectedModel = model;
+        await UntilAsync(() => !vm.IsBusy && open.Enabled);
+        Assert(delete.Visible && delete.Enabled, "A ready model found through a search folder must also offer file deletion.");
+        open.PerformClick();
+        Assert(opened == Path.GetDirectoryName(discovered), "Folder access must open the discovered model's actual directory.");
+        string[]? shownPaths = null;
+        window.BeginInvoke(() =>
+        {
+            var dialog = Application.OpenForms.OfType<LauncherDialog>().Single();
+            var paths = Controls(dialog).OfType<TextBox>().Single(control => control.Name == "DeleteModelFilePaths");
+            shownPaths = paths.Lines;
+            dialog.DialogResult = DialogResult.Cancel;
+        });
+        delete.PerformClick();
+        Assert(shownPaths is not null && shownPaths.SequenceEqual([discovered]) && File.Exists(discovered),
+            "The confirmation must show the exact discovered file, and cancel must preserve it.");
+
+        var evidence = Path.Combine(Root, "artifacts/cat-loader");
+        Directory.CreateDirectory(evidence);
+        using (var screenshot = new Bitmap(window.Width, window.Height))
+        {
+            window.DrawToBitmap(screenshot, new Rectangle(Point.Empty, window.Size));
+            screenshot.Save(Path.Combine(evidence, "model-file-actions.png"));
+        }
+
+        var nearby = Path.Combine(Path.GetDirectoryName(discovered)!, "shared-draft.gguf");
+        await File.WriteAllTextAsync(nearby, "shared by another model");
+        fixture.Installer.MissingModels.Add(model.Id);
+        vm.DeleteModelFilesCommand.Execute(vm.ModelFilesToDelete);
+        await UntilAsync(() => !vm.IsBusy && !delete.Enabled);
+        Assert(!File.Exists(discovered) && File.Exists(nearby), "Deletion must remove only the confirmed file from a search folder.");
+        window.Close();
+    }
+
     private static async Task TestLibrarySelectionFlowAsync()
     {
         await using var fixture = new Fixture(); var vm = fixture.ViewModel;

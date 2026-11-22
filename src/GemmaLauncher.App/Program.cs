@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using System.Windows.Forms;
+using GemmaLauncher.Core;
 
 namespace GemmaLauncher.App;
 
@@ -13,8 +15,19 @@ public static class Program
         {
             if (isUtilityCommand) return BundledResources.RunUtilityCommand(args);
             ApplicationConfiguration.Initialize();
-            using var application = new App(args);
-            if (application.Ready) Application.Run(application);
+            PortableUpdate? updated;
+            using (var application = new App(args))
+            {
+                if (application.Ready) Application.Run(application);
+                updated = application.PendingRestart;
+            }
+            if (updated is not null)
+            {
+                var start = new ProcessStartInfo(updated.Executable) { UseShellExecute = false };
+                foreach (var argument in args.Where(argument => argument != WindowsStartup.TrayArgument)) start.ArgumentList.Add(argument);
+                try { using var next = Process.Start(start) ?? throw new IOException(); }
+                catch { updated.Restore(); throw; }
+            }
             return 0;
         }
         catch (Exception exception)

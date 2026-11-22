@@ -64,6 +64,41 @@ public sealed partial class LauncherViewModel
     public ICommand ConnectMtpCommand { get; private set; } = null!;
     public ICommand ResetLoadOptionsCommand { get; private set; } = null!;
     public ICommand RemoveLibraryModelCommand { get; private set; } = null!;
+    public Action<string>? OpenModelDirectory { get; set; }
+    public string[] ModelFilesToDelete => SelectedModel is { } model ? ModelCache.DeletionCandidates(_paths, model, _installed) : [];
+    private string? ModelFolder
+    {
+        get
+        {
+            if (SelectedModel is not { } model) return null;
+            var files = ModelCache.PresentFiles(_paths, model);
+            if (_installed?.ModelPath is { } mainPath && File.Exists(mainPath))
+            {
+                if (files.Contains(mainPath, StringComparer.OrdinalIgnoreCase))
+                    return IsAnis ? _anis.ManagedModelDirectory : Path.Combine(_paths.Models, model.Id);
+                var folder = Path.GetDirectoryName(mainPath);
+                return IsAnis && folder is not null ? Path.GetDirectoryName(folder) : folder;
+            }
+            if (files.Length > 0) return IsAnis ? _anis.ManagedModelDirectory : Path.Combine(_paths.Models, model.Id);
+            return null;
+        }
+    }
+
+    private void DeleteSelectedModelFiles(string[]? confirmed)
+    {
+        if (!CanSelectModel || SelectedModel is not { } model || confirmed is not { Length: > 0 } ||
+            !ModelFilesToDelete.SequenceEqual(confirmed, StringComparer.OrdinalIgnoreCase)) return;
+        var installed = _installed;
+        BeginOperation(async token =>
+        {
+            try
+            {
+                await Task.Run(() => ModelCache.DeleteFiles(_paths, model, installed, confirmed), token);
+                Note(T("ui.model.filesDeleted"));
+            }
+            finally { await ScanSelectedAsync(model); }
+        }, stopOnFailure: false);
+    }
     public bool CanEditPreset => EditingPreset is not null && !IsBusy;
     public bool CanChangePreset => !IsBusy;
     public PresetChoice? SelectedPreset

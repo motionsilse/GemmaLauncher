@@ -27,6 +27,7 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
     private InstalledModel? _installed;
     private bool _busy;
     private bool _operationUsesModel;
+    private bool _canRecoverServer;
     private bool _scanning;
     private bool _isDisposed;
     private bool _rebuildingChoices;
@@ -51,6 +52,7 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
     private bool _indeterminate = true;
     private int? _activeContext;
     private ModelLoadOptions? _activeLoadOptions;
+    private LaunchConfiguration? _lastLaunch;
 
     public ObservableCollection<ModelDefinition> Models { get; }
     public ObservableCollection<ModelPresentation> ModelCards { get; }
@@ -131,6 +133,7 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
     public ICommand ManageModelsCommand { get; }
     public ICommand SelectModelCommand { get; }
     public ICommand OpenFolderCommand { get; }
+    public ICommand DeleteModelFilesCommand { get; }
     public ICommand OpenLogsCommand { get; }
     public ICommand ConnectModelFileCommand { get; }
     public ICommand ChooseModelFolderCommand { get; }
@@ -163,7 +166,8 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
             if (!IsServerRunning) { SelectedModel = model; return; }
             if (SavePendingPreset()) _ = StopAndSelectModelAsync(model);
         }, _ => CanChooseModel);
-        OpenFolderCommand = Command(_ => OpenDirectory(_installed is null ? _paths.Models : Path.GetDirectoryName(_installed.ModelPath)!));
+        OpenFolderCommand = Command(_ => { if (ModelFolder is { } folder) (OpenModelDirectory ?? OpenDirectory)(folder); }, _ => ModelFolder is not null);
+        DeleteModelFilesCommand = Command(value => DeleteSelectedModelFiles(value as string[]), _ => CanSelectModel && ModelFilesToDelete.Length > 0);
         OpenLogsCommand = Command(_ => OpenDirectory(_paths.Logs));
         ConnectModelFileCommand = Command(_ => ChooseModelFile(), _ => CanSelectModel);
         ChooseModelFolderCommand = Command(_ => ChooseModelFolder(), _ => CanSelectModel);
@@ -262,13 +266,14 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
 
     private void Primary()
     {
-        if (_busy) { _operationCancellation?.Cancel(); _progressMessage = T("ui.status.cancelling"); _transferProgress = null; Refresh(); return; }
+        if (_busy) { _canRecoverServer = false; _operationCancellation?.Cancel(); _progressMessage = T("ui.status.cancelling"); _transferProgress = null; Refresh(); return; }
         if (!CanOpenWebUi && RecoverBeforeStart()) return;
         if (!CanOpenWebUi && SelectedPresentation?.FileState == ModelFileState.ReconnectRequired)
         {
             if (IsAnis) ChooseAnisFolder(); else if (NeedsMtpReconnect) ChooseMtp(); else ChooseModelFile();
             return;
         }
+        _canRecoverServer = !CanOpenWebUi;
         BeginOperation(CanOpenWebUi ? StopAsync : StartAsync);
     }
 
@@ -330,12 +335,14 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
         _progressMessage = T("ui.status.loading"); _transferProgress = null; _indeterminate = true; Refresh();
         if (model.Engine == "llama" && model.Origin != "catalog") await Task.Run(() => GgufMetadata.Read(_installed.ModelPath, cancellationToken).RequireLoadable(), cancellationToken);
         var launchOptions = model.Engine == "anis" ? null : LoadOptions;
-        await _session.StartAsync(new(_installed, runtime, context, _paths.Logs, _serverPort)
+        var configuration = new LaunchConfiguration(_installed, runtime, context, _paths.Logs, _serverPort)
         {
             LoadOptions = launchOptions,
             Preset = model.SupportsTaskPresets ? SelectedPreset?.Preset ?? TaskPreset.Empty : TaskPreset.Empty,
             EnableGateway = true, BackendSourceDirectory = sourceDirectory, AnisDevice = AnisDevice
-        }, cancellationToken);
+        };
+        await _session.StartAsync(configuration, cancellationToken);
+        _lastLaunch = configuration;
         RememberModel(model); SaveSettings();
         _activeContext = context;
         _activeLoadOptions = launchOptions;
@@ -343,10 +350,12 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
 
     private async Task StopAsync(CancellationToken cancellationToken)
     {
+        _canRecoverServer = false;
+        _lastLaunch = null;
         _progressMessage = T("ui.status.stoppingDescription"); Refresh();
         await _session.StopAsync(cancellationToken); _activeContext = null; _activeLoadOptions = null;
     }
-    private async Task RestartAsync(CancellationToken cancellationToken) { await StopAsync(cancellationToken); cancellationToken.ThrowIfCancellationRequested(); await StartAsync(cancellationToken); }
+    private async Task RestartAsync(CancellationToken cancellationToken) { await StopAsync(cancellationToken); cancellationToken.ThrowIfCancellationRequested(); _canRecoverServer = true; await StartAsync(cancellationToken); }
     private async Task StopAndSelectModelAsync(ModelDefinition model)
     {
         var stopped = false;
@@ -364,6 +373,19 @@ public sealed partial class LauncherViewModel : ObservableObject, IAsyncDisposab
     {
         if (Environment.CurrentManagedThreadId != _uiThread) { _uiContext.Post(_ => OnSessionStatus(sender, status), null); return; }
         if (_isDisposed) return;
+        if (status.UnexpectedExit && (SelectedModel?.Id != status.ModelId || _session.Status != status)) return;
+        if (status.UnexpectedExit && _canRecoverServer && !_busy && !_scanning && _lastLaunch is { } launch)
+        {
+            _canRecoverServer = false;
+            SaveError(new IOException(status.Message));
+            BeginOperation(async token =>
+            {
+                var preset = launch.Model.Definition.SupportsTaskPresets ? SelectedPreset?.Preset ?? TaskPreset.Empty : TaskPreset.Empty;
+                await _session.StartAsync(launch with { Preset = preset }, token);
+                Note(T("ui.note.serverRecovered"));
+            });
+            return;
+        }
         if (status.State == ServerState.Faulted) _error = status.Message;
         if (status.State is ServerState.Starting or ServerState.Stopping) _progressMessage = status.Message;
         if (status.State != ServerState.Running) { _memoryUsage = null; _privateRamBytes = null; }

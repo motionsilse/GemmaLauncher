@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "Cập nhật lên {0} và khởi động lại",
+  "ui.update.progress": "Đang tải bản cập nhật · {0}%",
+  "ui.update.applying": "Đang cài đặt bản cập nhật",
+  "ui.update.failed": "Không thể cập nhật. {0}",
+  "ui.update.releasePage": "Trang phát hành",
   "ui.account.loginPortBusy": "Một lần đăng nhập khác đang dùng cổng phản hồi (1455). Hoàn tất hoặc hủy đăng nhập trong Codex hay ứng dụng khác, rồi thử lại.",
   "ui.update.available": "Tải phiên bản mới {0}",
   "ui.anis.login": "Đăng nhập Hugging Face",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "Korean → Japanese",
   "ui.anis.device": "Execution device",
   "ui.settings.done": "Xong",
-  "ui.settings.closeToTray": "Tiếp tục chạy ở khay hệ thống khi đóng cửa sổ",
+  "ui.settings.closeToTray": "Tiếp tục chạy trong khay khi đóng hoặc thu nhỏ",
   "ui.source.license": "Giấy phép",
   "ui.source.program": "Nguồn chương trình",
   "ui.connection.localOnly": "Chỉ chạy trên máy tính này",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "Chưa có ước tính RAM/VRAM. Xem mức dùng thực sau khi chạy.",
   "ui.resources.sizeUnknown": "Chưa biết kích thước",
   "ui.resources.basis": "Tham khảo tại ngữ cảnh mặc định {0} token. Phụ thuộc GPU và bộ nhớ đệm. Chế độ CPU không dùng VRAM mô hình và có thể cần thêm RAM.",
-  "ui.resources.anisBasis": "RAM: tham khảo CPU của tác giả. VRAM: ước tính CUDA. Chế độ CPU không dùng VRAM mô hình."
+  "ui.resources.anisBasis": "RAM: tham khảo CPU của tác giả. VRAM: ước tính CUDA. Chế độ CPU không dùng VRAM mô hình.",
+  "ui.settings.startWithWindows": "Khởi chạy trong khay khi Windows khởi động",
+  "ui.tray.hide": "Chuyển vào khay hệ thống",
+  "ui.model.deleteFiles": "Xóa tệp mô hình",
+  "ui.model.deleteFilesHint": "Xóa vĩnh viễn các tệp của {0} được liệt kê bên dưới?",
+  "ui.model.filesDeleted": "Đã xóa các tệp mô hình được chọn.",
+  "ui.note.serverRecovered": "Đã khởi động lại máy chủ sau khi bị dừng đột ngột."
 }

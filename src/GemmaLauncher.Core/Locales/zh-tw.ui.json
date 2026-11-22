@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "更新至 {0} 並重新啟動",
+  "ui.update.progress": "正在下載更新 · {0}%",
+  "ui.update.applying": "正在安裝更新",
+  "ui.update.failed": "無法更新。{0}",
+  "ui.update.releasePage": "發行頁面",
   "ui.account.loginPortBusy": "其他登入正在使用回呼連接埠（1455）。請完成或取消 Codex 等應用程式中的登入，然後重試。",
   "ui.update.available": "下載新版本 {0}",
   "ui.anis.login": "登入 Hugging Face",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "Korean → Japanese",
   "ui.anis.device": "Execution device",
   "ui.settings.done": "完成",
-  "ui.settings.closeToTray": "關閉視窗後繼續在系統匣執行",
+  "ui.settings.closeToTray": "關閉或最小化時在系統匣中繼續執行",
   "ui.source.license": "授權條款",
   "ui.source.program": "程式來源",
   "ui.connection.localOnly": "僅在此電腦上執行",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "無 RAM/VRAM 估計值，請啟動後查看實際用量。",
   "ui.resources.sizeUnknown": "大小未知",
   "ui.resources.basis": "預設 {0} 個權杖的參考值。GPU 分配和快取會改變用量。CPU 模式不使用模型顯存，可能需要更多記憶體。",
-  "ui.resources.anisBasis": "RAM 為作者的 CPU 參考值，VRAM 為 CUDA 估計值。CPU 模式不使用模型顯存。"
+  "ui.resources.anisBasis": "RAM 為作者的 CPU 參考值，VRAM 為 CUDA 估計值。CPU 模式不使用模型顯存。",
+  "ui.settings.startWithWindows": "Windows 啟動時在系統匣中執行",
+  "ui.tray.hide": "移至系統匣",
+  "ui.model.deleteFiles": "刪除模型檔案",
+  "ui.model.deleteFilesHint": "要永久刪除以下屬於 {0} 的檔案嗎？",
+  "ui.model.filesDeleted": "已刪除所選的模型檔案。",
+  "ui.note.serverRecovered": "伺服器意外結束後已重新啟動。"
 }

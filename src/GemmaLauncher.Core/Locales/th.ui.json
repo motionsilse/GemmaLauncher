@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "อัปเดตเป็น {0} และเริ่มใหม่",
+  "ui.update.progress": "กำลังดาวน์โหลดอัปเดต · {0}%",
+  "ui.update.applying": "กำลังติดตั้งอัปเดต",
+  "ui.update.failed": "อัปเดตไม่สำเร็จ {0}",
+  "ui.update.releasePage": "หน้ารุ่นเผยแพร่",
   "ui.account.loginPortBusy": "การลงชื่อเข้าใช้อื่นกำลังใช้พอร์ตตอบกลับ (1455) โปรดดำเนินการลงชื่อเข้าใช้ใน Codex หรือแอปอื่นให้เสร็จสิ้นหรือยกเลิก แล้วลองอีกครั้ง",
   "ui.update.available": "ดาวน์โหลดเวอร์ชันใหม่ {0}",
   "ui.anis.login": "เข้าสู่ระบบ Hugging Face",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "Korean → Japanese",
   "ui.anis.device": "Execution device",
   "ui.settings.done": "เสร็จสิ้น",
-  "ui.settings.closeToTray": "ทำงานต่อในถาดระบบเมื่อปิดหน้าต่าง",
+  "ui.settings.closeToTray": "ทำงานต่อในถาดระบบเมื่อปิดหรือย่อหน้าต่าง",
   "ui.source.license": "ใบอนุญาต",
   "ui.source.program": "ที่มาของโปรแกรม",
   "ui.connection.localOnly": "ทำงานบนพีซีนี้เท่านั้น",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "ไม่มีค่าประมาณ RAM/VRAM โปรดดูการใช้งานจริงหลังเริ่ม",
   "ui.resources.sizeUnknown": "ไม่ทราบขนาด",
   "ui.resources.basis": "ค่าอ้างอิงที่บริบทเริ่มต้น {0} โทเคน ขึ้นอยู่กับ GPU และแคช โหมด CPU ไม่ใช้ VRAM ของโมเดลและอาจต้องการ RAM เพิ่ม",
-  "ui.resources.anisBasis": "RAM เป็นค่าอ้างอิง CPU จากผู้สร้าง ส่วน VRAM เป็นค่าประมาณ CUDA โหมด CPU ไม่ใช้ VRAM ของโมเดล"
+  "ui.resources.anisBasis": "RAM เป็นค่าอ้างอิง CPU จากผู้สร้าง ส่วน VRAM เป็นค่าประมาณ CUDA โหมด CPU ไม่ใช้ VRAM ของโมเดล",
+  "ui.settings.startWithWindows": "เริ่มในถาดระบบเมื่อเปิด Windows",
+  "ui.tray.hide": "ย้ายไปที่ถาดระบบ",
+  "ui.model.deleteFiles": "ลบไฟล์โมเดล",
+  "ui.model.deleteFilesHint": "ลบไฟล์ของ {0} ที่แสดงด้านล่างอย่างถาวรหรือไม่",
+  "ui.model.filesDeleted": "ลบไฟล์โมเดลที่เลือกแล้ว",
+  "ui.note.serverRecovered": "เริ่มเซิร์ฟเวอร์ใหม่หลังจากหยุดทำงานโดยไม่คาดคิด"
 }

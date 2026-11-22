@@ -32,7 +32,37 @@ public sealed class LauncherWorkspace : LauncherPage
         Bindings.Visible(selected, () => vm.HasSelectedModel);
         var category = Value(selected, () => vm.SelectedPresentation?.Category ?? ""); category.ForeColor = Ui.Green; Ui.SetFont(category, Ui.SecondaryFontSize, FontStyle.Bold);
         var title = Value(selected, () => vm.SelectedPresentation?.DisplayName ?? ""); Ui.SetFont(title, 18, FontStyle.Bold);
-        Value(selected, () => vm.SelectedPresentation?.Description ?? "");
+        var modelActions = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, WrapContents = true, Margin = new Padding(0, 0, 0, 10) };
+        var folder = Ui.Button(); folder.Name = "OpenModelFolder"; folder.BackColor = Ui.Tint;
+        Bindings.Localize(folder, "ui.files.folder"); Bindings.Command(folder, vm.OpenFolderCommand);
+        modelActions.Controls.Add(folder);
+        var delete = Ui.Button(); delete.Name = "DeleteModelFiles";
+        Bindings.Localize(delete, "ui.model.deleteFiles");
+        Bindings.Enabled(delete, () => vm.DeleteModelFilesCommand.CanExecute(null));
+        delete.Click += (_, _) =>
+        {
+            if (!vm.DeleteModelFilesCommand.CanExecute(null)) return;
+            var model = vm.SelectedModel;
+            var files = vm.ModelFilesToDelete;
+            using var dialog = new LauncherDialog(vm, Core.Localization.T("ui.model.deleteFiles"), new Size(640, 380));
+            var content = Ui.Stack();
+            var message = Ui.Label(Core.Localization.T("ui.model.deleteFilesHint", vm.SelectedPresentation?.DisplayName ?? ""));
+            Ui.Add(content, message);
+            var paths = Ui.TextBox(); paths.Name = "DeleteModelFilePaths"; paths.Multiline = true;
+            paths.ReadOnly = true; paths.ScrollBars = ScrollBars.Vertical; paths.Height = 120;
+            paths.Lines = files;
+            Ui.Add(content, paths);
+            dialog.Content.Controls.Add(Ui.Scroll(content));
+            dialog.AddAction(Core.Localization.T("ui.account.cancel"), DialogResult.Cancel, true);
+            dialog.AddAction(Core.Localization.T("ui.model.deleteFiles"), DialogResult.Yes);
+            if (dialog.ShowDialog(this) == DialogResult.Yes && vm.SelectedModel == model) vm.DeleteModelFilesCommand.Execute(files);
+        };
+        modelActions.Controls.Add(delete);
+        var unlink = Ui.Button(); unlink.Name = "RemoveModelRegistration";
+        Bindings.Localize(unlink, "ui.library.remove"); Bindings.Command(unlink, vm.RemoveLibraryModelCommand, () => vm.SelectedPresentation);
+        Bindings.Visible(unlink, () => vm.SelectedPresentation?.IsUserModel == true); modelActions.Controls.Add(unlink);
+        Ui.Add(selected, modelActions);
+        var description = Value(selected, () => vm.SelectedPresentation?.Description ?? ""); description.Name = "RunModelDescription";
         var translationHint = Value(selected, () => vm.SelectedPresentation?.HardwareGuide ?? "");
         translationHint.Name = "RunTranslationHint";
         Bindings.Visible(translationHint, () => vm.SelectedModel?.UsesPlamoTranslationTemplate == true);
@@ -170,7 +200,7 @@ public sealed class LauncherWorkspace : LauncherPage
         Heading(load, "ui.library.resetHint");
         Action(load, "ui.library.resetOptions", vm.ResetLoadOptionsCommand);
         var web = Action(advanced, "ui.connection.web", vm.OpenWebUiCommand); Bindings.Visible(web, () => !vm.IsAnis);
-        Action(advanced, "ui.files.logs", vm.OpenLogsCommand); Action(advanced, "ui.files.folder", vm.OpenFolderCommand);
+        Action(advanced, "ui.files.logs", vm.OpenLogsCommand);
         StartBindings();
     }
     private void CopyField(TableLayoutPanel stack, string key, Func<string> get, System.Windows.Input.ICommand? command, UiBindings? bindings = null)

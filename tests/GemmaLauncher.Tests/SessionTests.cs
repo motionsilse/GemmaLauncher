@@ -56,6 +56,8 @@ public static class SessionTests
             var first = await reader.ReadLineAsync();
             string? line;
             while (!string.IsNullOrEmpty(line = await reader.ReadLineAsync())) { }
+            if (mode == "warm-up" && first?.StartsWith("POST /v1/chat/completions ", StringComparison.Ordinal) == true)
+                await File.WriteAllTextAsync(modelPath + ".warm-up", "received");
             var body = first?.Contains("/v1/models", StringComparison.Ordinal) == true
                 ? JsonSerializer.Serialize(new { data = new[] { new { id = mode == "wrong-alias" ? "someone-else" : alias } } })
                 : "{\"status\":\"ok\"}";
@@ -80,6 +82,12 @@ public static class SessionTests
         try
         {
             var configuration = CreateConfiguration(directory, "ready");
+            await using (var warming = new ServerSession(TimeSpan.FromSeconds(10)))
+            {
+                var warmUp = CreateConfiguration(directory, "warm-up");
+                await warming.StartAsync(warmUp);
+                Assert(File.Exists(warmUp.Model.ModelPath + ".warm-up"), "Startup must exercise completions before exposing the running state.");
+            }
             await CheckAnisReadinessAsync(configuration, directory);
             CheckArguments(configuration);
             await CheckInvalidContextAsync(configuration);
@@ -258,6 +266,7 @@ public static class SessionTests
         using var child = Process.GetProcessById(session.Status.ProcessId!.Value);
         child.Kill();
         var status = await faulted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert(status.UnexpectedExit && status.ModelId == configuration.Model.Definition.Id, "An unexpected exit must identify the running model for recovery.");
         Assert(status.ProcessId is null && status.Message.Contains("예기치", StringComparison.Ordinal), "Crash must remove stale running state.");
         await session.StartAsync(configuration);
         Assert(session.Status.State == ServerState.Running, "A crashed session must restart.");

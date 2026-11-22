@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "Perbarui ke {0} dan mulai ulang",
+  "ui.update.progress": "Mengunduh pembaruan · {0}%",
+  "ui.update.applying": "Memasang pembaruan",
+  "ui.update.failed": "Pembaruan gagal. {0}",
+  "ui.update.releasePage": "Halaman rilis",
   "ui.account.loginPortBusy": "Proses masuk lain sedang menggunakan port callback (1455). Selesaikan atau batalkan proses masuk di Codex atau aplikasi lain, lalu coba lagi.",
   "ui.update.available": "Unduh versi baru {0}",
   "ui.anis.login": "Masuk ke Hugging Face",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "Korean → Japanese",
   "ui.anis.device": "Execution device",
   "ui.settings.done": "Selesai",
-  "ui.settings.closeToTray": "Tetap berjalan di baki saat jendela ditutup",
+  "ui.settings.closeToTray": "Tetap berjalan di baki saat ditutup atau diminimalkan",
   "ui.source.license": "Lisensi",
   "ui.source.program": "Sumber program",
   "ui.connection.localOnly": "Hanya berjalan di PC ini",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "Perkiraan RAM/VRAM tidak tersedia. Periksa penggunaan nyata setelah mulai.",
   "ui.resources.sizeUnknown": "Ukuran tidak diketahui",
   "ui.resources.basis": "Referensi pada konteks default {0} token. Berubah sesuai GPU dan cache. Mode CPU tidak memakai VRAM model dan mungkin membutuhkan lebih banyak RAM.",
-  "ui.resources.anisBasis": "RAM: referensi CPU dari pembuat. VRAM: perkiraan CUDA. Mode CPU tidak memakai VRAM model."
+  "ui.resources.anisBasis": "RAM: referensi CPU dari pembuat. VRAM: perkiraan CUDA. Mode CPU tidak memakai VRAM model.",
+  "ui.settings.startWithWindows": "Mulai di baki saat Windows dimulai",
+  "ui.tray.hide": "Kirim ke baki",
+  "ui.model.deleteFiles": "Hapus file model",
+  "ui.model.deleteFilesHint": "Hapus permanen file untuk {0} yang tercantum di bawah?",
+  "ui.model.filesDeleted": "File model yang dipilih telah dihapus.",
+  "ui.note.serverRecovered": "Server dimulai ulang setelah berhenti mendadak."
 }

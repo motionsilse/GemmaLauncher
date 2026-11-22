@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "{0} sürümüne güncelle ve yeniden başlat",
+  "ui.update.progress": "Güncelleme indiriliyor · %{0}",
+  "ui.update.applying": "Güncelleme yükleniyor",
+  "ui.update.failed": "Güncelleme yapılamadı. {0}",
+  "ui.update.releasePage": "Sürüm sayfası",
   "ui.account.loginPortBusy": "Başka bir giriş işlemi geri çağrı bağlantı noktasını (1455) kullanıyor. Codex veya başka bir uygulamadaki girişi tamamlayın ya da iptal edin, ardından tekrar deneyin.",
   "ui.update.available": "Yeni {0} sürümünü indir",
   "ui.anis.login": "Hugging Face hesabına giriş yap",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "Korean → Japanese",
   "ui.anis.device": "Execution device",
   "ui.settings.done": "Bitti",
-  "ui.settings.closeToTray": "Pencere kapanınca tepside çalışmaya devam et",
+  "ui.settings.closeToTray": "Kapatıldığında veya küçültüldüğünde sistem tepsisinde çalışmayı sürdür",
   "ui.source.license": "Lisans",
   "ui.source.program": "Program kaynağı",
   "ui.connection.localOnly": "Yalnızca bu bilgisayarda çalışır",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "RAM/VRAM tahmini yok. Başlattıktan sonra gerçek kullanımı kontrol edin.",
   "ui.resources.sizeUnknown": "Boyut bilinmiyor",
   "ui.resources.basis": "Varsayılan {0} token bağlamı için referans. GPU ve önbelleğe göre değişir. CPU modu model VRAM’i kullanmaz ve daha fazla RAM gerektirebilir.",
-  "ui.resources.anisBasis": "RAM: yazarın CPU referansı. VRAM: CUDA tahmini. CPU modu model VRAM’i kullanmaz."
+  "ui.resources.anisBasis": "RAM: yazarın CPU referansı. VRAM: CUDA tahmini. CPU modu model VRAM’i kullanmaz.",
+  "ui.settings.startWithWindows": "Windows açıldığında sistem tepsisinde başlat",
+  "ui.tray.hide": "Sistem tepsisine gönder",
+  "ui.model.deleteFiles": "Model dosyalarını sil",
+  "ui.model.deleteFilesHint": "{0} için aşağıda listelenen dosyalar kalıcı olarak silinsin mi?",
+  "ui.model.filesDeleted": "Seçilen model dosyaları silindi.",
+  "ui.note.serverRecovered": "Beklenmedik şekilde kapanan sunucu yeniden başlatıldı."
 }

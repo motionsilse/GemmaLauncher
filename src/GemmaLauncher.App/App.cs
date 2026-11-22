@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Principal;
@@ -20,9 +21,11 @@ public sealed class App : ApplicationContext
     private Mutex? _instance, _legacyInstance;
     private bool _ownsInstance, _ownsLegacyInstance, _exiting, _exitComplete, _hideNoticeShown;
     public bool Ready { get; private set; }
+    internal PortableUpdate? PendingRestart { get; private set; }
 
     public App(string[] args)
     {
+        var startInTray = args.Contains(WindowsStartup.TrayArgument, StringComparer.Ordinal);
         LauncherPaths? paths = null;
         try
         {
@@ -31,14 +34,14 @@ public sealed class App : ApplicationContext
             var activateMessage = RegisterWindowMessage("GemmaLauncher.Activate.User." + identity);
             _instance = new Mutex(false, @"Local\GemmaLauncher.User." + identity);
             _ownsInstance = Acquire(_instance);
-            if (!_ownsInstance) { PostMessage(new IntPtr(0xffff), activateMessage, IntPtr.Zero, IntPtr.Zero); return; }
+            if (!_ownsInstance) { if (!startInTray) PostMessage(new IntPtr(0xffff), activateMessage, IntPtr.Zero, IntPtr.Zero); return; }
 
             paths = new LauncherPaths(ArgumentValue(args, "--data-dir"));
             var legacyIdentity = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(paths.Root.ToUpperInvariant())))[..16];
             var legacyActivateMessage = RegisterWindowMessage("GemmaLauncher.Activate." + legacyIdentity);
             _legacyInstance = new Mutex(false, @"Local\GemmaLauncher." + legacyIdentity);
             _ownsLegacyInstance = Acquire(_legacyInstance);
-            if (!_ownsLegacyInstance) { PostMessage(new IntPtr(0xffff), legacyActivateMessage, IntPtr.Zero, IntPtr.Zero); return; }
+            if (!_ownsLegacyInstance) { if (!startInTray) PostMessage(new IntPtr(0xffff), legacyActivateMessage, IntPtr.Zero, IntPtr.Zero); return; }
 
             // Establish the UI context before starting any asynchronous model scan.
             SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
@@ -62,18 +65,38 @@ public sealed class App : ApplicationContext
             for (var i = 0; i + 1 < args.Length; i++)
                 if (args[i] == "--model-folder" && Directory.Exists(args[i + 1]) && !settings.ModelFolders.Contains(args[i + 1], StringComparer.OrdinalIgnoreCase))
                     settings.ModelFolders.Add(Path.GetFullPath(args[i + 1]));
-            _viewModel = new(settings, store, () => new(BundledResources.LoadCatalog(), paths, settings, store), () => new(new Core.Accounts.AccountConnection(accountDirectory)));
+            var startup = new WindowsStartup(Environment.ProcessPath!);
+            // A manually updated standalone EXE should become the target of an existing opt-in.
+            try { startup.RefreshExecutable(); }
+            catch (Exception error) when (error is IOException or UnauthorizedAccessException or System.Security.SecurityException) { }
+            _viewModel = new(settings, store, () => new(BundledResources.LoadCatalog(), paths, settings, store), () => new(new Core.Accounts.AccountConnection(accountDirectory)), startup: startup);
+            var supportsUpdate = typeof(App).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
+                .Any(attribute => attribute.Key == "CatLoaderPortable" && attribute.Value == "true");
             _window = new LoaderWindow(_viewModel, activateMessage, legacyActivateMessage,
-                token => ReleaseUpdates.CheckAsync(typeof(App).Assembly.GetName().Version!, token)) { AccountStateDirectory = accountDirectory };
-            MainForm = _window;
+                token => ReleaseUpdates.CheckAsync(typeof(App).Assembly.GetName().Version!, token),
+                supportsUpdate ? ApplyUpdateAsync : null) { AccountStateDirectory = accountDirectory };
+            // Application.Run makes MainForm visible. Hidden startup uses the tray as its lifetime owner.
+            if (!startInTray) MainForm = _window;
             _window.ActivationRequested += (_, _) => ShowWindow();
             _window.ExitRequested += async (_, _) => await ExitAsync();
             _window.FormClosing += WindowClosing;
+            _window.VisibleChanged += UpdateTray;
+            _window.HiddenToTray += NoticeHiddenToTray;
+            _window.UpdateFound += (_, release) =>
+            {
+                if (_window.Visible && _window.WindowState != FormWindowState.Minimized) return;
+                if (_tray is null) return;
+                _tray.ShowBalloonTip(5000, T("ui.app.shortTitle"), T("ui.update.available", release.Version.ToString(3)), ToolTipIcon.Info);
+            };
             CreateTray();
             _viewModel.PropertyChanged += UpdateTray;
             UpdateTray(this, EventArgs.Empty);
-            _window.Show();
-            if (!settings.IntegrationNoticeShown) { _tray?.ShowBalloonTip(5000, "Cat Loader", T("ui.loader.closeHint"), ToolTipIcon.Info); settings.IntegrationNoticeShown = true; store.Save(settings); }
+            if (startInTray) _ = _window.Handle; // Receive activation broadcasts while initially hidden.
+            else
+            {
+                _window.Show();
+                if (!settings.IntegrationNoticeShown) { _tray?.ShowBalloonTip(5000, "Cat Loader", T("ui.loader.closeHint"), ToolTipIcon.Info); settings.IntegrationNoticeShown = true; store.Save(settings); }
+            }
             Ready = true;
         }
         catch (Exception exception)
@@ -107,7 +130,12 @@ public sealed class App : ApplicationContext
     private void CreateTray()
     {
         _menu = new ContextMenuStrip();
-        _open = new(T("ui.tray.open"), null, (_, _) => ShowWindow());
+        _menu.Opening += UpdateTray;
+        _open = new(T("ui.tray.open"), null, (_, _) =>
+        {
+            if (_window is { Visible: true, WindowState: not FormWindowState.Minimized }) _window.SendToTray();
+            else ShowWindow();
+        });
         _toggle = new(T("ui.loader.local"), null, async (_, _) => { if (_viewModel?.Local is null) { if (_viewModel is not null) await _viewModel.SelectFeatureAsync(LoaderFeature.LocalModels,default); ShowWindow(); } else _viewModel.Local.PrimaryCommand.Execute(null); });
         _account = new(T("ui.loader.chat"), null, async (_, _) => { if (_viewModel?.Account is null) { if (_viewModel is not null) await _viewModel.SelectFeatureAsync(LoaderFeature.ChatGpt,default); ShowWindow(); } else _viewModel.Account.PrimaryCommand.Execute(null); });
         _web = new(T("ui.connection.web"), null, (_, _) => _viewModel?.Local?.OpenWebUiCommand.Execute(null));
@@ -116,12 +144,13 @@ public sealed class App : ApplicationContext
         _icon = System.Drawing.Icon.ExtractAssociatedIcon(Environment.ProcessPath!) ?? (System.Drawing.Icon)System.Drawing.SystemIcons.Application.Clone();
         _tray = new NotifyIcon { Icon = _icon, Text = T("ui.app.shortTitle"), ContextMenuStrip = _menu, Visible = true };
         _tray.DoubleClick += (_, _) => ShowWindow();
+        _tray.BalloonTipClicked += (_, _) => ShowWindow();
     }
 
     private void UpdateTray(object? sender, EventArgs args)
     {
         if (_tray is null || _viewModel is null) return;
-        var text = "Cat Loader";
+        var text = _viewModel.Local?.IsServerRunning == true ? $"Cat Loader · {T("ui.status.running")}" : "Cat Loader";
         _tray.Text = text.Length > 63 ? text[..63] : text;
         _toggle!.Text = T("ui.loader.local") + " · " + (_viewModel.Local?.PrimaryLabel ?? T("ui.tray.open"));
         _toggle.Enabled = !_exiting && (_viewModel.Local?.PrimaryCommand.CanExecute(null) ?? true);
@@ -130,7 +159,7 @@ public sealed class App : ApplicationContext
         _web!.Enabled = !_exiting && _viewModel.Local?.CanOpenWebUi == true;
         _web.Visible = _viewModel.Local is { IsAnis: false };
         _web.Text = T("ui.connection.web");
-        _open!.Text = T("ui.tray.open");
+        _open!.Text = T(_window is { Visible: true, WindowState: not FormWindowState.Minimized } ? "ui.tray.hide" : "ui.tray.open");
         _exit!.Text = T("ui.tray.exit");
         _exit.Enabled = !_exiting;
     }
@@ -143,7 +172,11 @@ public sealed class App : ApplicationContext
         if (e.CloseReason is CloseReason.WindowsShutDown or CloseReason.TaskManagerClosing) { _ = ExitAsync(false); return; }
         if (_viewModel is not null && !_viewModel.ResolvePendingEdits()) return;
         if (_viewModel?.CloseToTray == false) { _ = ExitAsync(); return; }
-        _window!.Hide();
+        _window!.SendToTray();
+    }
+
+    private void NoticeHiddenToTray(object? sender, EventArgs args)
+    {
         if (!_hideNoticeShown && _tray is not null)
         {
             _hideNoticeShown = true;
@@ -154,9 +187,24 @@ public sealed class App : ApplicationContext
     private void ShowWindow()
     {
         if (_exiting || _window is null) return;
-        _window.Show();
         if (_window.WindowState == FormWindowState.Minimized) _window.WindowState = FormWindowState.Normal;
+        _window.Show();
         _window.Activate();
+    }
+
+    private async Task ApplyUpdateAsync(ReleaseUpdate release, IProgress<int> progress, CancellationToken token)
+    {
+        var executable = Environment.ProcessPath!;
+        var staged = Path.Combine(Path.GetDirectoryName(executable)!, $".catloader-{Guid.NewGuid():N}.download");
+        await ReleaseUpdates.DownloadAsync(release, staged, progress, token);
+        try
+        {
+            token.ThrowIfCancellationRequested();
+            if (_exiting || _viewModel?.ResolvePendingEdits() == false) return;
+            PendingRestart = PortableUpdate.Replace(executable, staged);
+            await ExitAsync(resolvePreset: false);
+        }
+        finally { File.Delete(staged); }
     }
 
     private async Task ExitAsync(bool resolvePreset = true)

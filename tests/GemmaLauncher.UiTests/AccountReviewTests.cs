@@ -97,7 +97,7 @@ public static partial class Program
         var buttons = Controls(dialog).OfType<Button>().Where(button => button.Visible).ToArray();
         Assert(buttons.Length == 1 && buttons[0].Text == Localization.T("ui.close"), "Instant-save settings must offer Close only, not a misleading Cancel");
         Assert(Controls(dialog).OfType<Label>().Any(label => label.Text == Localization.T("ui.settings.autoSaved")), "Settings must explain automatic saving");
-        var closeToTray = Controls(dialog).OfType<CheckBox>().Single(); closeToTray.Checked = !closeToTray.Checked;
+        var closeToTray = Controls(dialog).OfType<CheckBox>().Single(checkBox => checkBox.Name == "CloseToTray"); closeToTray.Checked = !closeToTray.Checked;
         Assert(fixture.Store.Load().CloseToTray == closeToTray.Checked, "Settings must persist immediately");
         var language = Controls(dialog).OfType<ComboBox>().Single();
         language.SelectedItem = language.Items.Cast<LanguageOption>().Single(option => option.Code == "en");

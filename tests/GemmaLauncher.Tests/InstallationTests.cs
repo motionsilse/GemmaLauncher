@@ -12,6 +12,7 @@ public static class InstallationTests
 {
     public static async Task RunAsync()
     {
+        DeletesOnlyManagedModelArtifacts();
         await MatchesRenamedModelFileAgainstPinnedMainArtifacts();
         await RejectsMissingOrUnmatchedModelFiles();
         await ReusesMappedOriginalAndColocatedMtpWithoutDownloading();
@@ -31,6 +32,28 @@ public static class InstallationTests
         await InstallsAndRevalidatesRuntime();
         await RejectsArchiveTraversalAndSymlinks();
         await RejectsUntrustedCatalogPathsAndHttp();
+    }
+
+    private static void DeletesOnlyManagedModelArtifacts()
+    {
+        using var fixture = new Fixture();
+        var model = Model([1, 2, 3]);
+        var main = model.Artifacts[0];
+        var mtp = new ModelArtifact { Role = "mtp", Filename = "draft.gguf", Url = "https://example.test/draft.gguf", Bytes = 2, Sha256 = Hash([4, 5]) };
+        model = model with { Artifacts = [main, mtp] };
+        var installed = Path.Combine(fixture.Paths.Models, model.Id, main.Sha256[..12], main.Filename);
+        var partial = Path.Combine(fixture.Paths.Models, model.Id, mtp.Sha256[..12], mtp.Filename + ".part");
+        var linked = Path.Combine(fixture.Root, main.Filename);
+        var notes = Path.Combine(Path.GetDirectoryName(installed)!, "notes.txt");
+        foreach (var file in new[] { installed, partial, linked, notes })
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+            File.WriteAllText(file, "fixture");
+        }
+        ModelCache.DeleteFiles(fixture.Paths, model);
+        ModelCache.DeleteFiles(fixture.Paths, model);
+        True(!File.Exists(installed) && !File.Exists(partial), "Deletion must remove the downloaded main file and draft partial.");
+        True(File.Exists(linked) && File.Exists(notes), "Deletion must preserve linked originals and unrelated files.");
     }
 
     private static async Task MatchesRenamedModelFileAgainstPinnedMainArtifacts()

@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "Actualizar a {0} y reiniciar",
+  "ui.update.progress": "Descargando la actualización · {0}%",
+  "ui.update.applying": "Instalando la actualización",
+  "ui.update.failed": "No se pudo actualizar. {0}",
+  "ui.update.releasePage": "Página de la versión",
   "ui.account.loginPortBusy": "Otro inicio de sesión usa el puerto de retorno (1455). Completa o cancela el inicio de sesión en Codex u otra aplicación y vuelve a intentarlo.",
   "ui.update.available": "Descargar la nueva versión {0}",
   "ui.anis.login": "Iniciar sesión en Hugging Face",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "Korean → Japanese",
   "ui.anis.device": "Execution device",
   "ui.settings.done": "Listo",
-  "ui.settings.closeToTray": "Seguir ejecutando en la bandeja al cerrar la ventana",
+  "ui.settings.closeToTray": "Seguir ejecutándose en la bandeja al cerrar o minimizar",
   "ui.source.license": "Licencia",
   "ui.source.program": "Código del programa",
   "ui.connection.localOnly": "Se ejecuta solo en este equipo",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "Sin estimación de RAM/VRAM. Consulta el uso real al iniciar.",
   "ui.resources.sizeUnknown": "Tamaño desconocido",
   "ui.resources.basis": "Referencia con contexto predeterminado de {0} tokens. Cambia con la GPU y la caché. El modo CPU no usa VRAM del modelo y puede necesitar más RAM.",
-  "ui.resources.anisBasis": "RAM: referencia del autor para CPU. VRAM: estimación para CUDA. El modo CPU no usa VRAM del modelo."
+  "ui.resources.anisBasis": "RAM: referencia del autor para CPU. VRAM: estimación para CUDA. El modo CPU no usa VRAM del modelo.",
+  "ui.settings.startWithWindows": "Iniciar en la bandeja al iniciar Windows",
+  "ui.tray.hide": "Enviar a la bandeja",
+  "ui.model.deleteFiles": "Eliminar archivos del modelo",
+  "ui.model.deleteFilesHint": "¿Eliminar permanentemente los archivos que se muestran abajo para {0}?",
+  "ui.model.filesDeleted": "Se eliminaron los archivos seleccionados del modelo.",
+  "ui.note.serverRecovered": "El servidor se reinició tras cerrarse inesperadamente."
 }

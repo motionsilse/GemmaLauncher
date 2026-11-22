@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "Mag-update sa {0} at mag-restart",
+  "ui.update.progress": "Dina-download ang update · {0}%",
+  "ui.update.applying": "Ini-install ang update",
+  "ui.update.failed": "Hindi ma-install ang update. {0}",
+  "ui.update.releasePage": "Pahina ng release",
   "ui.account.loginPortBusy": "Ginagamit ng ibang pag-sign in ang callback port (1455). Tapusin o kanselahin ang pag-sign in sa Codex o ibang app, saka subukang muli.",
   "ui.update.available": "I-download ang bagong bersyon {0}",
   "ui.anis.login": "Mag-sign in sa Hugging Face",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "Korean → Japanese",
   "ui.anis.device": "Execution device",
   "ui.settings.done": "Tapos",
-  "ui.settings.closeToTray": "Magpatuloy sa tray kapag isinara ang window",
+  "ui.settings.closeToTray": "Patuloy na tumakbo sa tray kapag isinara o pinaliit",
   "ui.source.license": "Lisensya",
   "ui.source.program": "Pinagmulan ng programa",
   "ui.connection.localOnly": "Sa PC na ito lang tumatakbo",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "Walang pagtatantiya ng RAM/VRAM. Tingnan ang aktuwal na gamit pagkatapos simulan.",
   "ui.resources.sizeUnknown": "Hindi alam ang laki",
   "ui.resources.basis": "Reference sa default na {0} token. Nagbabago ayon sa GPU at cache. Walang model VRAM sa CPU mode at maaaring mas maraming RAM ang kailangan.",
-  "ui.resources.anisBasis": "RAM: CPU reference ng may-akda. VRAM: tantiya para sa CUDA. Walang model VRAM sa CPU mode."
+  "ui.resources.anisBasis": "RAM: CPU reference ng may-akda. VRAM: tantiya para sa CUDA. Walang model VRAM sa CPU mode.",
+  "ui.settings.startWithWindows": "Magsimula sa tray kapag nagsimula ang Windows",
+  "ui.tray.hide": "Ipadala sa tray",
+  "ui.model.deleteFiles": "Burahin ang mga file ng modelo",
+  "ui.model.deleteFilesHint": "Permanenteng burahin ang mga file sa ibaba para sa {0}?",
+  "ui.model.filesDeleted": "Nabura ang mga napiling file ng modelo.",
+  "ui.note.serverRecovered": "Muling sinimulan ang server matapos itong biglang magsara."
 }

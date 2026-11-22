@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "Update to {0} and restart",
+  "ui.update.progress": "Downloading update · {0}%",
+  "ui.update.applying": "Applying update",
+  "ui.update.failed": "Could not update. {0}",
+  "ui.update.releasePage": "Release page",
   "ui.account.loginPortBusy": "Another sign-in is using the callback port (1455). Finish or cancel sign-in in Codex or another app, then try again.",
   "ui.update.available": "New version {0} · Download",
   "ui.anis.login": "Sign in to Hugging Face",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "Korean → Japanese",
   "ui.anis.device": "Execution device",
   "ui.settings.done": "Done",
-  "ui.settings.closeToTray": "Keep running in the tray when the window closes",
+  "ui.settings.closeToTray": "Keep running in the tray when closed or minimized",
   "ui.source.license": "License",
   "ui.source.program": "Program source",
   "ui.connection.localOnly": "Runs only on this PC",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "RAM/VRAM estimate unavailable. Check live usage after starting.",
   "ui.resources.sizeUnknown": "Size unavailable",
   "ui.resources.basis": "Reference at the default {0}-token context. GPU offload and cache settings change usage. CPU mode uses no model VRAM and may need more RAM.",
-  "ui.resources.anisBasis": "RAM is the author’s CPU reference; VRAM is an estimate for CUDA. CPU mode uses no model VRAM."
+  "ui.resources.anisBasis": "RAM is the author’s CPU reference; VRAM is an estimate for CUDA. CPU mode uses no model VRAM.",
+  "ui.settings.startWithWindows": "Start in the tray when Windows starts",
+  "ui.tray.hide": "Send to tray",
+  "ui.model.deleteFiles": "Delete model files",
+  "ui.model.deleteFilesHint": "Permanently delete the files listed below for {0}?",
+  "ui.model.filesDeleted": "Deleted the selected model files.",
+  "ui.note.serverRecovered": "Restarted the server after it exited unexpectedly."
 }

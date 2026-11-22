@@ -94,11 +94,14 @@ public static partial class Program
     private static async Task TestDynamicAccessibleActionsAsync()
     {
         var account = new JourneyAccount();
-        await using var vm = new AccountConnectionViewModel(account);
+        var browserRequests = new List<Uri>();
+        await using var vm = new AccountConnectionViewModel(account) { OpenBrowser = browserRequests.Add };
         await vm.ActivateAsync(default);
         using var window = new Form { Size = new(1040,840) };
         window.Controls.Add(new AccountConnectionView(vm)); window.Show();
         vm.LoginCommand.Execute(null); await UntilAsync(() => vm.CanReopen); await Task.Delay(40);
+        Assert(browserRequests.Count == 1 && browserRequests[0].AbsoluteUri == "https://example.invalid/test-login",
+            "Login must request the simulated browser handoff exactly once.");
         var login = Controls(window).OfType<Button>().Single(b => b.Name=="AccountLogin");
         Assert(login.AccessibleName == login.Text && login.AccessibilityObject.Name == login.Text && login.Text == vm.LoginLabel, "Accessible login action must say cancel while authentication is pending.");
         var labels = new List<string>(); login.TextChanged += (_,_) => labels.Add(login.Text);

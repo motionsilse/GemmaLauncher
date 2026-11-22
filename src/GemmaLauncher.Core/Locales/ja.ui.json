@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "{0} に更新して再起動",
+  "ui.update.progress": "更新をダウンロード中 · {0}%",
+  "ui.update.applying": "更新を適用中",
+  "ui.update.failed": "更新できませんでした。{0}",
+  "ui.update.releasePage": "リリースページ",
   "ui.account.loginPortBusy": "別のログインが応答ポート（1455）を使用しています。Codexなどのアプリでログインを完了またはキャンセルしてから、もう一度お試しください。",
   "ui.update.available": "新バージョン {0} をダウンロード",
   "ui.anis.login": "Hugging Face にログイン",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "韓国語 → 日本語",
   "ui.anis.device": "実行デバイス",
   "ui.settings.done": "完了",
-  "ui.settings.closeToTray": "ウィンドウを閉じてもトレイで実行を続ける",
+  "ui.settings.closeToTray": "閉じるか最小化したときにトレイで実行を続ける",
   "ui.source.license": "ライセンス",
   "ui.source.program": "プログラムの出典",
   "ui.connection.localOnly": "このPC内でのみ実行します",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "RAM/VRAM の推定なし。起動後の実測値を確認してください。",
   "ui.resources.sizeUnknown": "サイズ不明",
   "ui.resources.basis": "既定の {0} トークン時の参考値です。GPU 配分・キャッシュにより変わります。CPU モードでは VRAM を使わず RAM が増える場合があります。",
-  "ui.resources.anisBasis": "RAM は作者の CPU 参考値、VRAM は CUDA の推定です。CPU モードでは VRAM を使いません。"
+  "ui.resources.anisBasis": "RAM は作者の CPU 参考値、VRAM は CUDA の推定です。CPU モードでは VRAM を使いません。",
+  "ui.settings.startWithWindows": "Windows 起動時にトレイで起動する",
+  "ui.tray.hide": "トレイに移動",
+  "ui.model.deleteFiles": "モデルファイルを削除",
+  "ui.model.deleteFilesHint": "{0} が使用する以下のファイルを完全に削除しますか？",
+  "ui.model.filesDeleted": "選択したモデルファイルを削除しました。",
+  "ui.note.serverRecovered": "予期せず終了したサーバーを再起動しました。"
 }

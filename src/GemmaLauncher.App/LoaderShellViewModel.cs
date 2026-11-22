@@ -8,17 +8,35 @@ public sealed class LoaderShellViewModel : ObservableObject, IAsyncDisposable
     private readonly Func<LauncherViewModel> localFactory;
     private readonly Func<AccountConnectionViewModel> accountFactory;
     private readonly TimeSpan cleanupTimeout;
+    private readonly WindowsStartup startup;
+    private bool startWithWindows;
     private bool disposed;
     public LauncherViewModel? Local { get; private set; }
     public AccountConnectionViewModel? Account { get; private set; }
     public LoaderFeature SelectedFeature { get; private set; }
     public string SettingsSaveError { get; private set; } = "";
     public bool CloseToTray { get => settings.CloseToTray; set { settings.CloseToTray = value; if (Local is not null) Local.CloseToTray = value; Save(); } }
+    public bool StartWithWindows
+    {
+        get => startWithWindows;
+        set
+        {
+            if (value == startWithWindows) return;
+            try { startup.SetEnabled(value); startWithWindows = value; SettingsSaveError = ""; }
+            catch (Exception error) when (error is IOException or UnauthorizedAccessException or System.Security.SecurityException)
+            { SettingsSaveError = Localization.T("ui.note.saveFailed", error.Message); }
+            OnPropertyChanged(null);
+        }
+    }
     public string LanguageSelection { get => Localization.Current.Selection; set => Localization.Current.SetLanguage(value); }
-    public LoaderShellViewModel(LauncherSettings settings, SettingsStore store, Func<LauncherViewModel> localFactory, Func<AccountConnectionViewModel> accountFactory, TimeSpan? cleanupTimeout = null)
+    public LoaderShellViewModel(LauncherSettings settings, SettingsStore store, Func<LauncherViewModel> localFactory, Func<AccountConnectionViewModel> accountFactory, TimeSpan? cleanupTimeout = null, WindowsStartup? startup = null)
     {
         this.settings = settings; this.store = store; this.localFactory = localFactory; this.accountFactory = accountFactory;
         this.cleanupTimeout = cleanupTimeout ?? TimeSpan.FromSeconds(30);
+        this.startup = startup ?? new WindowsStartup(Environment.ProcessPath!);
+        try { startWithWindows = this.startup.IsEnabled; }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException or System.Security.SecurityException)
+        { SettingsSaveError = Localization.T("ui.note.saveFailed", error.Message); }
         SelectedFeature = settings.ActiveFeature == "chatgpt" ? LoaderFeature.ChatGpt : LoaderFeature.LocalModels;
         Localization.Current.LanguageChanged += LanguageChanged;
     }

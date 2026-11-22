@@ -28,6 +28,7 @@ public static partial class Program
                 if (args.Contains("--check-dispatcher-failure")) throw new InvalidOperationException("Intentional dispatcher failure.");
                 TestBundledResources();
                 if (args.Contains("--resource-guide-tests")) { await TestResourceGuidesAsync(); return; }
+                if (args.Contains("--model-file-actions")) { await TestManagedModelActionsAsync(); return; }
                 if (args.Contains("--account-regression-tests")) { await TestAccountRegressionsAsync(); return; }
                 if (args.Contains("--render-account-regressions")) { await RenderAccountRegressionsAsync(); return; }
                 if (args.Contains("--typography-tests")) { await TestModelListFontScalingAsync(); return; }
@@ -85,6 +86,7 @@ public static partial class Program
                 await TestNativeControlsAsync();
                 Console.WriteLine("TestLibrarySelectionFlowAsync");
                 await TestLibrarySelectionFlowAsync();
+                await TestManagedModelActionsAsync();
                 Console.WriteLine("TestLanguageAndLayoutAsync");
                 await TestLanguageAndLayoutAsync();
                 Console.WriteLine("TestTelemetryVisibilityAsync");
@@ -696,6 +698,7 @@ public static partial class Program
         public ModelDefinition? MatchedModel { get; set; }
         public List<string> FindCalls { get; } = [];
         public HashSet<string> MissingModels { get; } = [];
+        public Dictionary<string, string> DiscoveredMainFiles { get; } = [];
         public List<string> MatchCalls { get; } = [];
         public TaskCompletionSource BlockRuntimeDownload() => _runtimeDownload = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public TaskCompletionSource BlockNextScan() => _nextScan = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -742,7 +745,8 @@ public static partial class Program
             return Path.Combine(root, "fixture-runtime.exe");
         }
         private InstalledModel Installed(ModelDefinition model) => new(model,
-            modelFiles.GetValueOrDefault(model.Artifacts.Single(artifact => artifact.Role == "model").Sha256) ?? Path.Combine(root, model.Id + ".gguf"),
+            modelFiles.GetValueOrDefault(model.Artifacts.Single(artifact => artifact.Role == "model").Sha256) ??
+            DiscoveredMainFiles.GetValueOrDefault(model.Id) ?? Path.Combine(root, model.Id + ".gguf"),
             model.Artifacts.Any(artifact => artifact.Role == "mtp") ? Path.Combine(root, model.Id + ".mtp.gguf") : null);
         public void Dispose() => Disposed = true;
     }
@@ -783,6 +787,11 @@ public static partial class Program
         }
         public async ValueTask DisposeAsync() { Disposed = true; await StopAsync(); }
         public int? ProcessId { get; set; }
+        public void ExitUnexpectedly()
+        {
+            Status = new(ServerState.Faulted, "unexpected exit", ModelId: Starts.Last().Model.Definition.Id, UnexpectedExit: true);
+            StatusChanged?.Invoke(this, Status);
+        }
         private void Set(ServerState state) { Status = new(state, state.ToString(), ProcessId); StatusChanged?.Invoke(this, Status); }
     }
 

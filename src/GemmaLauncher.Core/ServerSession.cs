@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
+using System.Net.Http.Json;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
@@ -176,7 +177,9 @@ public sealed class ServerSession : IServerSession
             }
             SetStatus(new(ServerState.Starting, Localization.T("engine.session.loading"), _owned.Process.Id, configuration.Model.Definition.Id));
             await WaitUntilReadyAsync(_owned, startup.Token).ConfigureAwait(false);
+            await WarmUpAsync(_owned, startup.Token).ConfigureAwait(false);
             startup.Token.ThrowIfCancellationRequested();
+            if (_owned.Process.HasExited) throw new IOException(Localization.T("engine.session.earlyExit", _owned.Process.ExitCode));
             SetStatus(new(ServerState.Running, Localization.T("engine.session.running"), _owned.Process.Id, configuration.Model.Definition.Id));
             _ = MonitorExitAsync(_owned);
         }
@@ -307,6 +310,33 @@ public sealed class ServerSession : IServerSession
         }
     }
 
+    private static async Task WarmUpAsync(RunningProcess owned, CancellationToken cancellationToken)
+    {
+        var model = owned.Configuration.Model.Definition;
+        var text = model.Engine == "anis" ? "おはようございます。" : "Good morning.";
+        var messages = model.Engine == "anis" || model.UsesPlamoTranslationTemplate
+            ? new[] { new { role = "user", content = text } }
+            : new[] { new { role = "system", content = "Translate to Korean. Return only the translation." }, new { role = "user", content = text } };
+        var payload = new Dictionary<string, object>
+        {
+            ["model"] = model.ApiModelId, ["messages"] = messages, ["max_tokens"] = 8, ["stream"] = false
+        };
+        if (model.UsesPlamoTranslationTemplate) payload["chat_template_kwargs"] = new { target_lang = "ko" };
+        using var client = new HttpClient(new SocketsHttpHandler { UseProxy = false, AllowAutoRedirect = false })
+        {
+            BaseAddress = new Uri($"http://127.0.0.1:{owned.Configuration.Port}/"), Timeout = TimeSpan.FromSeconds(12)
+        };
+        try
+        {
+            using var response = await client.PostAsJsonAsync("v1/chat/completions", payload, cancellationToken).ConfigureAwait(false);
+            await owned.Log.WriteAsync($"[launcher] Warm-up HTTP {(int)response.StatusCode}\n").ConfigureAwait(false);
+        }
+        catch (Exception error) when (!cancellationToken.IsCancellationRequested && error is HttpRequestException or OperationCanceledException)
+        {
+            await owned.Log.WriteAsync($"[launcher] Warm-up incomplete: {error.Message}\n").ConfigureAwait(false);
+        }
+    }
+
     private async Task MonitorExitAsync(RunningProcess owned)
     {
         try
@@ -317,8 +347,9 @@ public sealed class ServerSession : IServerSession
             {
                 if (!ReferenceEquals(_owned, owned)) return;
                 var code = owned.Process.ExitCode;
+                await owned.Log.WriteAsync($"[launcher] Unexpected server exit: {code}\n").ConfigureAwait(false);
                 await CleanupOwnedAsync().ConfigureAwait(false);
-                SetStatus(new(ServerState.Faulted, Localization.T("engine.session.crashed", code, owned.Log.Path)));
+                SetStatus(new(ServerState.Faulted, Localization.T("engine.session.crashed", code, owned.Log.Path), ModelId: owned.Configuration.Model.Definition.Id, UnexpectedExit: true));
             }
             finally { _operation.Release(); }
         }

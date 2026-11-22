@@ -46,7 +46,7 @@ public sealed class AnisBackend : IDisposable
     private readonly bool ownsClient;
     private readonly SemaphoreSlim gate = new(1, 1);
     private readonly Dictionary<string, (long Bytes, long WriteTicks, bool Matches)> verified = new(StringComparer.OrdinalIgnoreCase);
-    public string ManagedModelDirectory => Path.Combine(paths.Models, "anis-trans", ModelRevision);
+    public string ManagedModelDirectory => ModelCache.AnisDirectory(paths);
 
     public AnisBackend(LauncherPaths paths, Func<string?>? externalFolder = null, HttpClient? client = null)
     {

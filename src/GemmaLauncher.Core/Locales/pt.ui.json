@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "Atualizar para {0} e reiniciar",
+  "ui.update.progress": "Baixando a atualização · {0}%",
+  "ui.update.applying": "Instalando a atualização",
+  "ui.update.failed": "Não foi possível atualizar. {0}",
+  "ui.update.releasePage": "Página da versão",
   "ui.account.loginPortBusy": "Outro início de sessão está a usar a porta de retorno (1455). Conclua ou cancele o início de sessão no Codex ou noutra aplicação e tente novamente.",
   "ui.update.available": "Baixar nova versão {0}",
   "ui.anis.login": "Entrar no Hugging Face",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "Korean → Japanese",
   "ui.anis.device": "Execution device",
   "ui.settings.done": "Concluído",
-  "ui.settings.closeToTray": "Continuar na bandeja ao fechar a janela",
+  "ui.settings.closeToTray": "Continuar na bandeja ao fechar ou minimizar",
   "ui.source.license": "Licença",
   "ui.source.program": "Código do programa",
   "ui.connection.localOnly": "Executado apenas neste PC",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "Sem estimativa de RAM/VRAM. Consulte o uso real após iniciar.",
   "ui.resources.sizeUnknown": "Tamanho desconhecido",
   "ui.resources.basis": "Referência no contexto padrão de {0} tokens. Varia com GPU e cache. O modo CPU não usa VRAM do modelo e pode precisar de mais RAM.",
-  "ui.resources.anisBasis": "RAM: referência do autor para CPU. VRAM: estimativa para CUDA. O modo CPU não usa VRAM do modelo."
+  "ui.resources.anisBasis": "RAM: referência do autor para CPU. VRAM: estimativa para CUDA. O modo CPU não usa VRAM do modelo.",
+  "ui.settings.startWithWindows": "Iniciar na bandeja quando o Windows iniciar",
+  "ui.tray.hide": "Enviar para a bandeja",
+  "ui.model.deleteFiles": "Excluir arquivos do modelo",
+  "ui.model.deleteFilesHint": "Excluir permanentemente os arquivos de {0} listados abaixo?",
+  "ui.model.filesDeleted": "Os arquivos selecionados do modelo foram excluídos.",
+  "ui.note.serverRecovered": "O servidor foi reiniciado após um encerramento inesperado."
 }

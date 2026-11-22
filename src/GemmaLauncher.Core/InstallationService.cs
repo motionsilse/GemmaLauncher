@@ -158,7 +158,7 @@ public sealed class InstallationService : IInstallationService, IDisposable
         }
     }
 
-    private string ArtifactPath(ModelDefinition model, ModelArtifact artifact) => ManagedPath(paths.Models, model.Id, artifact.Sha256[..12], artifact.Filename);
+    private string ArtifactPath(ModelDefinition model, ModelArtifact artifact) => ManagedPath(ModelCache.GgufPath(paths, model, artifact));
 
     private async Task DownloadVerifiedAsync(string url, long bytes, string sha256, string destination, IProgress<InstallationProgress>? progress, CancellationToken token)
     {
@@ -427,7 +427,7 @@ public sealed class InstallationService : IInstallationService, IDisposable
         return path;
     }
 
-    private static void RejectReparsePoints(string path)
+    internal static void RejectReparsePoints(string path)
     {
         for (string? current = path; current is not null; current = Path.GetDirectoryName(current))
             if ((File.Exists(current) || Directory.Exists(current)) && (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0) throw new InvalidDataException(Localization.T("engine.install.symbolicLink"));

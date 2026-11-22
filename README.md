@@ -1,6 +1,6 @@
 # Cat Loader by Drugged Cat
 
-**Cat Loader 0.1.5** adds Unsloth Gemma 4 QAT E2B and E4B just below Translate Gemma 4 Sub. Open the in-app update notice for the latest release. When moving from 0.4.x, download the new EXE manually. Existing model files, settings and account data stay in their current locations.
+**Cat Loader 0.1.6** adds in-app updates, puts model folder and file deletion controls below the selected model name, and supports starting in the tray when Windows signs in. Download this EXE once when upgrading from 0.1.5 or earlier. Future releases can be installed from the in-app notice. Existing models, settings, and account data stay in their current locations.
 
 Prepare an OpenAI-compatible API for other apps from one small Windows launcher. Choose **Local models** to run a model on your PC, or **ChatGPT connection** to connect a ChatGPT account through the optional proxy engine. Each has its own address, status and stop button.
 
@@ -88,7 +88,7 @@ Cat Loader uses a public Hugging Face OAuth client with the loopback redirect `h
 
 ## Window and language
 
-**X hides the window in the tray by default.** Change this in **Settings** to exit instead. The tray can restore the launcher or stop/quit its server. Opening the EXE again restores the existing window. One local model runs at a time. Selecting a different model stops the running local server, then selects your choice; choose **Start server** to run it. The ChatGPT connection stays independent. GGUF context and load-option changes take effect with **Apply and restart**.
+**Closing or minimizing the window sends it to the tray by default.** Use **Send to tray** in the tray menu to hide the launcher while its connections run. Enable **Start in the tray when Windows starts** in **Settings** to launch the app in the background at sign-in. Choose **Quit completely** when you want to stop both services and exit. Opening the EXE again restores the existing window. One local model runs at a time. Selecting a different model stops the running local server, then selects your choice; choose **Start server** to run it. The ChatGPT connection stays independent. GGUF context and load-option changes take effect with **Apply and restart**.
 
 The launcher checks for a new stable version at startup and hourly. When available, the notice opens the official release page. Downloads show their current step and, when file sizes are known, a percentage and transferred bytes.
 
@@ -116,7 +116,7 @@ Use `--data-dir "D:\GemmaLauncherData" --model-folder "D:\Models"` for custom da
 
 # Cat Loader by Drugged Cat
 
-**Cat Loader 0.1.5**에 Unsloth Gemma 4 QAT E2B와 E4B를 추가했습니다. Translate Gemma 4 Sub 바로 아래에서 선택할 수 있습니다. 앱의 업데이트 알림을 누르면 최신 릴리즈가 열립니다. 0.4.x에서 넘어올 때는 새 EXE를 직접 받아 실행하세요. 모델 파일·설정·계정 데이터는 기존 위치에서 계속 사용합니다.
+**Cat Loader 0.1.6**에서 앱 내 업데이트를 지원합니다. 선택한 모델 이름 아래에서 폴더를 열거나 파일을 삭제할 수 있고, Windows에 로그인할 때 Cat Loader를 트레이에서 시작할 수 있습니다. 0.1.5 이하에서는 이번 EXE를 한 번 내려받아 실행하세요. 다음 버전부터는 앱 안에서 설치할 수 있습니다. 모델 파일·설정·계정 데이터는 기존 위치에서 계속 사용합니다.
 
 AI 모델의 설치부터 실행·관리까지, 클릭 한 번으로 시작하세요. 번역·글쓰기·대화에 맞는 모델을 고르면 필요한 파일을 준비하고 서버를 켭니다. **브라우저 대화 화면과 OpenAI 호환 API**를 함께 제공하므로 CatBridge 같은 앱에도 바로 연결할 수 있습니다.
 
@@ -163,6 +163,8 @@ Translate Gemma 4 Sub는 대사와 자막에 맞춰 번역 튜닝을 한 모델�
 - **이미 받은 GGUF:** **모델 추가 → GGUF 파일 연결**에서 선택합니다. 원본을 이동하거나 복사하지 않습니다. 등록된 모델은 이름을 바꿔도 파일 내용으로 알아봅니다.
 - **Hugging Face:** 공개 저장소 주소를 입력하고 GGUF를 골라 추가합니다. 서버를 켤 때 선택한 파일을 다운로드하고 검증합니다.
 - **내 모델:** 등록한 모델을 다시 사용하거나 폴더를 엽니다. 사용자 모델 항목을 삭제해도 원본 파일은 남습니다.
+
+로컬 모델 화면의 모델 이름 바로 아래에서 **모델 폴더 열기**를 누르면 해당 모델 파일의 위치가 열립니다. 서버를 끈 뒤 **모델 파일 삭제**로 지울 파일의 실제 경로를 확인하고 삭제할 수 있습니다. 직접 추가한 모델은 **목록에서 제거**로 등록을 해제할 수 있습니다.
 - **고급 실행 설정:** GPU 사용량, KV 캐시, Flash Attention, 추론 모드와 대화 템플릿을 모델별로 저장합니다. 초기화하면 기본값으로 돌아가며 직접 연결한 MTP도 해제됩니다.
 - **MTP 연결:** 본체를 연결한 뒤 호환되는 Gemma 4 가속용 파일을 추가할 수 있습니다. 어휘와 대상 크기를 확인하므로 관계없는 모델을 MTP로 연결할 수는 없습니다.
 
@@ -198,9 +200,11 @@ CatBridge가 원문·대상 언어와 구분자로 감싼 원문을 보내면 Ca
 
 ## 창과 표시 언어
 
-기본 동작은 **X를 누르면 트레이로 숨기기**입니다. **설정**에서 창을 닫을 때 완전 종료하도록 바꿀 수 있습니다. 트레이에서 런처 복원과 서버 종료를 할 수 있고, EXE를 다시 실행하면 기존 창이 열립니다. 로컬 모델은 한 번에 하나만 실행합니다. 다른 모델을 고르면 실행 중인 로컬 서버를 끈 뒤 선택을 바꾸며, **서버 켜기**를 눌러 새 모델을 실행합니다. ChatGPT 연결은 별도로 유지됩니다. GGUF의 글 길이와 고급 실행 설정은 **적용하고 재시작**으로 반영합니다.
+기본 설정에서는 **창을 닫거나 최소화하면 트레이로 이동**합니다. 트레이 메뉴에서도 **트레이로 보내기**를 선택할 수 있습니다. **설정 → Windows 시작 시 트레이에서 실행**을 켜면 로그인할 때 창을 숨긴 상태로 앱이 시작됩니다. 트레이 메뉴의 **완전 종료**로 두 서비스를 종료할 수 있습니다. EXE를 다시 실행하면 기존 창이 열립니다. 로컬 모델은 한 번에 하나만 실행합니다. 다른 모델을 고르면 실행 중인 로컬 서버를 끈 뒤 선택을 바꾸며, **서버 켜기**를 눌러 새 모델을 실행합니다. ChatGPT 연결은 별도로 유지됩니다. GGUF의 글 길이와 고급 실행 설정은 **적용하고 재시작**으로 반영합니다.
 
-앱을 시작할 때와 이후 매시간 새 정식 버전을 확인합니다. 새 버전 알림을 누르면 공식 다운로드 페이지가 열립니다. 다운로드 중에는 현재 단계와, 파일 크기를 알 수 있는 경우 진행률·받은 용량을 표시합니다.
+앱을 시작할 때와 이후 매시간 새 정식 버전을 확인합니다. **업데이트 및 재시작**을 누르면 새 EXE를 다운로드하고 GitHub의 SHA-256으로 확인한 뒤, 같은 위치에 설치하고 앱을 다시 엽니다. 재시작하면서 실행 중인 서버 연결은 종료됩니다. 자동 설치를 완료할 수 없으면 공식 릴리즈 페이지를 열 수 있습니다.
+
+모델 다운로드 중에는 현재 단계와, 파일 크기를 알 수 있는 경우 진행률·받은 용량을 표시합니다.
 
 Windows 표시 언어를 자동으로 사용하고 지원하지 않는 언어는 영어로 표시합니다. **설정**에서 직접 고른 언어도 기억합니다. CatBridge와 같은 17개 언어를 지원합니다: 영어, 한국어, 일본어, 중국어 간체·번체, 스페인어, 포르투갈어, 프랑스어, 독일어, 필리핀어, 베트남어, 러시아어, 폴란드어, 인도네시아어, 말레이어, 튀르키예어, 태국어.
 

@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "更新到 {0} 并重启",
+  "ui.update.progress": "正在下载更新 · {0}%",
+  "ui.update.applying": "正在安装更新",
+  "ui.update.failed": "无法更新。{0}",
+  "ui.update.releasePage": "发布页面",
   "ui.account.loginPortBusy": "其他登录正在使用回调端口（1455）。请完成或取消 Codex 等应用中的登录，然后重试。",
   "ui.update.available": "下载新版本 {0}",
   "ui.anis.login": "登录 Hugging Face",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "Korean → Japanese",
   "ui.anis.device": "Execution device",
   "ui.settings.done": "完成",
-  "ui.settings.closeToTray": "关闭窗口后在托盘中继续运行",
+  "ui.settings.closeToTray": "关闭或最小化时在系统托盘中继续运行",
   "ui.source.license": "许可证",
   "ui.source.program": "程序来源",
   "ui.connection.localOnly": "仅在此电脑上运行",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "无 RAM/VRAM 估计值，请启动后查看实际用量。",
   "ui.resources.sizeUnknown": "大小未知",
   "ui.resources.basis": "默认 {0} 个令牌的参考值。GPU 分配和缓存会改变用量。CPU 模式不使用模型显存，可能需要更多内存。",
-  "ui.resources.anisBasis": "RAM 为作者的 CPU 参考值，VRAM 为 CUDA 估计值。CPU 模式不使用模型显存。"
+  "ui.resources.anisBasis": "RAM 为作者的 CPU 参考值，VRAM 为 CUDA 估计值。CPU 模式不使用模型显存。",
+  "ui.settings.startWithWindows": "Windows 启动时在系统托盘中运行",
+  "ui.tray.hide": "移至系统托盘",
+  "ui.model.deleteFiles": "删除模型文件",
+  "ui.model.deleteFilesHint": "要永久删除以下属于 {0} 的文件吗？",
+  "ui.model.filesDeleted": "已删除所选的模型文件。",
+  "ui.note.serverRecovered": "服务器意外退出后已重新启动。"
 }

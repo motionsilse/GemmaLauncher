@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "Zaktualizuj do {0} i uruchom ponownie",
+  "ui.update.progress": "Pobieranie aktualizacji · {0}%",
+  "ui.update.applying": "Instalowanie aktualizacji",
+  "ui.update.failed": "Nie udało się zaktualizować. {0}",
+  "ui.update.releasePage": "Strona wydania",
   "ui.account.loginPortBusy": "Inne logowanie używa portu zwrotnego (1455). Zakończ lub anuluj logowanie w Codex lub innej aplikacji i spróbuj ponownie.",
   "ui.update.available": "Pobierz nową wersję {0}",
   "ui.anis.login": "Zaloguj się do Hugging Face",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "Korean → Japanese",
   "ui.anis.device": "Execution device",
   "ui.settings.done": "Gotowe",
-  "ui.settings.closeToTray": "Działaj w zasobniku po zamknięciu okna",
+  "ui.settings.closeToTray": "Działaj w zasobniku po zamknięciu lub zminimalizowaniu",
   "ui.source.license": "Licencja",
   "ui.source.program": "Źródło programu",
   "ui.connection.localOnly": "Działa tylko na tym komputerze",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "Brak oszacowania RAM/VRAM. Sprawdź pomiary po uruchomieniu.",
   "ui.resources.sizeUnknown": "Nieznany rozmiar",
   "ui.resources.basis": "Wartości dla domyślnego kontekstu {0} tokenów. Zależą od GPU i pamięci podręcznej. Tryb CPU nie używa VRAM modelu i może wymagać więcej RAM.",
-  "ui.resources.anisBasis": "RAM: dane autora dla CPU. VRAM: oszacowanie dla CUDA. Tryb CPU nie używa VRAM modelu."
+  "ui.resources.anisBasis": "RAM: dane autora dla CPU. VRAM: oszacowanie dla CUDA. Tryb CPU nie używa VRAM modelu.",
+  "ui.settings.startWithWindows": "Uruchamiaj w zasobniku przy starcie systemu Windows",
+  "ui.tray.hide": "Przenieś do zasobnika",
+  "ui.model.deleteFiles": "Usuń pliki modelu",
+  "ui.model.deleteFilesHint": "Trwale usunąć poniższe pliki modelu {0}?",
+  "ui.model.filesDeleted": "Usunięto wybrane pliki modelu.",
+  "ui.note.serverRecovered": "Ponownie uruchomiono serwer po nieoczekiwanym zakończeniu."
 }

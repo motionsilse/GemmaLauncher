@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "Auf {0} aktualisieren und neu starten",
+  "ui.update.progress": "Update wird heruntergeladen · {0}%",
+  "ui.update.applying": "Update wird installiert",
+  "ui.update.failed": "Update fehlgeschlagen. {0}",
+  "ui.update.releasePage": "Release-Seite",
   "ui.account.loginPortBusy": "Eine andere Anmeldung verwendet den Rückruf-Port (1455). Schließen Sie die Anmeldung in Codex oder einer anderen App ab oder brechen Sie sie ab und versuchen Sie es erneut.",
   "ui.update.available": "Neue Version {0} herunterladen",
   "ui.anis.login": "Bei Hugging Face anmelden",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "Korean → Japanese",
   "ui.anis.device": "Execution device",
   "ui.settings.done": "Fertig",
-  "ui.settings.closeToTray": "Beim Schließen im Infobereich weiter ausführen",
+  "ui.settings.closeToTray": "Beim Schließen oder Minimieren im Infobereich weiter ausführen",
   "ui.source.license": "Lizenz",
   "ui.source.program": "Programmquelle",
   "ui.connection.localOnly": "Wird nur auf diesem PC ausgeführt",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "Keine RAM/VRAM-Schätzung. Nach dem Start die Messwerte prüfen.",
   "ui.resources.sizeUnknown": "Größe unbekannt",
   "ui.resources.basis": "Referenz bei {0} Tokens im Standardkontext. GPU und Cache ändern den Bedarf. CPU-Modus nutzt keinen Modell-VRAM und benötigt eventuell mehr RAM.",
-  "ui.resources.anisBasis": "RAM: CPU-Referenz des Autors. VRAM: CUDA-Schätzung. CPU-Modus nutzt keinen Modell-VRAM."
+  "ui.resources.anisBasis": "RAM: CPU-Referenz des Autors. VRAM: CUDA-Schätzung. CPU-Modus nutzt keinen Modell-VRAM.",
+  "ui.settings.startWithWindows": "Beim Windows-Start im Infobereich starten",
+  "ui.tray.hide": "In den Infobereich verschieben",
+  "ui.model.deleteFiles": "Modelldateien löschen",
+  "ui.model.deleteFilesHint": "Die unten aufgeführten Dateien für {0} dauerhaft löschen?",
+  "ui.model.filesDeleted": "Die ausgewählten Modelldateien wurden gelöscht.",
+  "ui.note.serverRecovered": "Der Server wurde nach einem unerwarteten Ende neu gestartet."
 }

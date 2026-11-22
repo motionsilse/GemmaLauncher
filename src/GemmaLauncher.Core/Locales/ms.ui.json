@@ -1,4 +1,9 @@
 {
+  "ui.update.install": "Kemas kini ke {0} dan mulakan semula",
+  "ui.update.progress": "Memuat turun kemas kini · {0}%",
+  "ui.update.applying": "Memasang kemas kini",
+  "ui.update.failed": "Kemas kini gagal. {0}",
+  "ui.update.releasePage": "Halaman keluaran",
   "ui.account.loginPortBusy": "Log masuk lain sedang menggunakan port panggil balik (1455). Selesaikan atau batalkan log masuk dalam Codex atau aplikasi lain, kemudian cuba lagi.",
   "ui.update.available": "Muat turun versi baharu {0}",
   "ui.anis.login": "Log masuk ke Hugging Face",
@@ -239,7 +244,7 @@
   "ui.anis.direction.ko-ja": "Korean → Japanese",
   "ui.anis.device": "Execution device",
   "ui.settings.done": "Selesai",
-  "ui.settings.closeToTray": "Terus berjalan dalam dulang apabila tetingkap ditutup",
+  "ui.settings.closeToTray": "Terus berjalan dalam dulang apabila ditutup atau diminimumkan",
   "ui.source.license": "Lesen",
   "ui.source.program": "Sumber program",
   "ui.connection.localOnly": "Berjalan pada PC ini sahaja",
@@ -368,5 +373,11 @@
   "ui.resources.unknown": "Anggaran RAM/VRAM tiada. Semak penggunaan sebenar selepas mula.",
   "ui.resources.sizeUnknown": "Saiz tidak diketahui",
   "ui.resources.basis": "Rujukan pada konteks lalai {0} token. Berubah mengikut GPU dan cache. Mod CPU tidak menggunakan VRAM model dan mungkin memerlukan lebih RAM.",
-  "ui.resources.anisBasis": "RAM: rujukan CPU pencipta. VRAM: anggaran CUDA. Mod CPU tidak menggunakan VRAM model."
+  "ui.resources.anisBasis": "RAM: rujukan CPU pencipta. VRAM: anggaran CUDA. Mod CPU tidak menggunakan VRAM model.",
+  "ui.settings.startWithWindows": "Mula dalam dulang apabila Windows bermula",
+  "ui.tray.hide": "Hantar ke dulang",
+  "ui.model.deleteFiles": "Padam fail model",
+  "ui.model.deleteFilesHint": "Padam fail bagi {0} yang disenaraikan di bawah secara kekal?",
+  "ui.model.filesDeleted": "Fail model yang dipilih telah dipadam.",
+  "ui.note.serverRecovered": "Pelayan dimulakan semula selepas terhenti tanpa dijangka."
 }
