@@ -7,7 +7,7 @@ public static partial class Program
     private static async Task TestLoaderAsync()
     {
         await TestLoaderSettingsSaveFailureAsync();
-        TestStartupRegistration();
+        await TestStartupRegistrationAsync();
         await using var fixture = new Fixture();
         var account = new FakeAccount();
         var paths = new GemmaLauncher.Core.LauncherPaths(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")));
@@ -99,7 +99,7 @@ public static partial class Program
         await TestLoaderCleanupAsync();
     }
 
-    private static void TestStartupRegistration()
+    private static async Task TestStartupRegistrationAsync()
     {
         var keyPath = @"Software\CatLoader.Tests-" + Guid.NewGuid().ToString("N");
         var executable = Path.Combine(Path.GetTempPath(), "Cat Loader test.exe");
@@ -116,6 +116,31 @@ public static partial class Program
                 Assert((key?.GetValue("Cat Loader") as string)?.Contains("Cat Loader newer.exe", StringComparison.Ordinal) == true, "An update must refresh the registered executable.");
             startup.SetEnabled(false);
             Assert(!startup.IsEnabled, "Disabling startup must remove the launcher entry.");
+
+            await using var fixture = new Fixture();
+            await using var shell = new LoaderShellViewModel(fixture.Settings, fixture.Store, () => fixture.ViewModel, () => new(new FakeAccount()), startup: startup);
+            using var window = new LoaderWindow(shell);
+            window.Show();
+            using var dialog = (Form)typeof(LoaderWindow).GetMethod("SettingsDialog", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.Invoke(window, null)!;
+            dialog.Show(window);
+            var checkbox = Controls(dialog).OfType<CheckBox>().Single(control => control.Name == "StartWithWindows");
+            var create = typeof(GemmaLauncher.App.App).GetMethod("CreateStartupMenuItem", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+            Assert(create is not null, "The tray needs a Windows startup toggle.");
+            var errors = new List<string>();
+            using var item = (ToolStripMenuItem)create!.Invoke(null, [shell, (Action<string>)errors.Add])!;
+            Assert(!item.Checked && !checkbox.Checked, "Both controls must show that startup is disabled.");
+            item.PerformClick();
+            await UntilAsync(() => checkbox.Checked);
+            Assert(item.Checked && startup.IsEnabled && shell.StartWithWindows, "Enabling startup from the tray must persist and appear in Settings.");
+            checkbox.Checked = false;
+            Assert(!item.Checked && !startup.IsEnabled, "Disabling startup in Settings must update the tray and remove the registry entry.");
+            checkbox.Checked = true;
+            Assert(item.Checked && startup.IsEnabled, "Enabling startup in Settings must check the tray action.");
+            item.PerformClick();
+            await UntilAsync(() => !checkbox.Checked);
+            Assert(!item.Checked && !startup.IsEnabled && errors.Count == 0, "Disabling startup from the tray must persist and appear in Settings.");
+            dialog.Close();
+            window.Close();
         }
         finally { Microsoft.Win32.Registry.CurrentUser.DeleteSubKey(keyPath, throwOnMissingSubKey: false); }
     }

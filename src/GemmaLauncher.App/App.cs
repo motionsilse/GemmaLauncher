@@ -17,7 +17,7 @@ public sealed class App : ApplicationContext
     private NotifyIcon? _tray;
     private System.Drawing.Icon? _icon;
     private ContextMenuStrip? _menu;
-    private ToolStripMenuItem? _toggle, _web, _open, _exit, _account;
+    private ToolStripMenuItem? _toggle, _web, _open, _exit, _account, _startup;
     private Mutex? _instance, _legacyInstance;
     private bool _ownsInstance, _ownsLegacyInstance, _exiting, _exitComplete, _hideNoticeShown;
     public bool Ready { get; private set; }
@@ -139,12 +139,33 @@ public sealed class App : ApplicationContext
         _toggle = new(T("ui.loader.local"), null, async (_, _) => { if (_viewModel?.Local is null) { if (_viewModel is not null) await _viewModel.SelectFeatureAsync(LoaderFeature.LocalModels,default); ShowWindow(); } else _viewModel.Local.PrimaryCommand.Execute(null); });
         _account = new(T("ui.loader.chat"), null, async (_, _) => { if (_viewModel?.Account is null) { if (_viewModel is not null) await _viewModel.SelectFeatureAsync(LoaderFeature.ChatGpt,default); ShowWindow(); } else _viewModel.Account.PrimaryCommand.Execute(null); });
         _web = new(T("ui.connection.web"), null, (_, _) => _viewModel?.Local?.OpenWebUiCommand.Execute(null));
+        _startup = CreateStartupMenuItem(_viewModel!, error => _tray?.ShowBalloonTip(5000, T("ui.app.shortTitle"), error, ToolTipIcon.Error));
         _exit = new(T("ui.tray.exit"), null, async (_, _) => await ExitAsync());
-        _menu.Items.AddRange([_open, _toggle, _account, _web, new ToolStripSeparator(), _exit]);
+        _menu.Items.AddRange([_open, _toggle, _account, _web, new ToolStripSeparator(), _startup, _exit]);
         _icon = System.Drawing.Icon.ExtractAssociatedIcon(Environment.ProcessPath!) ?? (System.Drawing.Icon)System.Drawing.SystemIcons.Application.Clone();
         _tray = new NotifyIcon { Icon = _icon, Text = T("ui.app.shortTitle"), ContextMenuStrip = _menu, Visible = true };
         _tray.DoubleClick += (_, _) => ShowWindow();
         _tray.BalloonTipClicked += (_, _) => ShowWindow();
+    }
+
+    private static ToolStripMenuItem CreateStartupMenuItem(LoaderShellViewModel shell, Action<string> showError)
+    {
+        var item = new ToolStripMenuItem(T("ui.settings.startWithWindows")) { Checked = shell.StartWithWindows };
+        item.Click += (_, _) =>
+        {
+            var enabled = !shell.StartWithWindows;
+            shell.StartWithWindows = enabled;
+            if (shell.StartWithWindows != enabled && shell.SettingsSaveError.Length > 0) showError(shell.SettingsSaveError);
+        };
+        shell.PropertyChanged += Refresh;
+        item.Disposed += (_, _) => shell.PropertyChanged -= Refresh;
+        return item;
+
+        void Refresh(object? sender, PropertyChangedEventArgs args)
+        {
+            item.Text = T("ui.settings.startWithWindows");
+            item.Checked = shell.StartWithWindows;
+        }
     }
 
     private void UpdateTray(object? sender, EventArgs args)
@@ -160,6 +181,7 @@ public sealed class App : ApplicationContext
         _web.Visible = _viewModel.Local is { IsAnis: false };
         _web.Text = T("ui.connection.web");
         _open!.Text = T(_window is { Visible: true, WindowState: not FormWindowState.Minimized } ? "ui.tray.hide" : "ui.tray.open");
+        _startup!.Enabled = !_exiting;
         _exit!.Text = T("ui.tray.exit");
         _exit.Enabled = !_exiting;
     }
